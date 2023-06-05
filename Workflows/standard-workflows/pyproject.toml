@@ -1,0 +1,49 @@
+[tool.poetry]
+name = "standard_workflows"
+version = "0.0.1"
+description = "Workflows"
+authors = ["Thalla <Temerita16@gmail.com>"]
+readme = "README.md"
+license = "LICENSE"
+
+[tool.poetry.dependencies]
+python = ">=3.9,<4.0"
+jupytex = "^0.0.3"
+sphinxcontrib-mermaid = "^0.8.1"
+jupytext = "^1.14.1"
+markdown = "^3.4.1"
+pathlib = "^1.0.1"
+logging = "^0.4.9.6"
+scanpy = "^1.9.1"
+poetrip = "^1.0.0"
+pycco = "^0.6.0"
+pdoc = "^12.2.0"
+mergedeep = "^1.3.4"
+pytest = "^7.2.0"
+panel = "^0.14.1"
+jupyter-bokeh = "^3.0.5"
+param = "^1.12.2"
+ipykernel = "^6.17.0"
+plotly = "^5.11.0"
+dill = "^0.3.6"
+toolz = "^0.12.0"
+pathos = "^0.3.0"
+termcolor = "^2.1.0"
+anndata = "^0.8.0"
+liana = "^0.1.7"
+bigtree = "^0.8.3"
+lxml = "^4.9.2"
+#pypath-omnipath = {git = "https://github.com/saezlab/pypath", rev = "969051d88cdcdf639756c953a2af407dac5f97dd"}
+#pycurl = "^7.45.2"
+omnipath = {git = "https://github.com/saezlab/omnipath.git"}
+decoupler = {git = "https://github.com/saezlab/decoupler-py.git"}
+
+[tool.poetry.dev-dependencies]
+
+[tool.poetry.group.dev.dependencies]
+ipykernel = "^6.17.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
