@@ -123,11 +123,15 @@ def get_analysis_params(w_organism = UiVal.HUMAN.lower(), w_omicstype = UiVal.BU
         },
         'use_pickle_data': True,    # h5ad files are read and then saved as pickle, the pickle files are used from there on
         'priorKnowledge':{
-            'progeny':{
-                'top': [300]
+            'pathways': {
+                'progeny':{
+                    'top': [300]
+                }
             },
-            'collectri':{
-                'split_complexes': [False]
+            'transcription_factors':{
+                'collectri':{
+                    'split_complexes': [False]
+                }
             }
         },
         'decoupler':{
@@ -150,18 +154,20 @@ def get_analysis_params(w_organism = UiVal.HUMAN.lower(), w_omicstype = UiVal.BU
             w_omicstype: { # seqType (scRNA, bulkRNA)
                 '01':{},
                 'priorKnowledge':{
-                    'progeny':
-                        {
-                            'top':['ADD']
-                        },
-                    'collectri':
-                        {
-                            'split_complexes': ['ADD']
+                    'pathways': {
+                        'progeny':{
+                            'top': [300]
+                        }
+                    },
+                    'transcription_factors':{
+                        'collectri':{
+                            'split_complexes': [False]
                         }
                     }
                 }
             }
         }  
+    }
     }
     return d
 
@@ -180,12 +186,14 @@ def show_table(data, download_key) -> None:
                         "data.csv", "text/csv", key = download_key)
     
 import re
-def sentence_case(string):
-    if string != '':
-        result = re.sub('([A-Z])', r' \1', string)
-        return result[:1].upper() + result[1:].lower()
-    print(result[:1])
-    return
+def sentence_case(sentence):
+    """ doesn't work with streamlit... result[:1] is nothing instead of first letter"""
+    if sentence != '':
+        result = re.sub('([A-Z])', r' \1', sentence)
+        result = result[:1].upper() + result[1:].lower()
+        return result
+
+
 
 def add_results(data, fig, title, download_key) -> None:
     """Add a table with download button and the figure.
@@ -195,8 +203,8 @@ def add_results(data, fig, title, download_key) -> None:
         fig (Plotly): Plot to show
         download_key (String): key
     """
-    title = sentence_case(title)
-    st.write(f'### {title}')
+    #title = sentence_case(title)
+    st.markdown(f'### {title}')
     col1, col2 = st.columns(2, gap = 'small')
     with col1:
         show_table(data, download_key)     

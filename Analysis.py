@@ -65,29 +65,43 @@ def get_acts(w_matrix, group):
     ap = st.session_state.ap
     priorKnwldg = sc_funcs.deep_get(ap['dataset_params'], (sc_funcs.getpath(ap['dataset_params'], 'priorKnowledge')))['priorKnowledge'].keys()
     organism = list(ap['dataset_params'].keys())[0]
-    for resource in priorKnwldg:
-        param = sc_funcs.deep_get(ap, sc_funcs.getpath(ap, resource, search_value = False))
-        if resource != 'collectri':
-            net = eval(f'dc.get_{resource}(organism,' + str(list(param.values())[0][0]) + ')')
-        else: 
-            net = pd.read_csv(ap['proj_params']['paths']['data_root_path']+'/collectri.csv')
-        d = data.transpose().tail(-1) 
-        d.columns = data[data.columns[0]]
-        d = d.astype(float)
-        result = dc.decouple(d, net)
-        method = 'ulm'
-        result[f'{method}_pvals'].index = ['pvals']
-        result_pvals = result[f'{method}_pvals'].transpose()
-        result_pvals[resource] = result_pvals.index
-        result_estimate = result[f'{method}_estimate'].transpose()
-        result_estimate[resource] = result_estimate.index
-        df = pd.merge(result_pvals, result_estimate)
-        #df = df[['genes', 't', 'pvals']] # reorder cols
-        df.index = df[resource]
-        df = df.drop(resource, axis = 1)
-        figpath = f'{resource}.png'
-        dc.plot_barplot(result[f'{method}_estimate'], 't', top=25, vertical=False, return_fig = False, save = figpath)
-        util.add_results(df, figpath, resource.capitalize(), resource)
+    for resource_type in priorKnwldg:
+        resources = resources = sc_funcs.deep_get(ap['dataset_params'], (sc_funcs.getpath(ap['dataset_params'], resource_type)))[resource_type].keys()
+        for resource in resources:
+            param = sc_funcs.deep_get(ap, sc_funcs.getpath(ap, resource, search_value = False))
+            if resource != 'collectri':
+                net = eval(f'dc.get_{resource}(organism,' + str(list(param.values())[0][0]) + ')')
+            else: 
+                net = pd.read_csv(ap['proj_params']['paths']['data_root_path']+'/collectri.csv')
+            d = data.transpose().tail(-1) 
+            d.columns = data[data.columns[0]]
+            d = d.astype(float)
+            try:
+                result = dc.decouple(d, net)
+                #st.write(result)
+                method = 'ulm'
+                #st.write(result[f'{method}_pvals'])
+                result[f'{method}_pvals'].index = ['pvals']
+                result_pvals = result[f'{method}_pvals'].transpose()
+                result_pvals[resource] = result_pvals.index
+                result_estimate = result[f'{method}_estimate'].transpose()
+                result_estimate[resource] = result_estimate.index
+                result_estimate.columns = ['t', resource]
+                df = pd.merge(result_pvals, result_estimate)
+                #df.columns = [resource, 'pvals', 't']
+                #df = df[['genes', 't', 'pvals']] # reorder cols
+                df.index = df[resource]
+                df = df.drop(resource, axis = 1)
+                st.write(df)
+                figpath = f'{resource}.png'
+                dc.plot_barplot(result[f'{method}_estimate'], result[f'{method}_estimate'].index[0], top=25, vertical=False, return_fig = False, save = figpath)
+                title = f'{resource_type.capitalize()} retrieved from {resource.capitalize()}'
+                util.add_results(df, figpath, title, title)
+            except ValueError as ve:
+                #result = dc.decouple(d, net, min_n=0)
+                #st.error("Warning: All sources are shown independent of the number of targets. If you want to go with the default of only using sources that have at least five targets, provide more data.")
+                st.error("Error: There aren't any sources with the minimum of five targets. Please provide more data.")
+            
 
 def process_genelist(w_genelist, w_organism):
     """Process the gene names provided by the user. 
@@ -121,31 +135,38 @@ def process_genelist(w_genelist, w_organism):
         # to avoid divide by zero error 
         #newp = np.where(res['p-value'] > 0.0000000001, res['p-value'] , -10)
         #res['log10(p-value)'] = np.log10(newp, out=newp, where=newp > 0)*-10
-        res['log10(p-value)'] = np.log10(res['p-value'])*-10
+        res['-log10(p-value)'] = np.log10(res['p-value'])*-1
         if len(res) >= 20: 
             max_rows = 20
         else: 
             max_rows = len(res)
         res_plot = res.iloc[0:max_rows, :]
-        if(res_plot['log10(p-value)'].value_counts().max() == 20):
+        if(res_plot['-log10(p-value)'].value_counts().max() == 20):
             print(res_plot)
             fig = 'false'
         else: 
-            fig = px.bar(res_plot, x=priortype, y='log10(p-value)')
+            fig = px.bar(res_plot, x=priortype, y='-log10(p-value)')
         return [res.iloc[:, 0:2], fig, priortype.capitalize()] # result, figure, title
-
-    prog = calculate_prior(dc.get_progeny(organism = w_organism), 'pathway')
-    collectri = calculate_prior(pd.read_csv(st.session_state.ap['proj_params']['paths']['data_root_path']+'/collectri.csv'), 'transcriptionFactor')
-    util.add_results(prog[0], prog[1], prog[2],'res_prog')
-    util.add_results(collectri[0], collectri[1], collectri[2],'res_collectri')
-
+    try:
+        prog = calculate_prior(dc.get_progeny(organism = w_organism), 'pathway')
+        collectri = calculate_prior(pd.read_csv(st.session_state.ap['proj_params']['paths']['data_root_path']+'/collectri.csv'), 'transcriptionFactor')
+        util.add_results(prog[0], prog[1], prog[2],'res_prog')
+        util.add_results(collectri[0], collectri[1], collectri[2],'res_collectri')
+    except ValueError as ve: 
+        st.error("Error: There aren't any sources with at least five targets. Please provide more genes.")
+            
 
 def get_testdata(w_inputformat, analysis_params):
     """Read and process Testdata"""
     data = ''
     match w_inputformat:
         case UiVal.GENES:
+            
             data = ['KIAA0907', 'KDM5A', 'CDC25A', 'EGR1', 'GADD45B', 'RELB', 'TERF2IP', 'SMNDC1', 'TICAM1', 'NFKB2', 'RGS2', 'NCOA3', 'ICAM1', 'TEX10', 'CNOT4', 'ARID4B', 'CLPX', 'CHIC2', 'CXCL2', 'FBXO11', 'MTF2', 'CDK2', 'DNTTIP2', 'GADD45A', 'GOLT1B', 'POLR2K', 'NFKBIE', 'GABPB1', 'ECD', 'PHKG2', 'RAD9A', 'NET1', 'KIAA0753', 'EZH2', 'NRAS', 'ATP6V0B', 'CDK7', 'CCNH', 'SENP6', 'TIPARP', 'FOS', 'ARPP19', 'TFAP2A', 'KDM5B', 'NPC1', 'TP53BP2', 'NUSAP1', 'SCCPDH', 'KIF20A', 'FZD7', 'USP22', 'PIP4K2B', 'CRYZ', 'GNB5', 'EIF4EBP1', 'PHGDH', 'RRAGA', 'SLC25A46', 'RPA1', 'HADH', 'DAG1', 'RPIA', 'P4HA2', 'MACF1', 'TMEM97', 'MPZL1', 'PSMG1', 'PLK1', 'SLC37A4', 'GLRX', 'CBR3', 'PRSS23', 'NUDCD3', 'CDC20', 'KIAA0528', 'NIPSNAP1', 'TRAM2', 'STUB1', 'DERA', 'MTHFD2', 'BLVRA', 'IARS2', 'LIPA', 'PGM1', 'CNDP2', 'BNIP3', 'CTSL1', 'CDC25B', 'HSPA8', 'EPRS', 'PAX8', 'SACM1L', 'HOXA5', 'TLE1', 'PYGL', 'TUBB6', 'LOXL1']
+            st.markdown("**The following genes are used:**")
+            st.write("'KIAA0907', 'KDM5A', 'CDC25A', 'EGR1', 'GADD45B', 'RELB', 'TERF2IP', 'SMNDC1', 'TICAM1', 'NFKB2', 'RGS2', 'NCOA3', 'ICAM1', 'TEX10', 'CNOT4', 'ARID4B', 'CLPX', 'CHIC2', 'CXCL2', 'FBXO11', 'MTF2', 'CDK2', 'DNTTIP2', 'GADD45A', 'GOLT1B', 'POLR2K', 'NFKBIE', 'GABPB1', 'ECD', 'PHKG2', 'RAD9A', 'NET1', 'KIAA0753', 'EZH2', 'NRAS', 'ATP6V0B', 'CDK7', 'CCNH', 'SENP6', 'TIPARP', 'FOS', 'ARPP19', 'TFAP2A', 'KDM5B', 'NPC1', 'TP53BP2', 'NUSAP1', 'SCCPDH', 'KIF20A', 'FZD7', 'USP22', 'PIP4K2B', 'CRYZ', 'GNB5', 'EIF4EBP1', 'PHGDH', 'RRAGA', 'SLC25A46', 'RPA1', 'HADH', 'DAG1', 'RPIA', 'P4HA2', 'MACF1', 'TMEM97', 'MPZL1', 'PSMG1', 'PLK1', 'SLC37A4', 'GLRX', 'CBR3', 'PRSS23', 'NUDCD3', 'CDC20', 'KIAA0528', 'NIPSNAP1', 'TRAM2', 'STUB1', 'DERA', 'MTHFD2', 'BLVRA', 'IARS2', 'LIPA', 'PGM1', 'CNDP2', 'BNIP3', 'CTSL1', 'CDC25B', 'HSPA8', 'EPRS', 'PAX8', 'SACM1L', 'HOXA5', 'TLE1', 'PYGL', 'TUBB6', 'LOXL1'")
+                     #on_change=lambda x:send_genelist(x), args=(st.session_state["genelist"]))
+
             process_genelist(data, w_organism)
             #display_genelist_result(result[0], result[1])
         case UiVal.MATRIX:
@@ -177,7 +198,7 @@ def get_data(w_inputformat, analysis_params):
                     if(data.shape[1] == 1):
                         process_genelist(data[1:].to_csv(header=None, index=False).strip('\n').split('\n'), w_organism)
                     else:
-                        get_acts(data, data.columns[1])
+                        get_acts(data.iloc[:, 0:2], data.columns[1])
         case UiVal.H5AD:
             sc.success('Congrats, your data unlocks the project management feature! This is an additional service that automatically downloads all results in a reproducible way.')
             #"/Users/hanna/Documents/projects/SGUI/CTLA4/v00/analysis/mouse/scRNA/01/data/01.h5ad"
@@ -237,6 +258,7 @@ with tab1:
         w_show_all_opts = st.checkbox('Show all options')
         if(w_show_all_opts): 
             st.caption('Advanced Settings')
+            st.warning("This feature is work in progress. You can see changes, that you do here, in the 'Analysis Parameters' tab but the data isn't saved, yet.")
             w_projname_default = st.session_state.ap['proj_params']['proj_id']
             w_projname    = st.text_input(UiVal.PROJ, placeholder = w_projname_default)
             if w_projname != '':
@@ -256,8 +278,12 @@ with tab1:
 
             sc_funcs.dict_delete_key(st.session_state.ap, sc_funcs.getpath(st.session_state.ap, w_datasetname_default))
             st.session_state.ap['dataset_params'][w_organism][w_omicstype][w_datasetname] = {}
-    
+    with tab2:
+        st.warning('This feature is coming soon')
+    with tab3: 
+        st.warning('This feature is coming soon')
     with tab4:
+        st.warning('This feature is work in progress.')
         st.write('### Chosen Analysis Parameters')
         st.write(st.session_state.ap)
         ap = st.session_state.ap
