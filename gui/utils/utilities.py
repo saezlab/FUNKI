@@ -9,7 +9,7 @@ sys.path.append('../')
 from streamlit_extras.switch_page_button import switch_page
 from st_pages import Page, show_pages, hide_pages
 #url('https://i.ibb.co/CP9qPhS/FUNKI.png');
-
+##https://i.postimg.cc/vBp8mDdG/funki-human-And-Mice.jpg');#https://i.ibb.co/Hg8yqF0/funki-human-And-Mice.jpg');
 def add_logo():
     """ logo and css
     """
@@ -34,7 +34,7 @@ def add_logo():
                 color: #FFFFFF;
             }
             [data-testid="stSidebarNav"] {
-                background-image: url('https://i.ibb.co/Hg8yqF0/funki-human-And-Mice.jpg'); 
+                background-image: url('https://picr.eu/images/2023/06/11/sWpkI.jpg'); 
                 background-size: contain;
                 background-repeat: no-repeat;
                 padding-top: 120px;
