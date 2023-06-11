@@ -92,7 +92,7 @@ def get_acts(w_matrix, group):
                 #df = df[['genes', 't', 'pvals']] # reorder cols
                 df.index = df[resource]
                 df = df.drop(resource, axis = 1)
-                st.write(df)
+                #st.write(df)
                 figpath = f'{resource}.png'
                 dc.plot_barplot(result[f'{method}_estimate'], result[f'{method}_estimate'].index[0], top=25, vertical=False, return_fig = False, save = figpath)
                 title = f'{resource_type.capitalize()} retrieved from {resource.capitalize()}'

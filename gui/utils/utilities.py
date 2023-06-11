@@ -34,7 +34,7 @@ def add_logo():
                 color: #FFFFFF;
             }
             [data-testid="stSidebarNav"] {
-                background-image: url('https://i.ibb.co/0Vz8ggH/funki-allfeet-grey-v3.jpg'); 
+                background-image: url('https://i.ibb.co/Hg8yqF0/funki-human-And-Mice.jpg'); 
                 background-size: contain;
                 background-repeat: no-repeat;
                 padding-top: 120px;
