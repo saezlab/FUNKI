@@ -1,17 +1,17 @@
 # FUNKI
+<img width="1072" alt="image" src="https://picr.eu/images/2023/06/11/sWpkI.jpg">
 
-FUNKIpy including Decoupler, GUI with Streamlit  
-  
-Possible input types:
-- gene list 
-- matrix
-
-Example gene list for testing: 
-KIAA0907, KDM5A, CDC25A, EGR1, GADD45B, RELB, TERF2IP, SMNDC1, TICAM1, NFKB2, RGS2, NCOA3, ICAM1, TEX10, CNOT4, ARID4B, CLPX, CHIC2, CXCL2, FBXO11, MTF2, CDK2, DNTTIP2, GADD45A, GOLT1B, POLR2K, NFKBIE, GABPB1, ECD, PHKG2, RAD9A, NET1, KIAA0753, EZH2, NRAS, ATP6V0B, CDK7, CCNH, SENP6, TIPARP, FOS, ARPP19, TFAP2A, KDM5B, NPC1, TP53BP2, NUSAP1, SCCPDH, KIF20A, FZD7, USP22, PIP4K2B, CRYZ, GNB5, EIF4EBP1, PHGDH, RRAGA, SLC25A46, RPA1, HADH, DAG1, RPIA, P4HA2, MACF1, TMEM97, MPZL1, PSMG1, PLK1, SLC37A4, GLRX, CBR3, PRSS23, NUDCD3, CDC20, KIAA0528, NIPSNAP1, TRAM2, STUB1, DERA, MTHFD2, BLVRA, IARS2, LIPA, PGM1, CNDP2, BNIP3, CTSL1, CDC25B, HSPA8, EPRS, PAX8, SACM1L, HOXA5, TLE1, PYGL, TUBB6, LOXL1
+FUNKI is a web application that connects prior knowledge with your datasets. It is written in python and uses the package *streamlit* to build the graphical user interface.  
 
 
-<img width="1072" alt="image" src="https://github.com/saezlab/FUNKI/assets/7726751/5ee3e38a-1a99-474d-9027-37c4898f394a">
+The following diagram shows the options of the user interface.   
 
-The diagram was made with Miro and can be found in the saezlab Miro account.
+![](./images/funki_ui.jpg)
+
+
+This diagram explains how the input from the user interface is processed internally.   
+
+![](./images/funki_processing.jpg)
+
 
 
