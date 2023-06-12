@@ -98,9 +98,11 @@ def get_acts(w_matrix, group):
                 title = f'{resource_type.capitalize()} retrieved from {resource.capitalize()}'
                 util.add_results(df, figpath, title, title)
             except ValueError as ve:
-                #result = dc.decouple(d, net, min_n=0)
-                #st.error("Warning: All sources are shown independent of the number of targets. If you want to go with the default of only using sources that have at least five targets, provide more data.")
-                st.error("Error: There aren't any sources with the minimum of five targets. Please provide more data.")
+                try:
+                    result = dc.decouple(d, net, min_n=2)
+                    st.warning("Warning: All sources with at least two targets were taken into consideration. The default would be to have at least five targets per source. To go with the default you would need to add more genes.")
+                except ValueError as ve:
+                    st.error("Error: There aren't any sources with the minimum of five targets. Please provide more genes.")
             
 
 def process_genelist(w_genelist, w_organism):
@@ -152,9 +154,16 @@ def process_genelist(w_genelist, w_organism):
         collectri = calculate_prior(pd.read_csv(st.session_state.ap['proj_params']['paths']['data_root_path']+'/collectri.csv'), 'transcriptionFactor')
         util.add_results(prog[0], prog[1], prog[2],'res_prog')
         util.add_results(collectri[0], collectri[1], collectri[2],'res_collectri')
-    except ValueError as ve: 
-        st.error("Error: There aren't any sources with at least five targets. Please provide more genes.")
-            
+    except ValueError as ve:
+        try:
+            prog = calculate_prior(dc.get_progeny(organism = w_organism, min_n = 2), 'pathway')
+            collectri = calculate_prior(pd.read_csv(st.session_state.ap['proj_params']['paths']['data_root_path']+'/collectri.csv', organism = w_organism, min_n = 2), 'transcriptionFactor')
+            util.add_results(prog[0], prog[1], prog[2],'res_prog')
+            util.add_results(collectri[0], collectri[1], collectri[2],'res_collectri')
+            st.warning("Warning: All sources with at least two targets were taken into consideration. The default would be to have at least five targets per source. To go with the default you would need to add more genes.")
+        except ValueError as ve:
+            st.error("Error: There aren't any sources with the minimum of five targets. Please provide more genes.")
+                  
 
 def get_testdata(w_inputformat, analysis_params):
     """Read and process Testdata"""
@@ -164,7 +173,7 @@ def get_testdata(w_inputformat, analysis_params):
             
             data = ['KIAA0907', 'KDM5A', 'CDC25A', 'EGR1', 'GADD45B', 'RELB', 'TERF2IP', 'SMNDC1', 'TICAM1', 'NFKB2', 'RGS2', 'NCOA3', 'ICAM1', 'TEX10', 'CNOT4', 'ARID4B', 'CLPX', 'CHIC2', 'CXCL2', 'FBXO11', 'MTF2', 'CDK2', 'DNTTIP2', 'GADD45A', 'GOLT1B', 'POLR2K', 'NFKBIE', 'GABPB1', 'ECD', 'PHKG2', 'RAD9A', 'NET1', 'KIAA0753', 'EZH2', 'NRAS', 'ATP6V0B', 'CDK7', 'CCNH', 'SENP6', 'TIPARP', 'FOS', 'ARPP19', 'TFAP2A', 'KDM5B', 'NPC1', 'TP53BP2', 'NUSAP1', 'SCCPDH', 'KIF20A', 'FZD7', 'USP22', 'PIP4K2B', 'CRYZ', 'GNB5', 'EIF4EBP1', 'PHGDH', 'RRAGA', 'SLC25A46', 'RPA1', 'HADH', 'DAG1', 'RPIA', 'P4HA2', 'MACF1', 'TMEM97', 'MPZL1', 'PSMG1', 'PLK1', 'SLC37A4', 'GLRX', 'CBR3', 'PRSS23', 'NUDCD3', 'CDC20', 'KIAA0528', 'NIPSNAP1', 'TRAM2', 'STUB1', 'DERA', 'MTHFD2', 'BLVRA', 'IARS2', 'LIPA', 'PGM1', 'CNDP2', 'BNIP3', 'CTSL1', 'CDC25B', 'HSPA8', 'EPRS', 'PAX8', 'SACM1L', 'HOXA5', 'TLE1', 'PYGL', 'TUBB6', 'LOXL1']
             st.markdown("**The following genes are used:**")
-            st.write("'KIAA0907', 'KDM5A', 'CDC25A', 'EGR1', 'GADD45B', 'RELB', 'TERF2IP', 'SMNDC1', 'TICAM1', 'NFKB2', 'RGS2', 'NCOA3', 'ICAM1', 'TEX10', 'CNOT4', 'ARID4B', 'CLPX', 'CHIC2', 'CXCL2', 'FBXO11', 'MTF2', 'CDK2', 'DNTTIP2', 'GADD45A', 'GOLT1B', 'POLR2K', 'NFKBIE', 'GABPB1', 'ECD', 'PHKG2', 'RAD9A', 'NET1', 'KIAA0753', 'EZH2', 'NRAS', 'ATP6V0B', 'CDK7', 'CCNH', 'SENP6', 'TIPARP', 'FOS', 'ARPP19', 'TFAP2A', 'KDM5B', 'NPC1', 'TP53BP2', 'NUSAP1', 'SCCPDH', 'KIF20A', 'FZD7', 'USP22', 'PIP4K2B', 'CRYZ', 'GNB5', 'EIF4EBP1', 'PHGDH', 'RRAGA', 'SLC25A46', 'RPA1', 'HADH', 'DAG1', 'RPIA', 'P4HA2', 'MACF1', 'TMEM97', 'MPZL1', 'PSMG1', 'PLK1', 'SLC37A4', 'GLRX', 'CBR3', 'PRSS23', 'NUDCD3', 'CDC20', 'KIAA0528', 'NIPSNAP1', 'TRAM2', 'STUB1', 'DERA', 'MTHFD2', 'BLVRA', 'IARS2', 'LIPA', 'PGM1', 'CNDP2', 'BNIP3', 'CTSL1', 'CDC25B', 'HSPA8', 'EPRS', 'PAX8', 'SACM1L', 'HOXA5', 'TLE1', 'PYGL', 'TUBB6', 'LOXL1'")
+            st.write("KIAA0907, KDM5A, CDC25A, EGR1, GADD45B, RELB, TERF2IP, SMNDC1, TICAM1, NFKB2, RGS2, NCOA3, ICAM1, TEX10, CNOT4, ARID4B, CLPX, CHIC2, CXCL2, FBXO11, MTF2, CDK2, DNTTIP2, GADD45A, GOLT1B, POLR2K, NFKBIE, GABPB1, ECD, PHKG2, RAD9A, NET1, KIAA0753, EZH2, NRAS, ATP6V0B, CDK7, CCNH, SENP6, TIPARP, FOS, ARPP19, TFAP2A, KDM5B, NPC1, TP53BP2, NUSAP1, SCCPDH, KIF20A, FZD7, USP22, PIP4K2B, CRYZ, GNB5, EIF4EBP1, PHGDH, RRAGA, SLC25A46, RPA1, HADH, DAG1, RPIA, P4HA2, MACF1, TMEM97, MPZL1, PSMG1, PLK1, SLC37A4, GLRX, CBR3, PRSS23, NUDCD3, CDC20, KIAA0528, NIPSNAP1, TRAM2, STUB1, DERA, MTHFD2, BLVRA, IARS2, LIPA, PGM1, CNDP2, BNIP3, CTSL1, CDC25B, HSPA8, EPRS, PAX8, SACM1L, HOXA5, TLE1, PYGL, TUBB6, LOXL1")
                      #on_change=lambda x:send_genelist(x), args=(st.session_state["genelist"]))
 
             process_genelist(data, w_organism)
