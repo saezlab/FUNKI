@@ -2,6 +2,8 @@
 
 - CRC1550_Retreat_heartExample.csv  
   -> The dataset that is used for the ChatGPT demonstration.
+  
+The following files are from the project [GSE50760](https://github.com/adugourd/GSE50760/tree/main/example_inputs):  
 - differential_genes.csv  
   -> Only a list of genes that uses ora. There is no difference between using a file with a genes column or entering the genes in the textfield on the website. 
 - differential_pvals.csv  
