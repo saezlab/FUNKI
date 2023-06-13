@@ -1,19 +1,20 @@
-example_inputs/differential_stats.csv:
-  the stats can be fold changes, t-values or zscores. They range between - and + infinity.
-  run decoupleR's ulm
-example_inputs/differential_pvals.csv
-  the stats are p-values. They range between 0 and 1
-  use all the genes to generate a background similar to background_genes.csv (see below)
-  use a p-value threshold of < 0.05 and generate an input identical to the differential_genes.csv file (see below)
-  run decoupleR's ORA using the differential genes and back gournd genes as input
-example_inputs/differential_genes.csv
-  run decoupleR's ORA using the default example_inputs/background_genes.csv file as background genes
-example_inputs/background_genes.csv
-  background genes to use as default background of ORA
-  
-CHECK WITH PAU IF DECOUPLER ORA CAN BE RUN WITH INPUTS list OF SIGNIFICANT GENES AND BACKGORUND
+**This folder holds a couple of possible input files for FUNKI, namely:**   
 
+- CRC1550_Retreat_heartExample.csv  
+  -> The dataset that is used for the ChatGPT demonstration.
+- differential_genes.csv  
+  -> Only a list of genes that uses ora. There is no difference between using a file with a genes column or entering the genes in the textfield on the website. 
+- differential_pvals.csv  
+  -> genes and pvals column, runs with ulm
+- differential_stats.csv  
+  -> genes and t vals column, runs with ulm  
+      
+      
+**Please make sure that input csv files are formatted like this:** 
 
-
-Where do the tables come from?
-Genelist -> field for # of background genes
+- comma separated
+- numbers use the english notation with dots instead of commas
+- first column are genes
+- the optional second column holds statistics (LFC, pval, ...) 
+- columns have names
+- there can be more columns but they are ignored by FUNKI
