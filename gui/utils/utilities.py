@@ -180,7 +180,8 @@ def add_results(data, fig, title, download_key) -> None:
                         label="Download image",
                         data=im,
                         file_name=f'{title}.png',
-                        mime="image/png"
+                        mime="image/png",
+                        key = f'{download_key}image1'
                     )
             else:
                 st.write('There are too many significant transcription factors. Therefore, no plot is produced.')

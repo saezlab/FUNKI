@@ -145,18 +145,22 @@ with tab1:
         aps = {'organism': list(st.session_state.ap['dataset_params'].keys())[0]}
         aps.update({'omicstype': list(st.session_state.ap['dataset_params'][aps['organism']].keys())[0]}) # analysis params
         datasets = bulk.get_data(w_inputformat)
+
+        print("LÄNGE!!! ", datasets)
+        if len(datasets) != 0:
+            cols = st.columns(len(datasets)) 
+            for i in range(0, len(datasets)):
+                with cols[i]:
+                    st.write('The following data will be used for the analysis: ')
+                    st.write(datasets[i]['datasetname'])
+                    st.write(datasets[i]['data'])
+                    bulk.get_acts(datasets[i])
     else:
         datasets = bulk.get_testdata(w_inputformat, datarootpath = st.session_state.ap['proj_params']['paths']['data_root_path'])
 
     
 
-    cols = st.columns(len(datasets)+1) 
-    for i in range(0, len(datasets)):
-        with cols[i]:
-            st.write('The following data will be used for the analysis: ')
-            st.write(datasets[i]['datasetname'])
-            st.write(datasets[i]['data'])
-            bulk.get_acts(datasets[i])
+    
 
 
 ################

@@ -75,7 +75,7 @@ def get_acts(dataset):
                 figpath = f'{resource}.png'
                 dc.plot_barplot(result[f'{method}_estimate'], result[f'{method}_estimate'].index[0], top=25, vertical=False, return_fig = False, save = figpath)
                 title = f'{resource_type.capitalize()} retrieved from {resource.capitalize()}'
-                util.add_results(df, figpath, title, title)
+                util.add_results(df, figpath, title, f"{title}{dataset['datasetid']}")
             except ValueError as ve:
                 try:
                     result = dc.decouple(d, net, min_n=2)
