@@ -129,6 +129,23 @@ def dict_delete_key(dict, path) -> dict:
     r = range(0,pathlen-1)
     del (reduce(lambda d,i: d[path[i]], r, dict))[path[pathlen-1]]
 
+
+def subset_dict(dict, keys_to_extract)-> dict:
+    """Subsetting dict to some of the keys in its first layer.
+
+    Args:
+        dict (Dict): Dictionary that shall be subsetted by its first layer. 
+        keys_to_extract (List): Keys in the first level of the dict that shall be used for the new dict.
+
+    Returns:
+        dict: subset
+    """
+    subset = {}
+    for key, value in dict.items():
+        if key in keys_to_extract:
+            subset[key] = value
+    return subset
+
 def merge_dicts(dict_1: dict, dict_2: dict) -> dict:
     """
     First updates dict_2 with dict_1. 

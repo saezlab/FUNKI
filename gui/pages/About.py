@@ -28,14 +28,19 @@ from utils import utilities as util
 from streamlit_extras.switch_page_button import switch_page
 from st_pages import Page, show_pages, hide_pages
 from streamlit_elements import elements, mui
+from utils import web_utils as web
 
-util.add_logo()
+web.add_logo()
 
 st.markdown('# About')
-st.markdown("FUNKI provides methods for functional omics analysis. It uses prior knowledge from the database Omnipath and uses the statistical methods from the tool Decoupler to find footprints in the data, like transcription factors and pathways.\nFUNKI is still under development so that new features will be added step by step.")
+st.markdown("FUNKI (FUNctional toolKIt ) provides methods for functional omics analysis. It uses prior knowledge from the database Omnipath and uses the statistical methods from the tool Decoupler to find footprints in the data, like transcription factors and pathways.\nFUNKI is still under development so that new features will be added step by step.")
+st.write('FUNKI is a new implementation of [ShinyFUNKI](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8963329/). \
+         The concept for both is the same. The difference is that this implementation is done in python (to be faster) and that newer tools/versions are used.')
+
+
 dc = st.button("Decoupler")
 if dc:
-    switch_page('decoupler')
+    switch_page('analysis')
 #drug = st.button("Drugst.One")
 #if drug:
 #    switch_page('Drugst.One')

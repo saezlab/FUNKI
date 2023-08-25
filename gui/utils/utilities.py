@@ -10,89 +10,8 @@ from streamlit_extras.switch_page_button import switch_page
 from st_pages import Page, show_pages, hide_pages
 #url('https://i.ibb.co/CP9qPhS/FUNKI.png');
 ##https://i.postimg.cc/vBp8mDdG/funki-human-And-Mice.jpg');#https://i.ibb.co/Hg8yqF0/funki-human-And-Mice.jpg');
-def add_logo():
-    """ logo and css
-    """
-    #st.image(im, width = 200)
-    st.markdown(
-        """
-        <style>
-            h1 {
-                font-family: "Arial";
-            }
-            .css-z5fcl4 {
-                 padding: 2rem 2rem;
-            }
-            [data-testid="column"] {
-                /*margin: 35px;
-                padding: 10px;*/
-            }
-            [data-testid="stSidebar"] {
-                background-color: #3a3a3a;
-            }
-            [data-testid="stSidebar"] span {
-                color: #FFFFFF;
-            }
-            [data-testid="stSidebarNav"] {
-                background-image: url('https://picr.eu/images/2023/06/11/sWpkI.jpg'); 
-                background-size: contain;
-                background-repeat: no-repeat;
-                padding-top: 120px;
-                background-position: 0px 20px;
-                color: white;
-            }
-            [data-testid="stSidebarNav"]::before {
-                /*content: "Methods";*/
-                color: white;
-                margin-left: 20px;
-                margin-top: 20px;
-                font-size: 30px;
-                position: relative;
-                top: 100px;
-            }
-            .css-l3i8zm {
-                font-weight: 900;
-                color: #08046e; <!-- redrgb(218, 80, 16);-->
-            }
-            [data-testid="stMarkdownContainer"] p {
-                font-weight: 400;
-            }
-            [data-baseweb="select"] div {
-                background-color: lightblue;
-                width = min-content;
-            }
-            footer {
-                visibility: hidden;
-                }
-            footer:after {
-                content:'   Made with Streamlit by Hanna Schumacher, Copyright 2023, Heidelberg University Hospital';
-                visibility: visible;
-                display: block;
-                height: 50px;
-                clear: both;
-                color: white;
-                background-color: lightslategray;
-                }
-        </style>
-        """,
-        unsafe_allow_html=True,
-    )
-add_logo()
-
  # ":linked_paperclips:"),
-def init_page():
-    """ logo, sidebar
-    """
-    add_logo()
-    show_pages([
-        Page("Analysis.py", "Analysis", ":bar_chart:"), 
-        Page("gui/pages/About.py","About", "🏠"),
-        #Page("gui/pages/Drugst.One.py","Drugst.One", ":spider_web:"),
-        Page("gui/pages/Citations.py", "Citations", ":book:")
-    ])
-    #hide_pages(['utilities'])
-    with st.sidebar:
-        st.caption('FUNKI is under active development.</br>Stay tuned for new features.', unsafe_allow_html=True)
+
 
 
 class UiVal:
@@ -108,9 +27,12 @@ class UiVal:
     PHOSPHO = 'Phosphoproteomics'
     SCRNA = 'SingleCellRNAseq (tbd.)'
     # w_inputformat
-    GENES = 'Gene names'
-    MATRIX = '.csv'
-    H5AD = '.h5ad (tbd.)'
+    GENES = 'Gene list'
+    KINASES = 'Genesymbol_phosphosite list'
+    MATRIX = 'Matrix'
+    CSV = '.csv'
+    H5AD = 'h5ad (tbd.)'
+    EXCEL = '.xlsx'
 
 def get_analysis_params(w_organism = UiVal.HUMAN.lower(), w_omicstype = UiVal.BULKRNA.lower()): 
     d = {
@@ -132,6 +54,9 @@ def get_analysis_params(w_organism = UiVal.HUMAN.lower(), w_omicstype = UiVal.BU
                 'collectri':{
                     'split_complexes': [False]
                 }
+            },
+            'kinase_substrate':{
+                'ksn':{}
             }
         },
         'decoupler':{
@@ -163,6 +88,10 @@ def get_analysis_params(w_organism = UiVal.HUMAN.lower(), w_omicstype = UiVal.BU
                         'collectri':{
                             'split_complexes': [False]
                         }
+                    },
+                    'kinase_substrate':{
+                        'ksn':{
+                        }
                     }
                 }
             }
@@ -170,6 +99,36 @@ def get_analysis_params(w_organism = UiVal.HUMAN.lower(), w_omicstype = UiVal.BU
     }
     }
     return d
+
+def set_priorKnwldg(w_omicstype, analysis_params) -> dict:
+    """Get priorKnwldg depending on omics type.
+
+    Args:
+        w_omicstype (UiVal): widget input
+    Return: dict
+    """
+    def set_priorKnwldg_bykeys(keys:list)-> dict:
+        """
+        1. Get all priorKnlwdg from project params.
+        2. Subset priorKnwldg by given keys. 
+        3. Set priorKnwldg for dataset.
+
+        Args:
+            keys (List): The priorKnwldg that shall be used.
+        Return: dict
+        """
+        all_priorKnwldg = dict(analysis_params['proj_params']['priorKnowledge'].items())
+        subset = sc_funcs.subset_dict(all_priorKnwldg, keys)
+        priorKnwldg_dspath = sc_funcs.getpath(analysis_params['dataset_params'], 'priorKnowledge')
+        subset = sc_funcs.dict_replace(analysis_params['dataset_params'], subset, priorKnwldg_dspath + ('priorKnowledge',))
+        analysis_params['dataset_params'].update(subset)
+        return analysis_params
+
+    match w_omicstype:
+        case UiVal.BULKRNA: 
+            return set_priorKnwldg_bykeys(['pathways', 'transcription_factors'])
+        case UiVal.PHOSPHO:
+            return set_priorKnwldg_bykeys(['kinase_substrate'])
 
 def change_param(param_id, value):
     sc_funcs.dict_replace(st.session_state.ap, value, sc_funcs.getpath(st.session_state.ap, param_id) + (param_id,))
@@ -323,52 +282,10 @@ def gui_paths(self):
     for data in self.datasets:
         st.text(sc_funcs.print_paths(data._paths))
 
+
+
 #mygrid = make_grid(5,5)
     #pdfdisp = f'<iframe src="/Abc/drawings/ab-1600.pdf" style="position: absolute; height: 100%; width: 100%;"></iframe>'
     #pdf_display = f'<iframe src="data:application/pdf;base64,{base64_pdf}" width="200" height="200" type="application/pdf"></iframe>'
     #st.markdown(pdf_display, unsafe_allow_html=True)
     #st.markdown(pdfdisp, unsafe_allow_html=True)
-
-# def get_ksn_omnipath(organism: str | int = 'human', top: int = 100) -> pd.DataFrame:
-
-
-
-#   import omnipath
-#   omnipath.requests.Enzsub.resources
-
-#     op = dc.omnip._check_if_omnipath()
-
-
-#     p = op.requests.Annotations.get(resources='PROGENy')
-#     p = p.set_index([
-#         'record_id', 'uniprot', 'genesymbol',
-#         'entity_type', 'source', 'label',
-#     ])
-
-
-
-#   list(...) %>%
-#     OmnipathR::import_omnipath_enzsub(!!!.) %>%
-#     filter(modification %in% c('phosphorylation', 'dephosphorylation')) %>%
-#     mutate(
-#       target = sprintf(
-#         '%s_%s%i',
-#         substrate_genesymbol,
-#         residue_type,
-#         residue_offset
-#       ),
-#       mor = (modification == 'phosphorylation') * 2L - 1L
-#     ) %>%
-#     select(source = enzyme_genesymbol, target, mor) %>%
-#     distinct %>%
-#     group_by(source, target) %>%
-#     mutate(mor = min(mor)) %>%
-#     summarize_all(first) %>%
-#     ungroup %T>%
-#     {OmnipathR::omnipath_msg(
-#       'success',
-#       '%i enzyme-PTM interactions after preprocessing.',
-#       nrow(.)
-#     )}
-
-# }
