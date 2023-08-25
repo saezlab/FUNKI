@@ -1,14 +1,20 @@
-import webbrowser, glob, os, subprocess              # json, yaml, base64, re, sys, numba, logging, random, dill, logging.config
+#import webbrowser, glob, os, subprocess              #json, yaml, base64, re, sys, numba, logging, random, dill, logging.config
 from os import makedirs, path       
-from copy import deepcopy
-import streamlit as st, decoupler as dc, numpy as np, pandas as pd 
-st.set_page_config(layout="wide")   ##import matplotlib.pyplot as plt
-#from standard_workflows import default_analysis_params as ap
+#from copy import deepcopy
+import streamlit as st
+st.set_page_config(layout="wide")
+# funki modules
 from standard_workflows import * 
-from gui import pages, utils
+#from gui import pages, utils
 from gui.utils import utilities as util
-UiVal = util.UiVal
+from gui.utils import bulkRNA_utils as bulk
+from gui.utils import web_utils as web
+from gui.utils import analysispage_utils as analysispage
+# Logging
+import logging
+from io import StringIO
 
+##########################################################################################################################################
 # st.success(f'The analysis will be run for **{w_organism}** with **{w_omicstype}** data in the format **{w_inputformat}**.')
 # #st.session_state.genelist = "Please wait while your data is processing..."
 #"""We use log10 for the plot because it has a better interpretability than log2.
@@ -47,221 +53,66 @@ UiVal = util.UiVal
 
 # adata = ad.AnnData(d, obs=pd.DataFrame(index=d.index), var=pd.DataFrame(index=d.columns))
 
+# TODO: if not 'Run', don't change any params or results.
+# TODO: Extend to multiple datasets at once? Not really necessary. Maybe one tab per ds results?
+#@st.cache, @st.cache_data, and @st.cache_resource
+###################################################################################################################
 
 
-util.init_page()
+        
+#--------LOGGING--------#
+logger = logging.getLogger(__name__)
+#logger.handlers.clear()
+print("handlers", logger.handlers)
+if not len(logger.handlers):
+    log_capture_string = StringIO()
+    fhandler = logging.FileHandler(filename='funki.log', mode='a')
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    fhandler.setFormatter(formatter)
+    fhandler.name = "funkifile_handler"
+    logger.addHandler(fhandler)
+    logger.setLevel(logging.INFO)
 
 
-
-def get_acts(w_matrix, group):
-    """run decoupler
-
-    Args:
-        w_matrix (DataFrame): first column gene names, second column p-values or other statistics
-        w_organism (_type_): _description_
-        group (_type_): _description_
-    """
-    data = w_matrix
-    ap = st.session_state.ap
-    priorKnwldg = sc_funcs.deep_get(ap['dataset_params'], (sc_funcs.getpath(ap['dataset_params'], 'priorKnowledge')))['priorKnowledge'].keys()
-    organism = list(ap['dataset_params'].keys())[0]
-    for resource_type in priorKnwldg:
-        resources = resources = sc_funcs.deep_get(ap['dataset_params'], (sc_funcs.getpath(ap['dataset_params'], resource_type)))[resource_type].keys()
-        for resource in resources:
-            param = sc_funcs.deep_get(ap, sc_funcs.getpath(ap, resource, search_value = False))
-            if resource != 'collectri':
-                net = eval(f'dc.get_{resource}(organism,' + str(list(param.values())[0][0]) + ')')
-            else: 
-                net = pd.read_csv(ap['proj_params']['paths']['data_root_path']+'/collectri.csv')
-            d = data.transpose().tail(-1) 
-            d.columns = data[data.columns[0]]
-            d = d.astype(float)
-            try:
-                result = dc.decouple(d, net)
-                #st.write(result)
-                method = 'ulm'
-                #st.write(result[f'{method}_pvals'])
-                result[f'{method}_pvals'].index = ['pvals']
-                result_pvals = result[f'{method}_pvals'].transpose()
-                result_pvals[resource] = result_pvals.index
-                result_estimate = result[f'{method}_estimate'].transpose()
-                result_estimate[resource] = result_estimate.index
-                result_estimate.columns = ['t', resource]
-                df = pd.merge(result_pvals, result_estimate)
-                #df.columns = [resource, 'pvals', 't']
-                #df = df[['genes', 't', 'pvals']] # reorder cols
-                df.index = df[resource]
-                df = df.drop(resource, axis = 1)
-                #st.write(df)
-                figpath = f'{resource}.png'
-                dc.plot_barplot(result[f'{method}_estimate'], result[f'{method}_estimate'].index[0], top=25, vertical=False, return_fig = False, save = figpath)
-                title = f'{resource_type.capitalize()} retrieved from {resource.capitalize()}'
-                util.add_results(df, figpath, title, title)
-            except ValueError as ve:
-                try:
-                    result = dc.decouple(d, net, min_n=2)
-                    st.warning("Warning: All sources with at least two targets were taken into consideration. The default would be to have at least five targets per source. To go with the default you would need to add more genes.")
-                except ValueError as ve:
-                    st.error("Error: There aren't any sources with the minimum of five targets. Please provide more genes.")
-            
-
-def process_genelist(w_genelist, w_organism):
-    """Process the gene names provided by the user. 
-    Uses get_ora_df as it is the only method that can be used with a gene list as input instead of a matrix.
-    """
-    features = w_genelist
-    data = pd.DataFrame({'group': ['undefined']*len(features), 'features': features})
-    def calculate_prior(net, priortype):
-        """ Get activities from decoupler
-
-        Args:
-            features (String): name of column with significant features
-            net (DataFrame): prior knwoledge retrieved via decoupler 
-            priortype (String): column name for result
-
-        Returns:
-            List: [DataFrame, Plotly, Title]
-        """
-        res = dc.get_ora_df(data, net, groupby='group', features='features')
-        # melt to long format
-        res = res.reset_index().melt(id_vars=['index'], var_name=priortype, value_name='p-value')
-        # sort by the p-values and assign ranks
-        res = res.sort_values(by='p-value')
-        #res['rank'] = list(range(1, len(res.index) + 1))
-        # Remove group, reset index, change column order
-        res = res.drop('index', axis=1).reset_index(drop=True)
-        res = res[[priortype, 'p-value']]
-        #res = res[['rank', priortype, 'p-value']]
-        import plotly.express as px
-        import numpy as np
-        # to avoid divide by zero error 
-        #newp = np.where(res['p-value'] > 0.0000000001, res['p-value'] , -10)
-        #res['log10(p-value)'] = np.log10(newp, out=newp, where=newp > 0)*-10
-        res['-log10(p-value)'] = np.log10(res['p-value'])*-1
-        if len(res) >= 20: 
-            max_rows = 20
-        else: 
-            max_rows = len(res)
-        res_plot = res.iloc[0:max_rows, :]
-        if(res_plot['-log10(p-value)'].value_counts().max() == 20):
-            print(res_plot)
-            fig = 'false'
-        else: 
-            fig = px.bar(res_plot, x=priortype, y='-log10(p-value)')
-        return [res.iloc[:, 0:2], fig, priortype.capitalize()] # result, figure, title
-    try:
-        prog = calculate_prior(dc.get_progeny(organism = w_organism), 'pathway')
-        collectri = calculate_prior(pd.read_csv(st.session_state.ap['proj_params']['paths']['data_root_path']+'/collectri.csv'), 'transcriptionFactor')
-        util.add_results(prog[0], prog[1], prog[2],'res_prog')
-        util.add_results(collectri[0], collectri[1], collectri[2],'res_collectri')
-    except ValueError as ve:
-        try:
-            prog = calculate_prior(dc.get_progeny(organism = w_organism, min_n = 2), 'pathway')
-            collectri = calculate_prior(pd.read_csv(st.session_state.ap['proj_params']['paths']['data_root_path']+'/collectri.csv', organism = w_organism, min_n = 2), 'transcriptionFactor')
-            util.add_results(prog[0], prog[1], prog[2],'res_prog')
-            util.add_results(collectri[0], collectri[1], collectri[2],'res_collectri')
-            st.warning("Warning: All sources with at least two targets were taken into consideration. The default would be to have at least five targets per source. To go with the default you would need to add more genes.")
-        except ValueError as ve:
-            st.error("Error: There aren't any sources with the minimum of five targets. Please provide more genes.")
-                  
-
-def get_testdata(w_inputformat, analysis_params):
-    """Read and process Testdata"""
-    data = ''
-    match w_inputformat:
-        case UiVal.GENES:
-            
-            data = ['KIAA0907', 'KDM5A', 'CDC25A', 'EGR1', 'GADD45B', 'RELB', 'TERF2IP', 'SMNDC1', 'TICAM1', 'NFKB2', 'RGS2', 'NCOA3', 'ICAM1', 'TEX10', 'CNOT4', 'ARID4B', 'CLPX', 'CHIC2', 'CXCL2', 'FBXO11', 'MTF2', 'CDK2', 'DNTTIP2', 'GADD45A', 'GOLT1B', 'POLR2K', 'NFKBIE', 'GABPB1', 'ECD', 'PHKG2', 'RAD9A', 'NET1', 'KIAA0753', 'EZH2', 'NRAS', 'ATP6V0B', 'CDK7', 'CCNH', 'SENP6', 'TIPARP', 'FOS', 'ARPP19', 'TFAP2A', 'KDM5B', 'NPC1', 'TP53BP2', 'NUSAP1', 'SCCPDH', 'KIF20A', 'FZD7', 'USP22', 'PIP4K2B', 'CRYZ', 'GNB5', 'EIF4EBP1', 'PHGDH', 'RRAGA', 'SLC25A46', 'RPA1', 'HADH', 'DAG1', 'RPIA', 'P4HA2', 'MACF1', 'TMEM97', 'MPZL1', 'PSMG1', 'PLK1', 'SLC37A4', 'GLRX', 'CBR3', 'PRSS23', 'NUDCD3', 'CDC20', 'KIAA0528', 'NIPSNAP1', 'TRAM2', 'STUB1', 'DERA', 'MTHFD2', 'BLVRA', 'IARS2', 'LIPA', 'PGM1', 'CNDP2', 'BNIP3', 'CTSL1', 'CDC25B', 'HSPA8', 'EPRS', 'PAX8', 'SACM1L', 'HOXA5', 'TLE1', 'PYGL', 'TUBB6', 'LOXL1']
-            st.markdown("**The following genes are used:**")
-            st.write("'KIAA0907', 'KDM5A', 'CDC25A', 'EGR1', 'GADD45B', 'RELB', 'TERF2IP', 'SMNDC1', 'TICAM1', 'NFKB2', 'RGS2', 'NCOA3', 'ICAM1', 'TEX10', 'CNOT4', 'ARID4B', 'CLPX', 'CHIC2', 'CXCL2', 'FBXO11', 'MTF2', 'CDK2', 'DNTTIP2', 'GADD45A', 'GOLT1B', 'POLR2K', 'NFKBIE', 'GABPB1', 'ECD', 'PHKG2', 'RAD9A', 'NET1', 'KIAA0753', 'EZH2', 'NRAS', 'ATP6V0B', 'CDK7', 'CCNH', 'SENP6', 'TIPARP', 'FOS', 'ARPP19', 'TFAP2A', 'KDM5B', 'NPC1', 'TP53BP2', 'NUSAP1', 'SCCPDH', 'KIF20A', 'FZD7', 'USP22', 'PIP4K2B', 'CRYZ', 'GNB5', 'EIF4EBP1', 'PHGDH', 'RRAGA', 'SLC25A46', 'RPA1', 'HADH', 'DAG1', 'RPIA', 'P4HA2', 'MACF1', 'TMEM97', 'MPZL1', 'PSMG1', 'PLK1', 'SLC37A4', 'GLRX', 'CBR3', 'PRSS23', 'NUDCD3', 'CDC20', 'KIAA0528', 'NIPSNAP1', 'TRAM2', 'STUB1', 'DERA', 'MTHFD2', 'BLVRA', 'IARS2', 'LIPA', 'PGM1', 'CNDP2', 'BNIP3', 'CTSL1', 'CDC25B', 'HSPA8', 'EPRS', 'PAX8', 'SACM1L', 'HOXA5', 'TLE1', 'PYGL', 'TUBB6', 'LOXL1'")
-                     #on_change=lambda x:send_genelist(x), args=(st.session_state["genelist"]))
-
-            process_genelist(data, w_organism)
-            #display_genelist_result(result[0], result[1])
-        case UiVal.MATRIX:
-            data = pd.read_csv(st.session_state.ap['proj_params']['paths']['data_root_path']+'/differential_stats.csv')
-            get_acts(data, data.columns[1])
-        case UiVal.H5AD: 
-            process_sc()
-    return data
-
-
-def get_data(w_inputformat, analysis_params):
-    match w_inputformat:
-        case UiVal.GENES:
-            w_genelist = st.text_area("Please paste your list of comma separated gene names (i.e. DEGs) here:", key= "genelist", placeholder= "Gene1, Gene2") #on_change=lambda x:send_genelist(x), args=(st.session_state["genelist"]))
-            w_analyse_genes = st.button('Analyse Genes')
-            if w_analyse_genes:
-                process_genelist(w_genelist.split(', '), w_organism)
-                #display_genelist_result(result[0], result[1])
-        case UiVal.MATRIX:
-            st.caption('Please provide a csv file with the gene names in the first column of the table.')
-            uploaded_files = st.file_uploader("Choose a CSV file", accept_multiple_files=True, type = ".csv") # TODO: allow tsv
-            if len(uploaded_files) >= 1:
-                cols = st.columns(len(uploaded_files)) 
-                for i in range(0, len(uploaded_files)):
-                    file = uploaded_files[i]
-                    data = pd.read_csv(file)
-                    with cols[i]:
-                        st.write(file.name, data)
-                    if(data.shape[1] == 1):
-                        process_genelist(data[1:].to_csv(header=None, index=False).strip('\n').split('\n'), w_organism)
-                    else:
-                        get_acts(data.iloc[:, 0:2], data.columns[1])
-        case UiVal.H5AD:
-            sc.success('Congrats, your data unlocks the project management feature! This is an additional service that automatically downloads all results in a reproducible way.')
-            #"/Users/hanna/Documents/projects/SGUI/CTLA4/v00/analysis/mouse/scRNA/01/data/01.h5ad"
-            projpath = st.text_input('basepath')
-            projname = st.text_input('project name')
-            input_path = st.text_input('input data path')
-            ok = st.button('OK')
-            if w_testdata:
-                projpath = './'
-                projname = w_projname
-                input_path = './example_inputs/'
-            if ok & (projname != None) & (projpath != None):
-                tbdatadir = path.join(projpath, projname, 'v00/analysis/01/data/')
-                tbdatapath = path.join(tbdatadir, '01.h5ad')
-                
-                if not path.exists(tbdatadir):
-                    os.makedirs(tbdatadir)
-                import scanpy as sc 
-                sc.write(tbdatapath, sc.read(input_path, cache = True))
-
-            projpath = path.join(projpath, projname)
-            scriptpath = path.join(projpath, 'scripts/python/')
-            if not path.exists(scriptpath):
-                os.makedirs(scriptpath)
-            subprocess.run(f'cp /Users/hanna/Documents/projects/SGUI/analysis_params.py {scriptpath}/analysis_params.py', shell=True)
-
-
-st.header("Transcription Factor And Pathway Analysis")
-st.markdown("**Analysis of bulk RNA sequencing data with the tool Decoupler**")
+#--------INIT--------#
+UiVal = util.UiVal
+web.init_page()
+analysispage.init_page()
 
 
 tab1, tab2, tab3, tab4 = st.tabs(['Analysis', 'Results 1st dataset', 'Results 2nd dataset', 'Parameter Choices'])
 
-# TODO: if not 'Run', don't change any params or results.
-# TODO: Extend to multiple datasets at once? Not really necessary. Maybe one tab per ds results?
-
 w_datasetname_default = '01'
-with tab1:
-    ### UI ###
 
-    # Dataset Specific Params
+
+################
+### Analysis ###
+################
+with tab1:
     st.caption('Describe your data')
     paramcol1, paramcol2 = st.columns(2)
+
+    #---- DATASET SPECIFIC PARAMS ----#
     with paramcol1:
-        w_organism    = st.selectbox('Organism', (UiVal.HUMAN, UiVal.MOUSE))
+        w_organism    = st.selectbox('Organism :bust_in_silhouette: :mouse2:', (UiVal.HUMAN, UiVal.MOUSE))
         w_omicstype   = st.selectbox('Omics Type', (UiVal.BULKRNA, UiVal.PHOSPHO, UiVal.SCRNA,)) 
-        w_inputformat = st.selectbox('Input format', (UiVal.GENES, UiVal.MATRIX, UiVal.H5AD))
-        # testdata
-        w_testdata    = st.checkbox('Use test data')
+        # adjust wording (gene/kinase)
+        match w_omicstype: 
+            case UiVal.BULKRNA:
+                inputformats = (UiVal.GENES, UiVal.MATRIX)
+            case UiVal.PHOSPHO:
+                inputformats = (UiVal.KINASES, UiVal.MATRIX)
+            case UiVal.SCRNA:
+                inputformats = (UiVal.H5AD,)
+
+        w_inputformat = st.selectbox('Input format  :page_with_curl:', inputformats)
+        w_testdata    = st.checkbox('Use test data :bar_chart:.\n\n*(Check the needed input formats*)')
+
+    #---- ANALYSIS_PARAMS ----#
     st.session_state.ap = util.get_analysis_params(w_organism, w_omicstype)
-    if not w_testdata:
-        get_data(w_inputformat, st.session_state.ap)
-    else:
-        data = get_testdata(w_inputformat, st.session_state.ap)
+    st.session_state.ap = util.set_priorKnwldg(w_omicstype, st.session_state.ap)
+
+    #---- ALL OPTIONS ----#        
     with paramcol2:
         # Project Specific Params
         w_show_all_opts = st.checkbox('Show all options')
@@ -287,25 +138,54 @@ with tab1:
 
             sc_funcs.dict_delete_key(st.session_state.ap, sc_funcs.getpath(st.session_state.ap, w_datasetname_default))
             st.session_state.ap['dataset_params'][w_organism][w_omicstype][w_datasetname] = {}
-    with tab2:
-        st.warning('This feature is coming soon')
-    with tab3: 
-        st.warning('This feature is coming soon')
-    with tab4:
-        st.warning('This feature is work in progress.')
-        st.write('### Chosen Analysis Parameters')
-        st.write(st.session_state.ap)
-        ap = st.session_state.ap
-        st.write('### Merged')
-        if 'w_datasetname' not in locals():
-            w_datasetname = w_datasetname_default
-        st.write(sc_funcs.merge_dicts(st.session_state.ap['proj_params'], st.session_state.ap['dataset_params'][w_organism][w_omicstype][w_datasetname]) )
-        st.write('### Session State')
-        st.write(st.session_state)
-        st.write('### Paths')
-        #st.markdown(sc_funcs.print_paths(st.session_state.ap['proj_params']['paths']))
+    
+    #---- Get/Prepare Data ----#
+    datasets = list()
+    if not w_testdata:
+        aps = {'organism': list(st.session_state.ap['dataset_params'].keys())[0]}
+        aps.update({'omicstype': list(st.session_state.ap['dataset_params'][aps['organism']].keys())[0]}) # analysis params
+        datasets = bulk.get_data(w_inputformat)
+    else:
+        datasets = bulk.get_testdata(w_inputformat, datarootpath = st.session_state.ap['proj_params']['paths']['data_root_path'])
 
     
+
+    cols = st.columns(len(datasets)+1) 
+    for i in range(0, len(datasets)):
+        with cols[i]:
+            st.write('The following data will be used for the analysis: ')
+            st.write(datasets[i]['datasetname'])
+            st.write(datasets[i]['data'])
+            bulk.get_acts(datasets[i])
+
+
+################
+### Datasets ###
+################
+with tab2:
+    st.warning('This feature is coming soon')
+with tab3: 
+    st.warning('This feature is coming soon')
+
+##################    
+### Parameters ###
+##################
+with tab4:
+    st.warning('This feature is work in progress.')
+    st.write('### Chosen Analysis Parameters')
+    st.write(st.session_state.ap)
+    ap = st.session_state.ap
+    st.write('### Merged')
+    if 'w_datasetname' not in locals():
+        w_datasetname = w_datasetname_default
+    st.write(sc_funcs.merge_dicts(st.session_state.ap['proj_params'], st.session_state.ap['dataset_params'][w_organism][w_omicstype][w_datasetname]) )
+    st.write('### Session State')
+    st.write(st.session_state)
+    st.write('### Paths')
+    #st.markdown(sc_funcs.print_paths(st.session_state.ap['proj_params']['paths']))
+
+
+
 
     ### Conditional Behaviour ###
     
@@ -324,7 +204,6 @@ with tab1:
 with tab2:
     if 'genelist_ds1' in st.session_state:
         util.add_results(st.session_state['genelist_ds1'][0], st.session_state['genelist_ds1'][1], 'download_csv_ds1_sessionstate')
-
 
 
     
