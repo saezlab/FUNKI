@@ -64,62 +64,56 @@ def walking_footprints():
                 }
 
 
-            </style>
+        </style>
     <img src="https://i.ibb.co/8xtMhp2/straight-Left-Foot.jpg" id="leftfoot">
     <img src="https://i.ibb.co/1Xh6M15/rightbackfootstraight.jpg" id="rightfoot">
-
     <img src="https://i.ibb.co/mH90bGM/leftfrontfootstraight.jpg" id="frontleftfoot">
     <img src="https://i.ibb.co/GWQ0q0W/frontrightfootstraight.jpg" id="frontrightfoot">
-
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/latest/TweenMax.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/2.0.2/TimelineMax.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/latest/utils/Draggable.min.js"></script>
+    
     <script>
-    var $rightfoot = $("#rightfoot"),
-        $leftfoot = $("#leftfoot");
-        $frontrightfoot = $("#frontrightfoot")
-        $frontleftfoot = $("#frontleftfoot")
+        var $rightfoot = $("#rightfoot"),
+            $leftfoot = $("#leftfoot"),
+            $frontrightfoot = $("#frontrightfoot"),
+            $frontleftfoot = $("#frontleftfoot");
 
-    var tl = new TimelineMax({repeat:0}) /*-1 to repeat indefinitely*/
+        var tl = new TimelineMax({repeat:0}) /*-1 to repeat indefinitely*/
 
-    var ease = SteppedEase.config(5);
+        var ease = SteppedEase.config(5);
 
-    tl
+        tl
 
-    .to($rightfoot, 0.25, {autoAlpha:1,},1)
-    .to($leftfoot, 0.25, {autoAlpha:1,},1)
+        .to($rightfoot, 0.25, {autoAlpha:1,},1)
+        .to($leftfoot, 0.25, {autoAlpha:1,},1)
 
-    .to($frontrightfoot, 0.25, {autoAlpha:1,},1)
-    .to($frontleftfoot, 0.25, {autoAlpha:1,},1)
+        .to($frontrightfoot, 0.25, {autoAlpha:1,},1)
+        .to($frontleftfoot, 0.25, {autoAlpha:1,},1)
 
-    .to($leftfoot, 3, 
+        .to($leftfoot, 3, 
+        {bezier:{ curviness: 1, values:[{x:0, y:0},{x:52, y:-25}, {x:97, y:-39}, {x:136, y:-54}, {x:172, y:-83}, {x:197, y:-117},{x:200, y:-163,}],
+        autoRotate:90}, ease:ease},1.5)
 
-    {bezier:{ curviness: 1, values:[{x:0, y:0},{x:52, y:-25}, {x:97, y:-39}, {x:136, y:-54}, {x:172, y:-83}, {x:197, y:-117},{x:200, y:-163,}],
-    autoRotate:90}, ease:ease},1.5)
+        .to($rightfoot, 3, 
+        {bezier:{ curviness: 1, values:[{x:0, y:0}, {x:44, y:-13}, {x:97, y:-28,}, {x:134, y:-49,}, {x:166, y:-83,}, {x:182, y:-126,}, {x:176, y:-163,}],
+        autoRotate:100}, ease:ease},1.75)
 
-    .to($rightfoot, 3, 
-    {bezier:{ curviness: 1, values:[{x:0, y:0}, {x:44, y:-13}, {x:97, y:-28,}, {x:134, y:-49,}, {x:166, y:-83,}, {x:182, y:-126,}, {x:176, y:-163,}],
-    autoRotate:100}, ease:ease},1.75)
+        .to($frontleftfoot, 3, 
+        {bezier:{ curviness: 1, values:[{x:0, y:0},{x:52, y:-25}, {x:97, y:-39}, {x:136, y:-54}, {x:172, y:-83}, {x:197, y:-117},{x:200, y:-163,}],
+        autoRotate:90}, ease:ease},1)
 
-    .to($frontleftfoot, 3, 
-
-    {bezier:{ curviness: 1, values:[{x:0, y:0},{x:52, y:-25}, {x:97, y:-39}, {x:136, y:-54}, {x:172, y:-83}, {x:197, y:-117},{x:200, y:-163,}],
-    autoRotate:90}, ease:ease},1)
-
-    .to($frontrightfoot, 3, 
-    {bezier:{ curviness: 1, values:[{x:0, y:0}, {x:44, y:-13}, {x:97, y:-28,}, {x:134, y:-49,}, {x:166, y:-83,}, {x:182, y:-126,}, {x:176, y:-163,}],
-    autoRotate:100}, ease:ease},1.25)
-
+        .to($frontrightfoot, 3, 
+        {bezier:{ curviness: 1, values:[{x:0, y:0}, {x:44, y:-13}, {x:97, y:-28,}, {x:134, y:-49,}, {x:166, y:-83,}, {x:182, y:-126,}, {x:176, y:-163,}],
+        autoRotate:100}, ease:ease},1.25)
     </script>
     <div>
-    <img src="https://i.ibb.co/8xtMhp2/straight-Left-Foot.jpg" id="leftfoot">
-    <img src="https://i.ibb.co/1Xh6M15/rightbackfootstraight.jpg" id="rightfoot">
-
-    <img src="https://i.ibb.co/mH90bGM/leftfrontfootstraight.jpg" id="frontleftfoot">
-    <img src="https://i.ibb.co/GWQ0q0W/frontrightfootstraight.jpg" id="frontrightfoot">
-
+        <img src="https://i.ibb.co/8xtMhp2/straight-Left-Foot.jpg" id="leftfoot">
+        <img src="https://i.ibb.co/1Xh6M15/rightbackfootstraight.jpg" id="rightfoot">
+        <img src="https://i.ibb.co/mH90bGM/leftfrontfootstraight.jpg" id="frontleftfoot">
+        <img src="https://i.ibb.co/GWQ0q0W/frontrightfootstraight.jpg" id="frontrightfoot">
     </div>
     """)
 

@@ -220,7 +220,7 @@ def get_matrixdata(organims):
 
 
 def get_data(w_inputformat):
-    filename = 'dataset01'
+    #filename = 'dataset01'
     data = ''
     method = ''
     i = 1
@@ -262,7 +262,7 @@ def get_data(w_inputformat):
                        
                         st.write(f'Dataset{i}: {filename}', data)
 
-                        if(w_analyse_elements):                        
+                        if(w_analyse_elements):                      
                             # clean data
                             if(stats_colname == ''):  #data.shape[1] == 1):
                                 data = data#.loc[:id_colname].to_csv(header=None, index=False).strip('\n').split('\n')
@@ -297,12 +297,16 @@ def get_testdata(w_inputformat, datarootpath):
             st.write(elements)
         case UiVal.MATRIX:
             data = pd.read_csv(datarootpath+'/differential_stats.csv')
+            datasets= {'datasetname': 'differential_stats', 'data': data, 'method': 'ulm', 'datasetid': 0}
+
         case UiVal.H5AD: 
             process_sc()
         case UiVal.EXCEL:
             data = pd.read_excel(datarootpath +'/dePhosRes.xlsx')
             data = data.loc[:,['site','t_statistic']]
             data['site'] = data['site'].apply(lambda x: x.upper())
-    return data
+            data[id_colname] = data[id_colname].apply(str.upper)
+            datasets= {'datasetname': 'smartphos', 'data': data, 'method': 'ulm', 'datasetid': 0}
+    return datasets
 
 

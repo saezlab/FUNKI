@@ -40,8 +40,8 @@ def get_analysis_params(w_organism = UiVal.HUMAN.lower(), w_omicstype = UiVal.BU
         'proj_id': 'FUNKI',    # always one folder above, projID should be 2 to 8 capital letters or underscores
         'version': 'v01', 
         'paths': {
-            'analysis_path': path.abspath('../../'),   # path to 'projects' folder or the folder where the proj results shall be saved
-            'data_root_path': path.abspath('./example_inputs') #+ '/<default>'  # for example path to SDS mounted location: .../mounted/projects/
+            'analysis_path': '' ,#path.abspath('../../'),   # path to 'projects' folder or the folder where the proj results shall be saved
+            'data_root_path': './example_inputs/'#path.abspath('./example_inputs') #+ '/<default>'  # for example path to SDS mounted location: .../mounted/projects/
         },
         'use_pickle_data': True,    # h5ad files are read and then saved as pickle, the pickle files are used from there on
         'priorKnowledge':{
@@ -77,7 +77,7 @@ def get_analysis_params(w_organism = UiVal.HUMAN.lower(), w_omicstype = UiVal.BU
     'dataset_params': {
         w_organism: { # organism (human, mouse)
             w_omicstype: { # seqType (scRNA, bulkRNA)
-                '01':{},
+                '01':{}, # datasetname
                 'priorKnowledge':{
                     'pathways': {
                         'progeny':{
@@ -130,8 +130,8 @@ def set_priorKnwldg(w_omicstype, analysis_params) -> dict:
         case UiVal.PHOSPHO:
             return set_priorKnwldg_bykeys(['kinase_substrate'])
 
-def change_param(param_id, value):
-    sc_funcs.dict_replace(st.session_state.ap, value, sc_funcs.getpath(st.session_state.ap, param_id) + (param_id,))
+def update_param(param_id, value, dict):
+    sc_funcs.dict_replace(dict, value, sc_funcs.getpath(dict, param_id) + (param_id,))
 
 def show_table(data, download_key) -> None:
     """Adds a table and a download button.

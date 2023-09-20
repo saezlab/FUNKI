@@ -17,19 +17,9 @@ from io import StringIO
 ##########################################################################################################################################
 # st.success(f'The analysis will be run for **{w_organism}** with **{w_omicstype}** data in the format **{w_inputformat}**.')
 # #st.session_state.genelist = "Please wait while your data is processing..."
-#"""We use log10 for the plot because it has a better interpretability than log2.
-#We can cache data of a function with the decorator: @st.cache_data . This way a function that does some heavy calculations doesn't recalculate when it gets the same input again but receives the data from the cache instead. 
-#"""
 # sparse matrix wrong datatype object instead of float in df coming from pd.read_csv
 # row t, cols genes -> row t, cols pathways
-# Ora background genes: we only need the number of background genes and not the actual genes but it's more intuitive for the people if they can just upload the genelist instead of counting the genes.
-# Tabs: 'Prior Knowledge', 'COSMOS/CARNIVAL', 'Pseudobulk', 'Parameter Choice'
 # #d.values.astype(float).index
-# TODO: 
-# - Same project and datasetname -> read in analysis params file if exists and execute analsis accordingly on 'submit'
-# - Add new dataset
-# - Choose already processed datasets that shall show their results in the tabs
-# - keep plotting function very general to use it with varous input data (left col for table, right col for plot)
 
 # Code for debugging: 
 # data = pd.read_csv('../../example_inputs/differential_stats.csv')
@@ -52,11 +42,92 @@ from io import StringIO
 # adata = ad.AnnData(r, obs = pd.DataFrame(index = r.index), var=pd.DataFrame(index=r.columns), dtype=np.float32)
 
 # adata = ad.AnnData(d, obs=pd.DataFrame(index=d.index), var=pd.DataFrame(index=d.columns))
-
-# TODO: if not 'Run', don't change any params or results.
-# TODO: Extend to multiple datasets at once? Not really necessary. Maybe one tab per ds results?
-#@st.cache, @st.cache_data, and @st.cache_resource
+# TODO: 
+# - REQ1: Ora background genes: we only need the number of background genes and not the actual genes but it's more intuitive for the people if they can just upload the genelist instead of counting the genes.
+# - Same project and datasetname -> read in analysis params file if exists and execute analsis accordingly on 'submit'
+# - Add new dataset
+# - Choose already processed datasets that shall show their results in the tabs
+# - keep plotting function very general to use it with varous input data (left col for table, right col for plot)
+# - if not 'Run' button, don't change any params or results.
+# - Extend to multiple datasets at once? Not really necessary. Maybe one tab per ds results?
 ###################################################################################################################
+
+
+def show_advanced_options():
+    with st.form('advanced_params', clear_on_submit=False):
+        st.caption('Advanced Settings')
+        st.warning("This feature is work in progress. You can see changes, that you do here, in the 'Analysis Parameters' tab but the data isn't saved, yet.")
+        
+        w_projname_default = st.session_state.ap['proj_params']['proj_id']
+        w_projname    = st.text_input(UiVal.PROJ, placeholder = w_projname_default)
+        w_datasetname = st.text_input('Dataset Name', placeholder = w_datasetname_default)  #datasetnames)
+        w_resultspath = st.text_input('Results Path', placeholder = '/Users/MaxMustermann/Documents/')
+        w_save_parameters = st.form_submit_button('Save Parameters')
+
+        #TODO: topn = st.text_input('top n', '')
+        #TODO: st.write('You chose the following parameters for topN: ', list(topn.split(',')))
+    
+        if(w_save_parameters):
+            if w_projname != '':
+                util.update_param('proj_id', w_projname, st.session_state.ap)
+            else:
+                w_projname = w_projname_default
+            #datasetnames   = list(st.session_state.ap['dataset_params'][w_organism][w_omicstype].keys())
+            #datasetnames.pop() # drop the prior knowledge element
+
+            if w_datasetname == '':
+                w_datasetname = w_datasetname_default 
+            st.session_state.ap['dataset_params'][w_organism][w_omicstype][w_datasetname] = {}
+
+            st.session_state.ap['proj_params']['paths']['analysis_path'] = w_resultspath
+            if w_resultspath != '':
+                st.success(f'The results will be saved in **{w_resultspath}/{w_projname}/{w_datasetname}/**.')
+            else:
+                st.warning('Please provide a "Results Path" if the results shall be saved')
+           
+def fill_tab4(ap):
+    ##################    
+    ### Parameters ###
+    ##################
+    with tab4:
+        import pandas as pd
+        st.warning('This feature is work in progress.')
+
+        # Extract params
+        st.write('### Chosen Analysis Parameters')
+
+        organism = list(ap['dataset_params'].keys())[0]
+        omicstype = list(ap['dataset_params'][organism].keys())[0]
+        dataset = list(ap['dataset_params'][organism][omicstype].keys())[0]
+        analysispath = ap['proj_params']['paths']['analysis_path']
+        priorKnowledge = ap['dataset_params'][organism][omicstype]['priorKnowledge']
+        projid = ap['proj_params']['proj_id']
+        
+        data = {'ProjectID': projid,
+                 'Organism': organism,
+                 'OmicsType': omicstype, 
+                 'DatasetID': dataset,
+                 'AnalysisPath': analysispath}
+        
+        st.dataframe(data)
+
+        data = {
+                 'PriorKnowledge': priorKnowledge}
+        st.dataframe(data)
+        
+        
+
+        st.write('### Internal Representation of Parameters')
+        st.write(ap)
+        st.write('### Merged')
+        #if 'w_datasetname' not in locals():
+        #    w_datasetname = w_datasetname_default
+        st.write(sc_funcs.merge_dicts(ap['proj_params'], ap['dataset_params'][organism][omicstype][dataset]) )
+        st.write('### Session State')
+        st.write(st.session_state)
+        st.write('### Paths')
+        #st.markdown(sc_funcs.print_paths(st.session_state.ap['proj_params']['paths']))
+
 
 
         
@@ -82,7 +153,7 @@ analysispage.init_page()
 
 tab1, tab2, tab3, tab4 = st.tabs(['Analysis', 'Results 1st dataset', 'Results 2nd dataset', 'Parameter Choices'])
 
-w_datasetname_default = '01'
+
 
 
 ################
@@ -94,6 +165,7 @@ with tab1:
 
     #---- DATASET SPECIFIC PARAMS ----#
     with paramcol1:
+        w_datasetname_default = '01'
         w_organism    = st.selectbox('Organism :bust_in_silhouette: :mouse2:', (UiVal.HUMAN, UiVal.MOUSE))
         w_omicstype   = st.selectbox('Omics Type', (UiVal.BULKRNA, UiVal.PHOSPHO, UiVal.SCRNA,)) 
         # adjust wording (gene/kinase)
@@ -108,37 +180,18 @@ with tab1:
         w_inputformat = st.selectbox('Input format  :page_with_curl:', inputformats)
         w_testdata    = st.checkbox('Use test data :bar_chart:.\n\n*(Check the needed input formats*)')
 
-    #---- ANALYSIS_PARAMS ----#
-    st.session_state.ap = util.get_analysis_params(w_organism, w_omicstype)
+    #---- INIT ANALYSIS_PARAMS ----#
+    if 'ap' not in st.session_state:
+        st.session_state.ap = util.get_analysis_params(w_organism, w_omicstype)
     st.session_state.ap = util.set_priorKnwldg(w_omicstype, st.session_state.ap)
 
-    #---- ALL OPTIONS ----#        
+    #---- ADVANCED OPTIONS ----#        
     with paramcol2:
         # Project Specific Params
         w_show_all_opts = st.checkbox('Show all options')
         if(w_show_all_opts): 
-            st.caption('Advanced Settings')
-            st.warning("This feature is work in progress. You can see changes, that you do here, in the 'Analysis Parameters' tab but the data isn't saved, yet.")
-            w_projname_default = st.session_state.ap['proj_params']['proj_id']
-            w_projname    = st.text_input(UiVal.PROJ, placeholder = w_projname_default)
-            if w_projname != '':
-                util.change_param('proj_id', w_projname)
-            else:
-                w_projname = st.session_state.ap['proj_params']['proj_id']
-            #datasetnames   = list(st.session_state.ap['dataset_params'][w_organism][w_omicstype].keys())
-            #datasetnames.pop() # drop the prior knowledge element
-            
-            w_datasetname = st.text_input('Dataset Name', placeholder = w_datasetname_default)#datasetnames)
-            if w_datasetname == '':
-                w_datasetname = w_datasetname_default
-            #TODO: w_resultpath  = st.text_input("Result Path (if empty, results won't be saved on your computer)", './')    
-            #TODO: topn = st.text_input('top n', '')
-            #TODO: st.write('You chose the following parameters for topN: ', list(topn.split(',')))
-            st.success(f'The results will be saved in **./{w_projname}/{w_datasetname}/**.')
+             show_advanced_options()
 
-            sc_funcs.dict_delete_key(st.session_state.ap, sc_funcs.getpath(st.session_state.ap, w_datasetname_default))
-            st.session_state.ap['dataset_params'][w_organism][w_omicstype][w_datasetname] = {}
-    
     #---- Get/Prepare Data ----#
     datasets = list()
     if not w_testdata:
@@ -146,7 +199,6 @@ with tab1:
         aps.update({'omicstype': list(st.session_state.ap['dataset_params'][aps['organism']].keys())[0]}) # analysis params
         datasets = bulk.get_data(w_inputformat)
 
-        print("LÄNGE!!! ", datasets)
         if len(datasets) != 0:
             cols = st.columns(len(datasets)) 
             for i in range(0, len(datasets)):
@@ -155,11 +207,16 @@ with tab1:
                     st.write(datasets[i]['datasetname'])
                     st.write(datasets[i]['data'])
                     bulk.get_acts(datasets[i])
-    else:
+    else: # let gettestdata return 'datasets'
+        aps = {'organism': list(st.session_state.ap['dataset_params'].keys())[0]}
+        aps.update({'omicstype': list(st.session_state.ap['dataset_params'][aps['organism']].keys())[0]}) # analysis params
         datasets = bulk.get_testdata(w_inputformat, datarootpath = st.session_state.ap['proj_params']['paths']['data_root_path'])
-
+        st.write('The following data will be used for the analysis: ')
+        st.write(datasets['datasetname'])
+        st.write(datasets['data'])
+        bulk.get_acts(datasets)
     
-
+fill_tab4(st.session_state.ap)
     
 
 
@@ -171,22 +228,8 @@ with tab2:
 with tab3: 
     st.warning('This feature is coming soon')
 
-##################    
-### Parameters ###
-##################
-with tab4:
-    st.warning('This feature is work in progress.')
-    st.write('### Chosen Analysis Parameters')
-    st.write(st.session_state.ap)
-    ap = st.session_state.ap
-    st.write('### Merged')
-    if 'w_datasetname' not in locals():
-        w_datasetname = w_datasetname_default
-    st.write(sc_funcs.merge_dicts(st.session_state.ap['proj_params'], st.session_state.ap['dataset_params'][w_organism][w_omicstype][w_datasetname]) )
-    st.write('### Session State')
-    st.write(st.session_state)
-    st.write('### Paths')
-    #st.markdown(sc_funcs.print_paths(st.session_state.ap['proj_params']['paths']))
+
+
 
 
 
