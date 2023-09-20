@@ -53,12 +53,12 @@ from io import StringIO
 ###################################################################################################################
 
 
-def show_advanced_options():
+def show_advanced_options(ap, organism, omicstype):
     with st.form('advanced_params', clear_on_submit=False):
         st.caption('Advanced Settings')
         st.warning("This feature is work in progress. You can see changes, that you do here, in the 'Analysis Parameters' tab but the data isn't saved, yet.")
-        
-        w_projname_default = st.session_state.ap['proj_params']['proj_id']
+        w_datasetname_default = list(ap['dataset_params'][organism][omicstype].keys())[0]
+        w_projname_default = ap['proj_params']['proj_id']
         w_projname    = st.text_input(UiVal.PROJ, placeholder = w_projname_default)
         w_datasetname = st.text_input('Dataset Name', placeholder = w_datasetname_default)  #datasetnames)
         w_resultspath = st.text_input('Results Path', placeholder = '/Users/MaxMustermann/Documents/')
@@ -69,7 +69,7 @@ def show_advanced_options():
     
         if(w_save_parameters):
             if w_projname != '':
-                util.update_param('proj_id', w_projname, st.session_state.ap)
+                util.update_param('proj_id', w_projname, ap)
             else:
                 w_projname = w_projname_default
             #datasetnames   = list(st.session_state.ap['dataset_params'][w_organism][w_omicstype].keys())
@@ -77,14 +77,15 @@ def show_advanced_options():
 
             if w_datasetname == '':
                 w_datasetname = w_datasetname_default 
-            st.session_state.ap['dataset_params'][w_organism][w_omicstype][w_datasetname] = {}
+            ap['dataset_params'][w_organism][w_omicstype][w_datasetname] = {}
 
-            st.session_state.ap['proj_params']['paths']['analysis_path'] = w_resultspath
+            ap['proj_params']['paths']['analysis_path'] = w_resultspath
             if w_resultspath != '':
                 st.success(f'The results will be saved in **{w_resultspath}/{w_projname}/{w_datasetname}/**.')
             else:
-                st.warning('Please provide a "Results Path" if the results shall be saved')
-           
+                st.warning('Please provide a "Results Path" if the results shall be saved')        
+        return ap
+
 def fill_tab4(ap):
     ##################    
     ### Parameters ###
@@ -153,9 +154,6 @@ analysispage.init_page()
 
 tab1, tab2, tab3, tab4 = st.tabs(['Analysis', 'Results 1st dataset', 'Results 2nd dataset', 'Parameter Choices'])
 
-
-
-
 ################
 ### Analysis ###
 ################
@@ -165,7 +163,7 @@ with tab1:
 
     #---- DATASET SPECIFIC PARAMS ----#
     with paramcol1:
-        w_datasetname_default = '01'
+#w_datasetname_default = '01'
         w_organism    = st.selectbox('Organism :bust_in_silhouette: :mouse2:', (UiVal.HUMAN, UiVal.MOUSE))
         w_omicstype   = st.selectbox('Omics Type', (UiVal.BULKRNA, UiVal.PHOSPHO, UiVal.SCRNA,)) 
         # adjust wording (gene/kinase)
@@ -181,24 +179,25 @@ with tab1:
         w_testdata    = st.checkbox('Use test data :bar_chart:.\n\n*(Check the needed input formats*)')
 
     #---- INIT ANALYSIS_PARAMS ----#
-    if 'ap' not in st.session_state:
-        st.session_state.ap = util.get_analysis_params(w_organism, w_omicstype)
-    st.session_state.ap = util.set_priorKnwldg(w_omicstype, st.session_state.ap)
+#if 'ap' not in st.session_state:
+    analysis_params = util.get_analysis_params(w_organism, w_omicstype)
+    analysis_params = util.set_priorKnwldg(w_omicstype, analysis_params)
+
 
     #---- ADVANCED OPTIONS ----#        
     with paramcol2:
         # Project Specific Params
         w_show_all_opts = st.checkbox('Show all options')
         if(w_show_all_opts): 
-             show_advanced_options()
+             analysis_params = show_advanced_options(analysis_params, w_organism, w_omicstype)
 
     #---- Get/Prepare Data ----#
+    st.session_state.ap = analysis_params
     datasets = list()
+    aps = {'organism': list(st.session_state.ap['dataset_params'].keys())[0]}
+    aps.update({'omicstype': list(st.session_state.ap['dataset_params'][aps['organism']].keys())[0]}) # analysis params    
     if not w_testdata:
-        aps = {'organism': list(st.session_state.ap['dataset_params'].keys())[0]}
-        aps.update({'omicstype': list(st.session_state.ap['dataset_params'][aps['organism']].keys())[0]}) # analysis params
         datasets = bulk.get_data(w_inputformat)
-
         if len(datasets) != 0:
             cols = st.columns(len(datasets)) 
             for i in range(0, len(datasets)):
@@ -208,8 +207,6 @@ with tab1:
                     st.write(datasets[i]['data'])
                     bulk.get_acts(datasets[i])
     else: # let gettestdata return 'datasets'
-        aps = {'organism': list(st.session_state.ap['dataset_params'].keys())[0]}
-        aps.update({'omicstype': list(st.session_state.ap['dataset_params'][aps['organism']].keys())[0]}) # analysis params
         datasets = bulk.get_testdata(w_inputformat, datarootpath = st.session_state.ap['proj_params']['paths']['data_root_path'])
         st.write('The following data will be used for the analysis: ')
         st.write(datasets['datasetname'])
