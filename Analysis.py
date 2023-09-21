@@ -189,7 +189,7 @@ with tab1:
         # Project Specific Params
         w_show_all_opts = st.checkbox('Show all options')
         if(w_show_all_opts): 
-             analysis_params = show_advanced_options(analysis_params, w_organism, w_omicstype)
+            analysis_params = show_advanced_options(analysis_params, w_organism, w_omicstype)
 
     #---- Get/Prepare Data ----#
     st.session_state.ap = analysis_params

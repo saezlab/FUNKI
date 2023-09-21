@@ -252,19 +252,20 @@ def get_data(w_inputformat):
                     with cols[i]:
                         columncol1, columncol2 = st.columns(2)
                         with columncol1:
-                            id_guess = data.columns[0]   #data.iloc[:, 0:1] # guess that the first colum is the id column
-                            id_colname = st.text_input('ID column', id_guess, key=f'idcolname_{i}')
+                            id_colname = st.selectbox('ID column', data.columns, 0, key=f'idcolname_{i}')
+                            
                         with columncol2:
                             stats_guess = ''
                             if len(data.columns) >= 2:
-                                stats_guess = data.columns[1] 
-                            stats_colname = st.text_input('Statistics column', stats_guess, key=f'statscolname_{i}')
-                       
+                                stats_colname = st.selectbox('Statistics column', data.columns, 1, key=f'statscolname_{i}')
+                            else:
+                                stats_colname = st.selectbox('Statistics column', list() ,0, key=f'statscolname_{i}')
+
                         st.write(f'Dataset{i}: {filename}', data)
 
                         if(w_analyse_elements):                      
                             # clean data
-                            if(stats_colname == ''):  #data.shape[1] == 1):
+                            if(stats_colname == None):  #data.shape[1] == 1):
                                 data = data#.loc[:id_colname].to_csv(header=None, index=False).strip('\n').split('\n')
                                 method = 'ora_df'
                                 print(data)
