@@ -207,7 +207,7 @@ with tab1:
                     st.write(datasets[i]['data'])
                     bulk.get_acts(datasets[i])
     else: # let gettestdata return 'datasets'
-        datasets = bulk.get_testdata(w_inputformat, datarootpath = st.session_state.ap['proj_params']['paths']['data_root_path'])
+        datasets = bulk.get_testdata(w_inputformat, w_omicstype, datarootpath = st.session_state.ap['proj_params']['paths']['data_root_path'])
         st.write('The following data will be used for the analysis: ')
         st.write(datasets['datasetname'])
         st.write(datasets['data'])

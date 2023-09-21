@@ -17,6 +17,7 @@ pandas = "^2.0.1"
 streamlit-extras = "^0.2.7"
 pdf2image = "^1.16.3"
 openpyxl = "^3.1.2"
+kaleido = "0.2.1"
 
 [build-system]
 requires = ["poetry-core"]

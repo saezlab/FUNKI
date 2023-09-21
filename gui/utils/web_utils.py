@@ -148,6 +148,6 @@ def init_page():
     ])
     #hide_pages(['utilities'])
     with st.sidebar:
-        st.caption('FUNKI is under active development.</br>Stay tuned for new features.', unsafe_allow_html=True)
+        st.caption('FUNKI is under active development.</br>For the latest features see the <a href="https://saezlabfunkidev.streamlit.app/">development version</a>. </br>The code is on <a href="https://github.com/saezlab/FUNKI">Github</a>.', unsafe_allow_html=True)
 
 
