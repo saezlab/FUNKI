@@ -1,3 +1,4 @@
+import subprocess 
 #import webbrowser, glob, os, subprocess              #json, yaml, base64, re, sys, numba, logging, random, dill, logging.config
 from os import makedirs, path       
 #from copy import deepcopy
@@ -176,7 +177,7 @@ with tab1:
                 inputformats = (UiVal.H5AD,)
 
         w_inputformat = st.selectbox('Input format  :page_with_curl:', inputformats)
-        w_testdata    = st.checkbox('Use test data :bar_chart:.\n\n*(Check the needed input formats*)')
+        w_testdata    = st.checkbox('Use test data (human) :bar_chart:.\n\n*(Check the needed input formats*)')
 
     #---- INIT ANALYSIS_PARAMS ----#
 #if 'ap' not in st.session_state:
@@ -199,13 +200,22 @@ with tab1:
     if not w_testdata:
         datasets = bulk.get_data(w_inputformat)
         if len(datasets) != 0:
-            cols = st.columns(len(datasets)) 
-            for i in range(0, len(datasets)):
-                with cols[i]:
-                    st.write('The following data will be used for the analysis: ')
-                    st.write(datasets[i]['datasetname'])
-                    st.write(datasets[i]['data'])
-                    bulk.get_acts(datasets[i])
+            def get_acts_perDs(datasets):
+                cols = st.columns(len(datasets)) 
+                for i in range(0, len(datasets)):
+                    with cols[i]:
+                        bulk.get_acts(datasets[i])
+            get_acts_perDs(datasets)
+            w_save_results= st.button('Save results in extra tab')
+            if(w_save_results):
+                if 'dataset01' not in st.session_state:
+                    with tab2:
+                        get_acts_perDs(datasets)
+                    st.session_state.dataset01 = 'dataset01'
+                else: 
+                    with tab3:
+                        get_acts_perDs(datasets)
+                    st.session_state.dataset02 = 'dataset02'
     else: # let gettestdata return 'datasets'
         datasets = bulk.get_testdata(w_inputformat, w_omicstype, datarootpath = st.session_state.ap['proj_params']['paths']['data_root_path'])
         st.write('The following data will be used for the analysis: ')

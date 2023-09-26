@@ -65,8 +65,8 @@ class Decoupler:
             print('Prior Knowledge was read in from pickle files.')
         else:
             organism = self.organism
-            if(modeltype == 'progeny'):
-                organism = "Mus musculus"
+            #if(modeltype == 'progeny'):
+            #    organism = "Mus musculus"
             model = eval('dc.get_' + modeltype + '(organism,' + str(param) + ')')
             if not exists(dirpath):
                 makedirs(dirpath)

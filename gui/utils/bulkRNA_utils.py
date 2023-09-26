@@ -16,6 +16,8 @@ import logging
 import plotly.express as px
 import numpy as np
 import kaleido
+import subprocess
+import glob
 #########################
 # TODO: allow tsv input #
 #########################
@@ -31,25 +33,39 @@ def get_acts(dataset):
     """
     data = dataset['data']
     ap = st.session_state.ap
+
     priorKnwldg = sc_funcs.deep_get(ap['dataset_params'], (sc_funcs.getpath(ap['dataset_params'], 'priorKnowledge')))['priorKnowledge'].keys()
     organism = list(ap['dataset_params'].keys())[0]
     for resource_type in priorKnwldg:
-        resources = resources = sc_funcs.deep_get(ap['dataset_params'], (sc_funcs.getpath(ap['dataset_params'], resource_type)))[resource_type].keys()
+        resources = sc_funcs.deep_get(ap['dataset_params'], (sc_funcs.getpath(ap['dataset_params'], resource_type)))[resource_type].keys()
+        datarootpath = st.session_state.ap['proj_params']['paths']['data_root_path']
+
+        #subprocess.call([f'{datarootpath}getfrom_omnipath.R {resource} {organism}'], shell = True)
         for resource in resources:
             param = sc_funcs.deep_get(ap, sc_funcs.getpath(ap, resource, search_value = False))
-            if resource == 'collectri':
-                datarootpath = st.session_state.ap['proj_params']['paths']['data_root_path']
-                net = pd.read_csv(f"{datarootpath}/collectri.csv")
-            elif resource != 'ksn':
+            param_val = str(list(param.values())[0][0])
+            net = pd.DataFrame()
+            if resource == 'progeny' and organism == 'mouse':
+                    priorKnwldg_avail_path = r'./data/priorKnowledge/*' + re.escape(resource) + '*' + re.escape(organism) + '*' + re.escape(param_val) + '*.csv'
+                    priorKnwldg_avail = glob.glob(priorKnwldg_avail_path)
+                    if priorKnwldg_avail == [] :
+                        priorKnwldg_avail_path = r'./data/priorKnowledge/*' + re.escape(resource) + '*' + re.escape(organism) + '*.csv'
+                    priorKnwldg_avail = glob.glob(priorKnwldg_avail_path)[0]
+                    #priorKnwldg_avail = [os.path.basename(x) for x in glob.glob(priorKnwldg_avail_path)]
+                    st.write(f'The following file is used as priorKnowledge resource:  \n\n`{priorKnwldg_avail}`')
+                    net = pd.read_csv(priorKnwldg_avail, index_col = False)
+            elif resource == 'ksn':
+                if organism == 'human':
+                    net = dc.get_ksn_omnipath()
+                else: 
+                    st.warning('This priorKnowledgeResource is only available for human data so far.')
+                    return
+            else:
+                st.write(f'**PriorKnowledge Resource {resource}**')
                 print(f'{resource}, {organism}, {str(list(param.values())[0][0])}')
                 net = eval(f'dc.get_{resource}(organism,' + str(list(param.values())[0][0]) + ')')
-            else: 
-                #net = pd.read_csv(ap['proj_params']['paths']['data_root_path']+'/collectri.csv')
-                net = dc.get_ksn_omnipath()
-                print(net)
             
-#            
-            #st.write(net)
+            st.write(net)
             method = dataset['method']
             figpath = f'{resource}.png'
             title = f'{resource_type.capitalize()} retrieved from {resource.capitalize()}'
@@ -112,196 +128,73 @@ def get_acts(dataset):
             util.add_results(df, figpath, title, f"{title}{dataset['datasetid']}")
             
 
-def process_elementlist(w_genelist, w_organism):
-    """Process the gene names provided by the user. 
-    Uses get_ora_df as it is the only method that can be used with a gene list as input instead of a matrix.
-    """
-    data = pd.DataFrame({'features': w_genelist})
-    def calculate_prior(net, priortype):
-        """ Get activities from decoupler
 
-        Args:
-            features (String): name of column with significant features
-            net (DataFrame): prior knwoledge retrieved via decoupler 
-            priortype (String): column name for result
-
-        Returns:
-            List: [DataFrame, Plotly, Title]
-        """
-        logging.info(data)
-        print(data)
-        print(net)
-        res = dc.get_ora_df(data, net)
-        # melt to long format
-        res = res.reset_index().melt(id_vars=['index'], var_name=priortype, value_name='p-value')
-        # sort by the p-values and assign ranks
-        res = res.sort_values(by='p-value')
-        #res['rank'] = list(range(1, len(res.index) + 1))
-        # reset index, change column order
-        res = res[[priortype, 'p-value']]
-        #res = res[['rank', priortype, 'p-value']]
-        import plotly.express as px
-        import numpy as np
-        # to avoid divide by zero error 
-        #newp = np.where(res['p-value'] > 0.0000000001, res['p-value'] , -10)
-        #res['log10(p-value)'] = np.log10(newp, out=newp, where=newp > 0)*-10
-        res['-log10(p-value)'] = np.log10(res['p-value'])*-1
-        if len(res) >= 20: 
-            max_rows = 20
-        else: 
-            max_rows = len(res)
-        res_plot = res.iloc[0:max_rows, :]
-        if(res_plot['-log10(p-value)'].value_counts().max() == 20):
-            print(res_plot)
-        else: 
-            fig = px.bar(res_plot, x=priortype, y='-log10(p-value)')
-            fig.write_image()
-        return [res.iloc[:, 0:2], fig, priortype.capitalize()] # result, figure, title
-    try:
-        prog = calculate_prior(dc.get_progeny(organism = w_organism), 'pathway')
-        collectri = calculate_prior(pd.read_csv(st.session_state.ap['proj_params']['paths']['data_root_path']+'/collectri.csv'), 'transcriptionFactor')
-        util.add_results(prog[0], prog[1], prog[2],'res_prog')
-        util.add_results(collectri[0], collectri[1], collectri[2],'res_collectri')
-    except ValueError as ve:
-        try:
-            prog = calculate_prior(dc.get_progeny(organism = w_organism, min_n = 2), 'pathway')
-            collectri = calculate_prior(pd.read_csv(st.session_state.ap['proj_params']['paths']['data_root_path']+'/collectri.csv', organism = w_organism, min_n = 2), 'transcriptionFactor')
-            util.add_results(prog[0], prog[1], prog[2],'res_prog')
-            util.add_results(collectri[0], collectri[1], collectri[2],'res_collectri')
-            st.warning("Warning: All sources with at least two targets were taken into consideration. The default would be to have at least five targets per source. To go with the default you would need to add more genes.")
-        except ValueError as ve:
-            st.error("Error: There aren't any sources with the minimum of five targets. Please provide more genes.")
-
-def get_listdata(organism):
-    """Provide a text field for string list input"""
-    w_elementlist = st.text_area("Please paste your list of comma separated element names (i.e. DEGs,...) here:", key= "elementlist", placeholder= "element1, element2") #on_change=lambda x:send_genelist(x), args=(st.session_state["genelist"]))
-    
-    if w_analyse_elements:            
-        process_elementlist(w_elementlist.split(', '), organism)
-        #display_genelist_result(result[0], result[1])
-
-def get_matrixdata(organims):
-    st.caption('Please provide a csv or xlsx file.')
-    uploaded_files = st.file_uploader("Choose a file", accept_multiple_files=True, type = ['.xlsx', '.csv']) 
-            
-
-# def get_data(w_inputformat, analysis_params):
-#     data = ''
-#     organism = list(analysis_params['dataset_params'].keys())[0]
-#     match w_inputformat:
-#         case UiVal.GENES:
-#             w_elementlist = st.text_area(f"Please paste your list comma separated {UiVal.GENES} (i.e. DEGs) here:", key= "genelist", placeholder= "Gene1, Gene2") #on_change=lambda x:send_genelist(x), args=(st.session_state["genelist"]))
-#             w_analyse_elements = st.button('Analyse')
-#             if w_analyse_elements:            
-#                 process_elementlist(w_elementlist.split(', '), organism)
-#                 #display_genelist_result(result[0], result[1])
-#         case UiVal.KINASES:
-#                 ""
-#         case UiVal.MATRIX: 
-#             st.caption('Please provide a csv or xlsx file.')
-#             uploaded_files = st.file_uploader("Choose a file", accept_multiple_files=True, type = ['.xlsx', '.csv']) 
-#             if len(uploaded_files) >= 1:
-#                 cols = st.columns(len(uploaded_files)) 
-#                 for i in range(0, len(uploaded_files)):
-#                     file = uploaded_files[i]
-#                     ext = os.path.splitext(file.name)[-1].lower()
-#                     match ext:
-#                         case UiVal.CSV:
-#                             data = pd.read_csv(file)
-#                         case UiVal.EXCEL:
-#                             data = pd.read_excel(file)
-
-#                     with cols[i]:
-#                         st.write(file.name, data)
-
-#                     if(data.shape[1] == 1):
-#                         process_genelist(data[1:].to_csv(header=None, index=False).strip('\n').split('\n'), w_organism)
-#                     else:
-#                         get_acts(data.iloc[:, 0:2], data.columns[1])
-#         case UiVal.H5AD:
-#             st.success('Congrats, your data unlocks the project management feature! This is an additional service that automatically downloads all results in a reproducible way.')
-#             #"/Users/hanna/Documents/projects/SGUI/CTLA4/v00/analysis/mouse/scRNA/01/data/01.h5ad"
-#             projpath = st.text_input('basepath')
-#             projname = st.text_input('project name')
-#             input_path = st.text_input('input data path')
-#             ok = st.button('OK')
-#             if w_testdata:
-#                 projpath = './'
-#                 projname = w_projname
-#                 input_path = './example_inputs/'
-#             if ok & (projname != None) & (projpath != None):
-#                 tbdatadir = path.join(projpath, projname, 'v00/analysis/01/data/')
-#                 tbdatapath = path.join(tbdatadir, '01.h5ad')
-                
-#                 if not path.exists(tbdatadir):
-#                     os.makedirs(tbdatadir)
-#                 import scanpy as sc 
-#                 sc.write(tbdatapath, sc.read(input_path, cache = True))
-
-#             projpath = path.join(projpath, projname)
-#             scriptpath = path.join(projpath, 'scripts/python/')
-#             if not path.exists(scriptpath):
-#                 os.makedirs(scriptpath)
-#             subprocess.run(f'cp /Users/hanna/Documents/projects/SGUI/analysis_params.py {scriptpath}/analysis_params.py', shell=True)
-
-
-
-def get_data(w_inputformat):
-    #filename = 'dataset01'
-    data = ''
-    method = ''
-    i = 1
+def get_data(w_inputformat)->list[dict] :
     datasets = list()
     match w_inputformat:
         case UiVal.GENES | UiVal.KINASES:
             w_elementlist = st.text_area("Please paste your list of comma separated element names (i.e. DEGs,...) here:", key= "elementlist", placeholder= "element1, element2") #on_change=lambda x:send_genelist(x), args=(st.session_state["genelist"]))
             data = w_elementlist.split(', ')
+            data = data.split(',')
+            data = data.split('\t')
+            datasets.append({'datasetname': '', 'data': data, 'method': 'ora_df', 'datasetid': 1})
         case UiVal.MATRIX: # TODO add warning when NA included
-            st.caption('Please provide a csv or xlsx file.')
+            st.caption('Please provide a csv, tsv or xlsx file.')
             uploaded_files = st.file_uploader("Choose a file", accept_multiple_files=True, type = ['.xlsx', '.csv']) 
-            data = ""
-            # read and display data
+            
+            # read and display data per upload and return 'datasets'
             if len(uploaded_files) >= 1:
-                st.write('Please provide the names of your entity column and the statistics column if available. Leave the stats column name empty if your data has no statistics or consists of significant elements only. By default the fields are filled with the names of the first and second column of the uploaded data table.')
-                w_analyse_elements = st.button('Analyse', key=f'analyse_button')
-                cols = st.columns(len(uploaded_files)) 
-                for i in range(0, len(uploaded_files)):
-                    file = uploaded_files[i]
-                    ext = os.path.splitext(file.name)[-1].lower()
-                    filename = os.path.splitext(file.name)[0].lower()
-                    # read data
-                    match ext:
-                        case UiVal.CSV:
-                            data = pd.read_csv(file)
-                        case UiVal.EXCEL:
-                            data = pd.read_excel(file)
-                    # display data
-                    with cols[i]:
-                        columncol1, columncol2 = st.columns(2)
-                        with columncol1:
-                            id_colname = st.selectbox('ID column', data.columns, 0, key=f'idcolname_{i}')
+                def read_and_display_files(uploaded_files)->list[dict]:
+                    datasets = list()
+                    data = ''
+                    method = ''
+                    st.write('Please provide the names of your entity column and the statistics column if available. Leave the stats column name empty if your data has no statistics or consists of significant elements only. By default the fields are filled with the names of the first and second column of the uploaded data table.')
+                    w_analyse_elements = st.button('Analyse', key=f'analyse_button')
+                    filecols = st.columns(len(uploaded_files)) 
+                    for i in range(0, len(uploaded_files)):
+                        file = uploaded_files[i]
+                        ext = os.path.splitext(file.name)[-1].lower()
+                        filename = os.path.splitext(file.name)[0].lower()
+
+                        # read data
+                        match ext:
+                            case UiVal.CSV:
+                                data = pd.read_csv(file)
+                            case UiVal.EXCEL:
+                                data = pd.read_excel(file)
+                            case UiVal.TSV: 
+                                data = pd.read_csv(file, delimiter='\t')
+
+                        with filecols[i]:
+                            # display data
+                            w_choose_id_col, w_choose_stats_col = st.columns(2)
+                            with w_choose_id_col:
+                                id_colname = st.selectbox('ID column', data.columns, 0, key=f'idcolname_{i}')
+                                
+                            with w_choose_stats_col:
+                                if len(data.columns) >= 2:
+                                    cols = list(data.columns)
+                                    cols.append(None)
+                                    stats_colname = st.selectbox('Statistics column', cols, 1, key=f'statscolname_{i}')
+                                else:
+                                    stats_colname = st.selectbox('Statistics column', list() ,0, key=f'statscolname_{i}')
+
+                            st.write(f'Dataset{i}: {filename}', data)
+
+                            # return relevant information per dataset
+                            if(w_analyse_elements):                      
+                                # clean data
+                                if(stats_colname == None):
+                                    data = data[[id_colname]]
+                                    method = 'ora_df'
+                                else:
+                                    data = data[[id_colname, stats_colname]]
+                                    method = 'ulm'
+                                data[id_colname] = data[id_colname].apply(str.upper)
+                                datasets.append({'datasetname': filename, 'data': data, 'method': method, 'datasetid': i})
+                    return datasets
                             
-                        with columncol2:
-                            stats_guess = ''
-                            if len(data.columns) >= 2:
-                                stats_colname = st.selectbox('Statistics column', data.columns, 1, key=f'statscolname_{i}')
-                            else:
-                                stats_colname = st.selectbox('Statistics column', list() ,0, key=f'statscolname_{i}')
-
-                        st.write(f'Dataset{i}: {filename}', data)
-
-                        if(w_analyse_elements):                      
-                            # clean data
-                            if(stats_colname == None):  #data.shape[1] == 1):
-                                data = data#.loc[:id_colname].to_csv(header=None, index=False).strip('\n').split('\n')
-                                method = 'ora_df'
-                                print(data)
-                            else:
-                                data = data[[id_colname, stats_colname]]#, data.columns[1]
-                                method = 'ulm'
-                            data[id_colname] = data[id_colname].apply(str.upper)
-                            datasets.append({'datasetname': filename, 'data': data, 'method': method, 'datasetid': i})
-    
+                datasets = read_and_display_files(uploaded_files)
     return datasets
 
 

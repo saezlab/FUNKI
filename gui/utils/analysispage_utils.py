@@ -120,14 +120,15 @@ def walking_footprints():
 
 
 def init_page():
-    st.markdown("# Transcription Factor & Pathway Analysis")
+    st.markdown("# Footprint analysis")
     coldesc, colfootprints = st.columns(2)
     with coldesc:
         # heading + description
-        st.markdown("**Analysis of bulk RNA sequencing data with the tool [Decoupler](https://decoupler-py.readthedocs.io/en/latest/index.html).**\n\n   \
-Start your analysis by uploading and describing your data in the 'Analysis' tab.\n   \
-- The transcription factor (TF) analysis is done based on the prior knowledge resource `CollecTri`.\n  \
-- The pathway analysis is based on the resource `Progeny`.")
+        st.markdown("**Analysis of bulk RNA or phosphoproteomics data with the tool [Decoupler](https://decoupler-py.readthedocs.io/en/latest/index.html).**\n\n   \
+Start your analysis by uploading and describing your data in the 'Analysis' tab.\n\n   \
+All prior knowledge resources are derived from the database [Omnipath](https://omnipathdb.org/).\n   \
+For transcription factors `CollecTri` is used and for pathways `Progeny`.\n\n   \
+In case of questions write to *hanna.schumacher@uni-heidelberg.de*.")
                     
     with colfootprints:
         walking_footprints()
