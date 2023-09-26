@@ -65,13 +65,15 @@ def get_acts(dataset):
                 print(f'{resource}, {organism}, {str(list(param.values())[0][0])}')
                 net = eval(f'dc.get_{resource}(organism,' + str(list(param.values())[0][0]) + ')')
             
-            st.write(net)
+            #st.write(net)
             method = dataset['method']
             figpath = f'{resource}.png'
             title = f'{resource_type.capitalize()} retrieved from {resource.capitalize()}'
             if method == 'ora_df':
                 d = data
+                d = d[d.columns[0]].tolist()
                 result = dc.get_ora_df(d, net)
+                #st.write(result)
                 result = result[['Term', 'p-value']]
                 # sort by the p-values and assign ranks
                 result = result.sort_values(by='p-value')
@@ -135,9 +137,9 @@ def get_data(w_inputformat)->list[dict] :
         case UiVal.GENES | UiVal.KINASES:
             w_elementlist = st.text_area("Please paste your list of comma separated element names (i.e. DEGs,...) here:", key= "elementlist", placeholder= "element1, element2") #on_change=lambda x:send_genelist(x), args=(st.session_state["genelist"]))
             data = w_elementlist.split(', ')
-            data = data.split(',')
-            data = data.split('\t')
-            datasets.append({'datasetname': '', 'data': data, 'method': 'ora_df', 'datasetid': 1})
+            #data = data.split(',')
+            #data = data.split('\t')
+            datasets.append({'datasetname': '01', 'data': data, 'method': 'ora_df', 'datasetid': 1})
         case UiVal.MATRIX: # TODO add warning when NA included
             st.caption('Please provide a csv, tsv or xlsx file.')
             uploaded_files = st.file_uploader("Choose a file", accept_multiple_files=True, type = ['.xlsx', '.csv']) 

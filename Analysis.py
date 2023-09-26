@@ -199,6 +199,7 @@ with tab1:
     aps.update({'omicstype': list(st.session_state.ap['dataset_params'][aps['organism']].keys())[0]}) # analysis params    
     if not w_testdata:
         datasets = bulk.get_data(w_inputformat)
+        #st.write(datasets)
         if len(datasets) != 0:
             def get_acts_perDs(datasets):
                 cols = st.columns(len(datasets)) 
