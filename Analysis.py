@@ -101,24 +101,8 @@ def add_results(data, fig, title, download_key) -> None:
                         import base64
                         with open(fig, "rb") as image2string:
                             im64 = base64.b64encode(image2string.read())
-                        #converted_string
-                        #with open('encode.bin', "wb") as file:
-                        #    file.write(converted_string)
-                        #file = open('encode.bin', 'rb')
-                        #byte = file.read()
-                        #file.close()
-                        #decodeit = open('hello_level.jpeg', 'wb')
-                        #decodeit.write(base64.b64decode((converted_string)))
-                        #decodeit.close()
 
-                    #with open(fig, "rb") as im:
-                        #st.download_button(
-                        #    label="Download image",
-                        #    data=im,
-                        #    file_name=f'{title}.png',
-                        #    mime="image/png",
-                        #    key = f'{download_key}image1'
-                        #)
+
                     with open(fig, 'wb') as im:
                         im64 = im64.decode("utf-8")
                         download_button_str = custom_css + f'<a download="image.png" id="button0" href="data:image/png;base64,{im64}">Download</a><br></br>'
@@ -230,9 +214,10 @@ UiVal = util.UiVal
 web.init_page()
 analysispage.init_page()
 
-
+if 'analysiscount' not in st.session_state:
+    st.session_state.analysiscount = 0
 tab1, tab2, tab3, tab4 = st.tabs(['Analysis', 'Results 1st dataset', 'Results 2nd dataset', 'Parameter Choices'])
-
+tabs = st.tabs(['Analysis'] + [f'analysis{x}' for x in range(st.session_state.analysiscount)] + ['ParameterChoices'])
 ################
 ### Analysis ###
 ################
@@ -285,8 +270,8 @@ with tab1:
                 cols = st.columns(len(datasets)) 
                 for i in range(0, len(datasets)):
                     with cols[i]:
-                        data, fig, title, download_key = bulk.get_acts(datasets[i])
-                        add_results(data, fig, title, download_key)
+                        with tab2:
+                            bulk.get_acts(datasets[i])
             get_acts_perDs(datasets)
     else: # let gettestdata return 'datasets'
         datasets = bulk.get_testdata(w_inputformat, w_omicstype, datarootpath = st.session_state.ap['proj_params']['paths']['data_root_path'])

@@ -7,6 +7,7 @@ import json, yaml                               # numba, logging, random, dill, 
 from standard_workflows import *  
 sys.path.append('../')
 from streamlit_extras.switch_page_button import switch_page
+from streamlit_extras.dataframe_explorer import dataframe_explorer 
 from st_pages import Page, show_pages, hide_pages
 import pandas as pd
 #url('https://i.ibb.co/CP9qPhS/FUNKI.png');
@@ -144,6 +145,8 @@ def show_table(data, download_key) -> None:
         download_key (String): key
     """
     st.dataframe(data.round(4)) 
+    filtered_df = dataframe_explorer(data.round(4), case=False)
+    st.dataframe(filtered_df, use_container_width=True)
     #st.download_button( "Download table", data.to_csv(),
     #                    "data.csv", "text/csv", key = download_key)
     download_button_str = download_button(data, 'data.csv', 'Download table')
@@ -341,6 +344,7 @@ import pandas as pd
 
 def download_button(object_to_download, download_filename, button_text, pickle_it=False):
     """
+    Code taken from here: https://gist.github.com/chad-m/6be98ed6cf1c4f17d09b7f6e5ca2978f and extended to work for image as well.
     Generates a link to download the given object_to_download.
     Params:
     ------

@@ -135,9 +135,7 @@ def get_acts(dataset):
                         st.warning("Warning: All sources with at least two targets were taken into consideration. The default would be to have at least five targets per source. To go with the default you would need to add more genes.")
                     except ValueError as ve:
                         st.error("Error: There aren't any sources with the minimum of five targets. Please provide more genes.")
-            return df, figpath, title, f"{title}{dataset['datasetid']}"
-            #d.to_csv("./input.csv")
-            #util.add_results(df, figpath, title, f"{title}{dataset['datasetid']}")
+            util.add_results(df, figpath, title, f"{title}{dataset['datasetid']}")
             
 
 
@@ -161,7 +159,12 @@ def get_data(w_inputformat)->list[dict] :
                     data = ''
                     method = ''
                     st.write('Please provide the names of your entity column and the statistics column if available. Leave the stats column name empty if your data has no statistics or consists of significant elements only. By default the fields are filled with the names of the first and second column of the uploaded data table.')
-                    w_analyse_elements = st.button('Analyse', key=f'analyse_button')
+                    
+                    def increment_analysiscount():
+                        st.session_state.analysiscount += 1
+                    w_analyse_elements = st.button('Analyse', key=f'analyse_button', on_click=increment_analysiscount)
+
+                    
                     filecols = st.columns(len(uploaded_files)) 
                     for i in range(0, len(uploaded_files)):
                         # read data
@@ -185,8 +188,9 @@ def get_data(w_inputformat)->list[dict] :
 
                             st.write(f'Dataset{i}: {filename}', data)
 
+                        
                             # return relevant information per dataset
-                            if(w_analyse_elements):                      
+                            if(w_analyse_elements):    
                                 # clean data
                                 if(stats_colname == None):
                                     data = data[[id_colname]]
