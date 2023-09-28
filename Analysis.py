@@ -52,6 +52,83 @@ from io import StringIO
 # - if not 'Run' button, don't change any params or results.
 # - Extend to multiple datasets at once? Not really necessary. Maybe one tab per ds results?
 ###################################################################################################################
+custom_css = f""" 
+        <style>
+            #button0 {{
+                background-color: rgb(255, 255, 255);
+                color: rgb(38, 39, 48);
+                padding: 0.25em 0.38em;
+                position: relative;
+                text-decoration: none;
+                border-radius: 4px;
+                border-width: 1px;
+                border-style: solid;
+                border-color: rgb(230, 234, 241);
+                border-image: initial;
+            }} 
+            #button0:hover {{
+                border-color: rgb(246, 51, 102);
+                color: rgb(246, 51, 102);
+            }}
+            #button0:active {{
+                box-shadow: none;
+                background-color: rgb(246, 51, 102);
+                color: white;
+                }}
+        </style> """
+
+def add_results(data, fig, title, download_key) -> None:
+    """Add a table with download button and the figure.
+
+    Args:
+        data (DataFrame): Data to show
+        fig (Plotly): Plot to show
+        download_key (String): key
+    """
+    #title = sentence_case(title)
+    with tab2:
+        st.markdown(f'### {title}')
+        col1, col2 = st.columns(2, gap = 'small')
+        with col1:
+            util.show_table(data, download_key)     
+        with col2:
+            if isinstance(fig, str):
+                import matplotlib.pyplot as plt
+                from PIL import Image
+                if fig != 'false':
+                    with Image.open(fig) as im: 
+                        st.image(im)
+                        import base64
+                        with open(fig, "rb") as image2string:
+                            im64 = base64.b64encode(image2string.read())
+                        #converted_string
+                        #with open('encode.bin', "wb") as file:
+                        #    file.write(converted_string)
+                        #file = open('encode.bin', 'rb')
+                        #byte = file.read()
+                        #file.close()
+                        #decodeit = open('hello_level.jpeg', 'wb')
+                        #decodeit.write(base64.b64decode((converted_string)))
+                        #decodeit.close()
+
+                    #with open(fig, "rb") as im:
+                        #st.download_button(
+                        #    label="Download image",
+                        #    data=im,
+                        #    file_name=f'{title}.png',
+                        #    mime="image/png",
+                        #    key = f'{download_key}image1'
+                        #)
+                    with open(fig, 'wb') as im:
+                        im64 = im64.decode("utf-8")
+                        download_button_str = custom_css + f'<a download="image.png" id="button0" href="data:image/png;base64,{im64}">Download</a><br></br>'
+                        st.markdown(download_button_str, unsafe_allow_html=True)
+                       
+                else:
+                    st.write('There are too many significant transcription factors. Therefore, no plot is produced.')
+            else:
+                st.plotly_chart(fig)
+
 
 
 def show_advanced_options(ap, organism, omicstype):
@@ -85,7 +162,8 @@ def show_advanced_options(ap, organism, omicstype):
                 st.success(f'The results will be saved in **{w_resultspath}/{w_projname}/{w_datasetname}/**.')
             else:
                 st.warning('Please provide a "Results Path" if the results shall be saved')        
-        return ap
+        st.session_state.ap = ap # as long as the form was not sent, 'ap' doesn't change
+
 
 def fill_tab4(ap):
     ##################    
@@ -190,10 +268,11 @@ with tab1:
         # Project Specific Params
         w_show_all_opts = st.checkbox('Show all options')
         if(w_show_all_opts): 
-            analysis_params = show_advanced_options(analysis_params, w_organism, w_omicstype)
-
+            show_advanced_options(analysis_params, w_organism, w_omicstype)
+        else:
+            st.session_state.ap = analysis_params
     #---- Get/Prepare Data ----#
-    st.session_state.ap = analysis_params
+
     datasets = list()
     aps = {'organism': list(st.session_state.ap['dataset_params'].keys())[0]}
     aps.update({'omicstype': list(st.session_state.ap['dataset_params'][aps['organism']].keys())[0]}) # analysis params    
@@ -201,22 +280,14 @@ with tab1:
         datasets = bulk.get_data(w_inputformat)
         #st.write(datasets)
         if len(datasets) != 0:
+            
             def get_acts_perDs(datasets):
                 cols = st.columns(len(datasets)) 
                 for i in range(0, len(datasets)):
                     with cols[i]:
-                        bulk.get_acts(datasets[i])
+                        data, fig, title, download_key = bulk.get_acts(datasets[i])
+                        add_results(data, fig, title, download_key)
             get_acts_perDs(datasets)
-            w_save_results= st.button('Save results in extra tab')
-            if(w_save_results):
-                if 'dataset01' not in st.session_state:
-                    with tab2:
-                        get_acts_perDs(datasets)
-                    st.session_state.dataset01 = 'dataset01'
-                else: 
-                    with tab3:
-                        get_acts_perDs(datasets)
-                    st.session_state.dataset02 = 'dataset02'
     else: # let gettestdata return 'datasets'
         datasets = bulk.get_testdata(w_inputformat, w_omicstype, datarootpath = st.session_state.ap['proj_params']['paths']['data_root_path'])
         st.write('The following data will be used for the analysis: ')
@@ -228,11 +299,15 @@ fill_tab4(st.session_state.ap)
     
 
 
+
+
 ################
 ### Datasets ###
 ################
-with tab2:
-    st.warning('This feature is coming soon')
+#with tab2:
+#    st.warning('This feature is coming soon')
+#    if 'dataset01' in st.session_state:
+#        get_acts_perDs(st.session_state.dataset01)
 with tab3: 
     st.warning('This feature is coming soon')
 

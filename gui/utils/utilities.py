@@ -8,6 +8,7 @@ from standard_workflows import *
 sys.path.append('../')
 from streamlit_extras.switch_page_button import switch_page
 from st_pages import Page, show_pages, hide_pages
+import pandas as pd
 #url('https://i.ibb.co/CP9qPhS/FUNKI.png');
 ##https://i.postimg.cc/vBp8mDdG/funki-human-And-Mice.jpg');#https://i.ibb.co/Hg8yqF0/funki-human-And-Mice.jpg');
  # ":linked_paperclips:"),
@@ -134,6 +135,7 @@ def set_priorKnwldg(w_omicstype, analysis_params) -> dict:
 def update_param(param_id, value, dict):
     sc_funcs.dict_replace(dict, value, sc_funcs.getpath(dict, param_id) + (param_id,))
 
+
 def show_table(data, download_key) -> None:
     """Adds a table and a download button.
 
@@ -142,8 +144,10 @@ def show_table(data, download_key) -> None:
         download_key (String): key
     """
     st.dataframe(data.round(4)) 
-    st.download_button( "Download table", data.to_csv(),
-                        "data.csv", "text/csv", key = download_key)
+    #st.download_button( "Download table", data.to_csv(),
+    #                    "data.csv", "text/csv", key = download_key)
+    download_button_str = download_button(data, 'data.csv', 'Download table')
+    st.markdown(download_button_str, unsafe_allow_html=True)
     
 import re
 def sentence_case(sentence):
@@ -154,7 +158,7 @@ def sentence_case(sentence):
         return result
 
 
-
+#@st.cache_data(experimental_allow_widgets=True) 
 def add_results(data, fig, title, download_key) -> None:
     """Add a table with download button and the figure.
 
@@ -164,6 +168,7 @@ def add_results(data, fig, title, download_key) -> None:
         download_key (String): key
     """
     #title = sentence_case(title)
+
     st.markdown(f'### {title}')
     col1, col2 = st.columns(2, gap = 'small')
     with col1:
@@ -284,10 +289,175 @@ def gui_paths(self):
     for data in self.datasets:
         st.text(sc_funcs.print_paths(data._paths))
 
+def read_file(file):
+    """ Reads file depending on its extension.
 
+    Args:
+        file (UploadedFile): file from st.file_uploader
+
+    Returns:
+        data: file content
+    """
+    ext = os.path.splitext(file.name)[-1].lower()
+    match ext:
+        case UiVal.CSV:
+            return pd.read_csv(file)
+        case UiVal.EXCEL:
+            return pd.read_excel(file)
+        case UiVal.TSV: 
+            return pd.read_csv(file, delimiter='\t')
 
 #mygrid = make_grid(5,5)
     #pdfdisp = f'<iframe src="/Abc/drawings/ab-1600.pdf" style="position: absolute; height: 100%; width: 100%;"></iframe>'
     #pdf_display = f'<iframe src="data:application/pdf;base64,{base64_pdf}" width="200" height="200" type="application/pdf"></iframe>'
     #st.markdown(pdf_display, unsafe_allow_html=True)
     #st.markdown(pdfdisp, unsafe_allow_html=True)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+import base64
+import os
+import json
+import pickle
+import uuid
+import re
+
+import streamlit as st
+import pandas as pd
+
+
+def download_button(object_to_download, download_filename, button_text, pickle_it=False):
+    """
+    Generates a link to download the given object_to_download.
+    Params:
+    ------
+    object_to_download:  The object to be downloaded.
+    download_filename (str): filename and extension of file. e.g. mydata.csv,
+    some_txt_output.txt download_link_text (str): Text to display for download
+    link.
+    button_text (str): Text to display on download button (e.g. 'click here to download file')
+    pickle_it (bool): If True, pickle file.
+    Returns:
+    -------
+    (str): the anchor tag to download object_to_download
+    Examples:
+    --------
+    download_link(your_df, 'YOUR_DF.csv', 'Click to download data!')
+    download_link(your_str, 'YOUR_STRING.txt', 'Click to download text!')
+    """
+    import io
+    from PIL import Image
+    custom_css = f""" 
+        <style>
+            #button0 {{
+                background-color: rgb(255, 255, 255);
+                color: rgb(38, 39, 48);
+                padding: 0.25em 0.38em;
+                position: relative;
+                text-decoration: none;
+                border-radius: 4px;
+                border-width: 1px;
+                border-style: solid;
+                border-color: rgb(230, 234, 241);
+                border-image: initial;
+            }} 
+            #button0:hover {{
+                border-color: rgb(246, 51, 102);
+                color: rgb(246, 51, 102);
+            }}
+            #button0:active {{
+                box-shadow: none;
+                background-color: rgb(246, 51, 102);
+                color: white;
+                }}
+        </style> """
+    st.write(type(object_to_download))
+    if isinstance(object_to_download, str):#io.BufferedReader):
+        #import PIL.Image as Image
+        #pil_im = Image.fromarray(object_to_download)
+        #b = io.BytesIO()
+        #pil_im.save(b, 'png')
+        #im_bytes = b.getvalue()
+        #st.write(type(im_bytes))
+        #img_str = base64.b64encode(im_bytes).decode()
+        #st.write(img_str)
+        #st.write('hu')
+        #st.markdown(get_image_download_link(object_to_download,'image.png','Download'), unsafe_allow_html=True)
+        dl_link = custom_css + f'<a download="image.png" id="button0" href="data:image/png;base64,{object_to_download}">Download</a><br></br>'
+    else:
+        if pickle_it:
+            try:
+                object_to_download = pickle.dumps(object_to_download)
+            except pickle.PicklingError as e:
+                st.write(e)
+                return None
+
+        else:
+            if isinstance(object_to_download, bytes):
+                pass
+
+            elif isinstance(object_to_download, pd.DataFrame):
+                object_to_download = object_to_download.to_csv(index=False)
+
+            # Try JSON encode for everything else
+            else:
+                object_to_download = json.dumps(object_to_download)
+
+        try:
+            # some strings <-> bytes conversions necessary here
+            b64 = base64.b64encode(object_to_download.encode()).decode()
+
+        except AttributeError as e:
+            b64 = base64.b64encode(object_to_download).decode()
+
+        button_uuid = str(uuid.uuid4()).replace('-', '')
+        button_id = re.sub('\d+', '', button_uuid)
+
+        custom_css = f""" 
+            <style>
+                #{button_id} {{
+                    background-color: rgb(255, 255, 255);
+                    color: rgb(38, 39, 48);
+                    padding: 0.25em 0.38em;
+                    position: relative;
+                    text-decoration: none;
+                    border-radius: 4px;
+                    border-width: 1px;
+                    border-style: solid;
+                    border-color: rgb(230, 234, 241);
+                    border-image: initial;
+                }} 
+                #{button_id}:hover {{
+                    border-color: rgb(246, 51, 102);
+                    color: rgb(246, 51, 102);
+                }}
+                #{button_id}:active {{
+                    box-shadow: none;
+                    background-color: rgb(246, 51, 102);
+                    color: white;
+                    }}
+            </style> """
+
+        dl_link = custom_css + f'<a download="{download_filename}" id="{button_id}" href="data:file/txt;base64,{b64}">{button_text}</a><br></br>'
+
+    return dl_link
+
+
+def file_selector(folder_path='.'):
+    filenames = os.listdir(folder_path)
+    selected_filename = st.selectbox('Select a file', filenames)
+    return os.path.join(folder_path, selected_filename)
+

@@ -23,6 +23,7 @@ import glob
 #########################
 
 UiVal = util.UiVal
+#@st.cache_data(experimental_allow_widgets=True)
 def get_acts(dataset):
     """run decoupler
 
@@ -72,33 +73,42 @@ def get_acts(dataset):
             if method == 'ora_df':
                 d = data
                 d = d[d.columns[0]].tolist()
+
                 result = dc.get_ora_df(d, net)
-                #st.write(result)
-                result = result[['Term', 'p-value']]
-                # sort by the p-values and assign ranks
-                result = result.sort_values(by='p-value')
-                result.columns = [resource, 'p-value']
-                result['-log10(p-value)'] = np.log10(result['p-value'])*-1
-                if len(result) >= 20: 
-                    max_rows = 20
-                else: 
-                    max_rows = len(result)
-                #st.write(result)
-                res_plot = result.iloc[0:max_rows, :]
-                if(res_plot['-log10(p-value)'].value_counts().max() == 20):
-                    print(res_plot)
-                    fig = 'false'
-                else: 
-                    fig = px.bar(res_plot, x=resource, y='-log10(p-value)')
-                    #st.write(fig)
-                    fig.write_image(figpath)
-                df = result.iloc[:, 0:2]
-                #return [result.iloc[:, 0:2], figpath, resource.capitalize()] # result, figure, title
+                def plot_pval(data, idCol, pvalCol, figpath, max_rows = 20):
+                    """barplot showing -log10 pvals but not more than 20 results
+
+                    Args:
+                        data (DataFrame): full dataframe
+                        idCol (str): x axis
+                        pvalCol (str): y axis, gets transformed with -log10
+                        figpath (str): path where the resulting figure is saved
+
+                    Returns:
+                        _type_: _description_
+                    """
+                    data = data[[idCol, pvalCol]].sort_values(by=pvalCol)
+                    # assign ranks
+                    data.columns = [resource, pvalCol]
+                    data[f'-log10({pvalCol})'] = np.log10(data[pvalCol])*-1
+                    if len(result) < max_rows: 
+                        max_rows = len(data)
+                    data_plot = data.iloc[0:max_rows, :]
+                    
+                    if(data_plot[f'-log10({pvalCol})'].value_counts().max() == 20):
+                        print(data_plot)
+                        fig = 'false'
+                    else: 
+                        fig = px.bar(data_plot, x=resource, y='-log10(p-value)')
+                        fig.write_image(figpath)
+                    return data, fig
+                df, fig = plot_pval(result, 'Term', 'p-value', figpath)                
             else:
                 try:
                     d = data.transpose().tail(-1)  # drop first row
                     d.columns = data[data.columns[0]] # reset column names
                     d = d.astype(float)
+
                     result = dc.decouple(d, net, methods=[method])
                     print(result)
                     def decouple_result_totable(result):
@@ -125,9 +135,9 @@ def get_acts(dataset):
                         st.warning("Warning: All sources with at least two targets were taken into consideration. The default would be to have at least five targets per source. To go with the default you would need to add more genes.")
                     except ValueError as ve:
                         st.error("Error: There aren't any sources with the minimum of five targets. Please provide more genes.")
-    
+            return df, figpath, title, f"{title}{dataset['datasetid']}"
             #d.to_csv("./input.csv")
-            util.add_results(df, figpath, title, f"{title}{dataset['datasetid']}")
+            #util.add_results(df, figpath, title, f"{title}{dataset['datasetid']}")
             
 
 
@@ -154,18 +164,10 @@ def get_data(w_inputformat)->list[dict] :
                     w_analyse_elements = st.button('Analyse', key=f'analyse_button')
                     filecols = st.columns(len(uploaded_files)) 
                     for i in range(0, len(uploaded_files)):
-                        file = uploaded_files[i]
-                        ext = os.path.splitext(file.name)[-1].lower()
-                        filename = os.path.splitext(file.name)[0].lower()
-
                         # read data
-                        match ext:
-                            case UiVal.CSV:
-                                data = pd.read_csv(file)
-                            case UiVal.EXCEL:
-                                data = pd.read_excel(file)
-                            case UiVal.TSV: 
-                                data = pd.read_csv(file, delimiter='\t')
+                        file = uploaded_files[i]
+                        filename = os.path.splitext(file.name)[0].lower()
+                        data = util.read_file(file)
 
                         with filecols[i]:
                             # display data
