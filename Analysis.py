@@ -201,10 +201,10 @@ with tab1:
         datasets = bulk.get_data(w_inputformat)
         if len(datasets) != 0:       
             def get_acts_perDs(datasets):
-                cols = st.columns(len(datasets)) 
-                for i in range(0, len(datasets)):
-                    with cols[i]:
-                        with tab2:
+                with tab2:
+                    cols = st.columns(len(datasets)) 
+                    for i in range(0, len(datasets)):
+                        with cols[i]:
                             bulk.get_acts(datasets[i])
             get_acts_perDs(datasets)
     else: # let gettestdata return 'datasets'

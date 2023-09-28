@@ -206,7 +206,7 @@ def get_data(w_inputformat)->list[dict] :
                                     method = 'ulm'
                                 data[id_colname] = data[id_colname].apply(str.upper)
                                 datasets.append({'datasetname': filename, 'data': data, 'method': method, 'datasetid': i})
-                                st.write('You can find the results in the "dataset1" tab above.')
+                                st.write('You can find the results in the "Results 1st dataset" tab above.')
                     return datasets
                             
                 datasets = read_and_display_files(uploaded_files)
