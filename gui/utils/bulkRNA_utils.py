@@ -44,16 +44,17 @@ def get_acts(dataset):
         #subprocess.call([f'{datarootpath}getfrom_omnipath.R {resource} {organism}'], shell = True)
         for resource in resources:
             param = sc_funcs.deep_get(ap, sc_funcs.getpath(ap, resource, search_value = False))
-            param_val = str(list(param.values())[0][0])
+            
             net = pd.DataFrame()
             if resource == 'progeny' and organism == 'mouse':
+                    param_val = str(list(param.values())[0][0])
                     priorKnwldg_avail_path = r'./data/priorKnowledge/*' + re.escape(resource) + '*' + re.escape(organism) + '*' + re.escape(param_val) + '*.csv'
                     priorKnwldg_avail = glob.glob(priorKnwldg_avail_path)
                     if priorKnwldg_avail == [] :
                         priorKnwldg_avail_path = r'./data/priorKnowledge/*' + re.escape(resource) + '*' + re.escape(organism) + '*.csv'
                     priorKnwldg_avail = glob.glob(priorKnwldg_avail_path)[0]
                     #priorKnwldg_avail = [os.path.basename(x) for x in glob.glob(priorKnwldg_avail_path)]
-                    st.write(f'The following file is used as priorKnowledge resource:  \n\n`{priorKnwldg_avail}`')
+                    #st.write(f'The following file is used as priorKnowledge resource:  \n\n`{priorKnwldg_avail}`')
                     net = pd.read_csv(priorKnwldg_avail, index_col = False)
             elif resource == 'ksn':
                 if organism == 'human':
@@ -62,7 +63,7 @@ def get_acts(dataset):
                     st.warning('This priorKnowledgeResource is only available for human data so far.')
                     return
             else:
-                st.write(f'**PriorKnowledge Resource {resource}**')
+                # st.write(f'**PriorKnowledge Resource {resource}**')
                 print(f'{resource}, {organism}, {str(list(param.values())[0][0])}')
                 net = eval(f'dc.get_{resource}(organism,' + str(list(param.values())[0][0]) + ')')
             
@@ -72,7 +73,8 @@ def get_acts(dataset):
             title = f'{resource_type.capitalize()} retrieved from {resource.capitalize()}'
             if method == 'ora_df':
                 d = data
-                d = d[d.columns[0]].tolist()
+                if type(d) == pd.DataFrame:
+                    d = d[d.columns[0]].tolist()
 
                 result = dc.get_ora_df(d, net)
                 def plot_pval(data, idCol, pvalCol, figpath, max_rows = 20):
@@ -141,13 +143,18 @@ def get_acts(dataset):
 
 def get_data(w_inputformat)->list[dict] :
     datasets = list()
+    def increment_analysiscount():
+        st.session_state.analysiscount += 1
     match w_inputformat:
         case UiVal.GENES | UiVal.KINASES:
             w_elementlist = st.text_area("Please paste your list of comma separated element names (i.e. DEGs,...) here:", key= "elementlist", placeholder= "element1, element2") #on_change=lambda x:send_genelist(x), args=(st.session_state["genelist"]))
             data = w_elementlist.split(', ')
             #data = data.split(',')
             #data = data.split('\t')
-            datasets.append({'datasetname': '01', 'data': data, 'method': 'ora_df', 'datasetid': 1})
+            w_analyse_elements = st.button('Analyse', key=f'analyse_button', on_click=increment_analysiscount)
+            if w_analyse_elements:
+                datasets.append({'datasetname': '01', 'data': data, 'method': 'ora_df', 'datasetid': 1})
+            st.write('You can find the results in the "dataset1" tab above.')
         case UiVal.MATRIX: # TODO add warning when NA included
             st.caption('Please provide a csv, tsv or xlsx file.')
             uploaded_files = st.file_uploader("Choose a file", accept_multiple_files=True, type = ['.xlsx', '.csv']) 
@@ -160,8 +167,7 @@ def get_data(w_inputformat)->list[dict] :
                     method = ''
                     st.write('Please provide the names of your entity column and the statistics column if available. Leave the stats column name empty if your data has no statistics or consists of significant elements only. By default the fields are filled with the names of the first and second column of the uploaded data table.')
                     
-                    def increment_analysiscount():
-                        st.session_state.analysiscount += 1
+                    
                     w_analyse_elements = st.button('Analyse', key=f'analyse_button', on_click=increment_analysiscount)
 
                     
@@ -200,6 +206,7 @@ def get_data(w_inputformat)->list[dict] :
                                     method = 'ulm'
                                 data[id_colname] = data[id_colname].apply(str.upper)
                                 datasets.append({'datasetname': filename, 'data': data, 'method': method, 'datasetid': i})
+                                st.write('You can find the results in the "dataset1" tab above.')
                     return datasets
                             
                 datasets = read_and_display_files(uploaded_files)
@@ -216,7 +223,7 @@ def get_testdata(w_inputformat, w_omicstype, datarootpath):
         case UiVal.KINASES:
             data = ['Tex2_S265', 'Abl2_S822', 'Abl2_S819', 'Prkd3_S213', 'Tfeb_S108', 'Prkd3_S216', 'Foxk2_S389', 'Mtor_T2473', 'Peak1_S1203', 'Peak1_S1206', 'Lsr_S591', 'Eps15l1_S253', 'Lsr_S588', 'Dennd6a_S16', 'Unc5b_S531', 'Nfia_S310', 'Mapk6_S683', 'Mapk6_S687', 'Unc5b_S528', 'Tns3_Y773', 'Tfeb_S121', 'Mybbp1a_T1260', 'Washc2_S1048', 'Washc2_S1049', 'Tfeb_S113', 'Clip1_S194', 'Iws1_S667', 'Larp1_S743', 'Znf608_S626', 'Trmt10c_S79', 'Gpatch8_S733', 'Gpatch8_S735', 'Fnbp1_S299', 'Nfia_S303', 'Ankrd17_S1692', 'Rhbdf1_T180', 'Pnisr_S321', 'Trmt10c_S85', 'Micall1_S494', 'Micall1_S496', 'Ankrd17_S1696', 'Top2b_S1448', 'Rabep1_S410', 'Znf608_T635', 'Tnks1bp1_S889', 'Mrpl11_S160', 'Nufip2_T221', 'Morc2a_S737', 'Rgl3_S568', 'Rgl3_S572', 'Ercc5_S572', 'Lsm11_S18', 'Arhgap12_S211', 'Rbm25_S678', 'Samd4b_S585', 'Sipa1l1_S211', 'Supt5h_T661', 'Srrm2_S2691', 'Srrm2_T2689', 'Plec_S4396', 'Iws1_S666', 'Pnn_S698', 'Pnn_S700', 'Lmna_T19', 'Phldb2_S71']
             elementtype = 'kinases'
-            elements = "'Tex2_S265', 'Abl2_S822', 'Abl2_S819', 'Prkd3_S213', 'Tfeb_S108', 'Prkd3_S216', 'Foxk2_S389', 'Mtor_T2473', 'Peak1_S1203', 'Peak1_S1206', 'Lsr_S591', 'Eps15l1_S253', 'Lsr_S588', 'Dennd6a_S16', 'Unc5b_S531', 'Nfia_S310', 'Mapk6_S683', 'Mapk6_S687', 'Unc5b_S528', 'Tns3_Y773', 'Tfeb_S121', 'Mybbp1a_T1260', 'Washc2_S1048', 'Washc2_S1049', 'Tfeb_S113', 'Clip1_S194', 'Iws1_S667', 'Larp1_S743', 'Znf608_S626', 'Trmt10c_S79', 'Gpatch8_S733', 'Gpatch8_S735', 'Fnbp1_S299', 'Nfia_S303', 'Ankrd17_S1692', 'Rhbdf1_T180', 'Pnisr_S321', 'Trmt10c_S85', 'Micall1_S494', 'Micall1_S496', 'Ankrd17_S1696', 'Top2b_S1448', 'Rabep1_S410', 'Znf608_T635', 'Tnks1bp1_S889', 'Mrpl11_S160', 'Nufip2_T221', 'Morc2a_S737', 'Rgl3_S568', 'Rgl3_S572', 'Ercc5_S572', 'Lsm11_S18', 'Arhgap12_S211', 'Rbm25_S678', 'Samd4b_S585', 'Sipa1l1_S211', 'Supt5h_T661', 'Srrm2_S2691', 'Srrm2_T2689', 'Plec_S4396', 'Iws1_S666', 'Pnn_S698', 'Pnn_S700', 'Lmna_T19', 'Phldb2_S71'"
+            elements = "Tex2_S265, Abl2_S822, Abl2_S819, Prkd3_S213, Tfeb_S108, Prkd3_S216, Foxk2_S389, Mtor_T2473, Peak1_S1203, Peak1_S1206, Lsr_S591, Eps15l1_S253, Lsr_S588, Dennd6a_S16, Unc5b_S531, Nfia_S310, Mapk6_S683, Mapk6_S687, Unc5b_S528, Tns3_Y773, Tfeb_S121, Mybbp1a_T1260, Washc2_S1048, Washc2_S1049, Tfeb_S113, Clip1_S194, Iws1_S667, Larp1_S743, Znf608_S626, Trmt10c_S79, Gpatch8_S733, Gpatch8_S735, Fnbp1_S299, Nfia_S303, Ankrd17_S1692, Rhbdf1_T180, Pnisr_S321, Trmt10c_S85, Micall1_S494, Micall1_S496, Ankrd17_S1696, Top2b_S1448, Rabep1_S410, Znf608_T635, Tnks1bp1_S889, Mrpl11_S160, Nufip2_T221, Morc2a_S737, Rgl3_S568, Rgl3_S572, Ercc5_S572, Lsm11_S18, Arhgap12_S211, Rbm25_S678, Samd4b_S585, Sipa1l1_S211, Supt5h_T661, Srrm2_S2691, Srrm2_T2689, Plec_S4396, Iws1_S666, Pnn_S698, Pnn_S700, Lmna_T19, Phldb2_S71"
             #data = pd.DataFrame({'features': data})
             st.markdown(f"**The following {elementtype} are used:**")
             st.write(elements)
@@ -224,7 +231,7 @@ def get_testdata(w_inputformat, w_omicstype, datarootpath):
         case UiVal.GENES:
             data = ['KIAA0907', 'KDM5A', 'CDC25A', 'EGR1', 'GADD45B', 'RELB', 'TERF2IP', 'SMNDC1', 'TICAM1', 'NFKB2', 'RGS2', 'NCOA3', 'ICAM1', 'TEX10', 'CNOT4', 'ARID4B', 'CLPX', 'CHIC2', 'CXCL2', 'FBXO11', 'MTF2', 'CDK2', 'DNTTIP2', 'GADD45A', 'GOLT1B', 'POLR2K', 'NFKBIE', 'GABPB1', 'ECD', 'PHKG2', 'RAD9A', 'NET1', 'KIAA0753', 'EZH2', 'NRAS', 'ATP6V0B', 'CDK7', 'CCNH', 'SENP6', 'TIPARP', 'FOS', 'ARPP19', 'TFAP2A', 'KDM5B', 'NPC1', 'TP53BP2', 'NUSAP1', 'SCCPDH', 'KIF20A', 'FZD7', 'USP22', 'PIP4K2B', 'CRYZ', 'GNB5', 'EIF4EBP1', 'PHGDH', 'RRAGA', 'SLC25A46', 'RPA1', 'HADH', 'DAG1', 'RPIA', 'P4HA2', 'MACF1', 'TMEM97', 'MPZL1', 'PSMG1', 'PLK1', 'SLC37A4', 'GLRX', 'CBR3', 'PRSS23', 'NUDCD3', 'CDC20', 'KIAA0528', 'NIPSNAP1', 'TRAM2', 'STUB1', 'DERA', 'MTHFD2', 'BLVRA', 'IARS2', 'LIPA', 'PGM1', 'CNDP2', 'BNIP3', 'CTSL1', 'CDC25B', 'HSPA8', 'EPRS', 'PAX8', 'SACM1L', 'HOXA5', 'TLE1', 'PYGL', 'TUBB6', 'LOXL1']
             elementtype = 'genes'
-            elements = "'KIAA0907', 'KDM5A', 'CDC25A', 'EGR1', 'GADD45B', 'RELB', 'TERF2IP', 'SMNDC1', 'TICAM1', 'NFKB2', 'RGS2', 'NCOA3', 'ICAM1', 'TEX10', 'CNOT4', 'ARID4B', 'CLPX', 'CHIC2', 'CXCL2', 'FBXO11', 'MTF2', 'CDK2', 'DNTTIP2', 'GADD45A', 'GOLT1B', 'POLR2K', 'NFKBIE', 'GABPB1', 'ECD', 'PHKG2', 'RAD9A', 'NET1', 'KIAA0753', 'EZH2', 'NRAS', 'ATP6V0B', 'CDK7', 'CCNH', 'SENP6', 'TIPARP', 'FOS', 'ARPP19', 'TFAP2A', 'KDM5B', 'NPC1', 'TP53BP2', 'NUSAP1', 'SCCPDH', 'KIF20A', 'FZD7', 'USP22', 'PIP4K2B', 'CRYZ', 'GNB5', 'EIF4EBP1', 'PHGDH', 'RRAGA', 'SLC25A46', 'RPA1', 'HADH', 'DAG1', 'RPIA', 'P4HA2', 'MACF1', 'TMEM97', 'MPZL1', 'PSMG1', 'PLK1', 'SLC37A4', 'GLRX', 'CBR3', 'PRSS23', 'NUDCD3', 'CDC20', 'KIAA0528', 'NIPSNAP1', 'TRAM2', 'STUB1', 'DERA', 'MTHFD2', 'BLVRA', 'IARS2', 'LIPA', 'PGM1', 'CNDP2', 'BNIP3', 'CTSL1', 'CDC25B', 'HSPA8', 'EPRS', 'PAX8', 'SACM1L', 'HOXA5', 'TLE1', 'PYGL', 'TUBB6', 'LOXL1'"
+            elements = "KIAA0907, KDM5A, CDC25A, EGR1, GADD45B, RELB, TERF2IP, SMNDC1, TICAM1, NFKB2, RGS2, NCOA3, ICAM1, TEX10, CNOT4, ARID4B, CLPX, CHIC2, CXCL2, FBXO11, MTF2, CDK2, DNTTIP2, GADD45A, GOLT1B, POLR2K, NFKBIE, GABPB1, ECD, PHKG2, RAD9A, NET1, KIAA0753, EZH2, NRAS, ATP6V0B, CDK7, CCNH, SENP6, TIPARP, FOS, ARPP19, TFAP2A, KDM5B, NPC1, TP53BP2, NUSAP1, SCCPDH, KIF20A, FZD7, USP22, PIP4K2B, CRYZ, GNB5, EIF4EBP1, PHGDH, RRAGA, SLC25A46, RPA1, HADH, DAG1, RPIA, P4HA2, MACF1, TMEM97, MPZL1, PSMG1, PLK1, SLC37A4, GLRX, CBR3, PRSS23, NUDCD3, CDC20, KIAA0528, NIPSNAP1, TRAM2, STUB1, DERA, MTHFD2, BLVRA, IARS2, LIPA, PGM1, CNDP2, BNIP3, CTSL1, CDC25B, HSPA8, EPRS, PAX8, SACM1L, HOXA5, TLE1, PYGL, TUBB6, LOXL1"
             #data = pd.DataFrame({'features': data})
             st.markdown(f"**The following {elementtype} are used:**")
             st.write(elements)

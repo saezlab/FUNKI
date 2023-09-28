@@ -3,13 +3,15 @@ import os, base64, re, sys
 from os import makedirs, path
 from copy import deepcopy
 from IPython.display import display, Markdown   #, Latex # to display Markdown in code chunk
-import json, yaml                               # numba, logging, random, dill, logging.config
+import json, yaml, pickle, uuid                               # numba, logging, random, dill, logging.config
 from standard_workflows import *  
 sys.path.append('../')
 from streamlit_extras.switch_page_button import switch_page
 from streamlit_extras.dataframe_explorer import dataframe_explorer 
 from st_pages import Page, show_pages, hide_pages
 import pandas as pd
+
+
 #url('https://i.ibb.co/CP9qPhS/FUNKI.png');
 ##https://i.postimg.cc/vBp8mDdG/funki-human-And-Mice.jpg');#https://i.ibb.co/Hg8yqF0/funki-human-And-Mice.jpg');
  # ":linked_paperclips:"),
@@ -145,10 +147,8 @@ def show_table(data, download_key) -> None:
         download_key (String): key
     """
     st.dataframe(data.round(4)) 
-    filtered_df = dataframe_explorer(data.round(4), case=False)
-    st.dataframe(filtered_df, use_container_width=True)
-    #st.download_button( "Download table", data.to_csv(),
-    #                    "data.csv", "text/csv", key = download_key)
+    #filtered_df = dataframe_explorer(data.round(4), case=False)
+    #st.dataframe(filtered_df, use_container_width=True)
     download_button_str = download_button(data, 'data.csv', 'Download table')
     st.markdown(download_button_str, unsafe_allow_html=True)
     
@@ -160,6 +160,30 @@ def sentence_case(sentence):
         result = result[:1].upper() + result[1:].lower()
         return result
 
+button_css = f""" 
+        <style>
+            #button0 {{
+                background-color: rgb(255, 255, 255);
+                color: rgb(38, 39, 48);
+                padding: 0.25em 0.38em;
+                position: relative;
+                text-decoration: none;
+                border-radius: 4px;
+                border-width: 1px;
+                border-style: solid;
+                border-color: rgb(230, 234, 241);
+                border-image: initial;
+            }} 
+            #button0:hover {{
+                border-color: rgb(246, 51, 102);
+                color: rgb(246, 51, 102);
+            }}
+            #button0:active {{
+                box-shadow: none;
+                background-color: rgb(246, 51, 102);
+                color: white;
+                }}
+        </style> """
 
 #@st.cache_data(experimental_allow_widgets=True) 
 def add_results(data, fig, title, download_key) -> None:
@@ -171,7 +195,6 @@ def add_results(data, fig, title, download_key) -> None:
         download_key (String): key
     """
     #title = sentence_case(title)
-
     st.markdown(f'### {title}')
     col1, col2 = st.columns(2, gap = 'small')
     with col1:
@@ -183,15 +206,13 @@ def add_results(data, fig, title, download_key) -> None:
             if fig != 'false':
                 with Image.open(fig) as im: 
                     st.image(im)
-                
-                with open(fig, "rb") as im:
-                    st.download_button(
-                        label="Download image",
-                        data=im,
-                        file_name=f'{title}.png',
-                        mime="image/png",
-                        key = f'{download_key}image1'
-                    )
+                    import base64
+                    with open(fig, "rb") as image2string:
+                        im64 = base64.b64encode(image2string.read())
+                with open(fig, 'wb') as im:
+                    im64 = im64.decode("utf-8")
+                    download_button_str = button_css + f'<a download="image.png" id="button0" href="data:image/png;base64,{im64}">Download</a><br></br>'
+                    st.markdown(download_button_str, unsafe_allow_html=True)          
             else:
                 st.write('There are too many significant transcription factors. Therefore, no plot is produced.')
         else:
@@ -317,34 +338,9 @@ def read_file(file):
     #st.markdown(pdfdisp, unsafe_allow_html=True)
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-import base64
-import os
-import json
-import pickle
-import uuid
-import re
-
-import streamlit as st
-import pandas as pd
-
-
 def download_button(object_to_download, download_filename, button_text, pickle_it=False):
     """
-    Code taken from here: https://gist.github.com/chad-m/6be98ed6cf1c4f17d09b7f6e5ca2978f and extended to work for image as well.
+    ! Code taken from here: https://gist.github.com/chad-m/6be98ed6cf1c4f17d09b7f6e5ca2978f and extended to work for image as well.
     Generates a link to download the given object_to_download.
     Params:
     ------
@@ -364,31 +360,6 @@ def download_button(object_to_download, download_filename, button_text, pickle_i
     """
     import io
     from PIL import Image
-    custom_css = f""" 
-        <style>
-            #button0 {{
-                background-color: rgb(255, 255, 255);
-                color: rgb(38, 39, 48);
-                padding: 0.25em 0.38em;
-                position: relative;
-                text-decoration: none;
-                border-radius: 4px;
-                border-width: 1px;
-                border-style: solid;
-                border-color: rgb(230, 234, 241);
-                border-image: initial;
-            }} 
-            #button0:hover {{
-                border-color: rgb(246, 51, 102);
-                color: rgb(246, 51, 102);
-            }}
-            #button0:active {{
-                box-shadow: none;
-                background-color: rgb(246, 51, 102);
-                color: white;
-                }}
-        </style> """
-    st.write(type(object_to_download))
     if isinstance(object_to_download, str):#io.BufferedReader):
         #import PIL.Image as Image
         #pil_im = Image.fromarray(object_to_download)

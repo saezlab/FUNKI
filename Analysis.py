@@ -52,68 +52,6 @@ from io import StringIO
 # - if not 'Run' button, don't change any params or results.
 # - Extend to multiple datasets at once? Not really necessary. Maybe one tab per ds results?
 ###################################################################################################################
-custom_css = f""" 
-        <style>
-            #button0 {{
-                background-color: rgb(255, 255, 255);
-                color: rgb(38, 39, 48);
-                padding: 0.25em 0.38em;
-                position: relative;
-                text-decoration: none;
-                border-radius: 4px;
-                border-width: 1px;
-                border-style: solid;
-                border-color: rgb(230, 234, 241);
-                border-image: initial;
-            }} 
-            #button0:hover {{
-                border-color: rgb(246, 51, 102);
-                color: rgb(246, 51, 102);
-            }}
-            #button0:active {{
-                box-shadow: none;
-                background-color: rgb(246, 51, 102);
-                color: white;
-                }}
-        </style> """
-
-def add_results(data, fig, title, download_key) -> None:
-    """Add a table with download button and the figure.
-
-    Args:
-        data (DataFrame): Data to show
-        fig (Plotly): Plot to show
-        download_key (String): key
-    """
-    #title = sentence_case(title)
-    with tab2:
-        st.markdown(f'### {title}')
-        col1, col2 = st.columns(2, gap = 'small')
-        with col1:
-            util.show_table(data, download_key)     
-        with col2:
-            if isinstance(fig, str):
-                import matplotlib.pyplot as plt
-                from PIL import Image
-                if fig != 'false':
-                    with Image.open(fig) as im: 
-                        st.image(im)
-                        import base64
-                        with open(fig, "rb") as image2string:
-                            im64 = base64.b64encode(image2string.read())
-
-
-                    with open(fig, 'wb') as im:
-                        im64 = im64.decode("utf-8")
-                        download_button_str = custom_css + f'<a download="image.png" id="button0" href="data:image/png;base64,{im64}">Download</a><br></br>'
-                        st.markdown(download_button_str, unsafe_allow_html=True)
-                       
-                else:
-                    st.write('There are too many significant transcription factors. Therefore, no plot is produced.')
-            else:
-                st.plotly_chart(fig)
-
-
 
 def show_advanced_options(ap, organism, omicstype):
     with st.form('advanced_params', clear_on_submit=False):
@@ -174,13 +112,10 @@ def fill_tab4(ap):
                  'AnalysisPath': analysispath}
         
         st.dataframe(data)
-
         data = {
                  'PriorKnowledge': priorKnowledge}
         st.dataframe(data)
         
-        
-
         st.write('### Internal Representation of Parameters')
         st.write(ap)
         st.write('### Merged')
@@ -217,7 +152,8 @@ analysispage.init_page()
 if 'analysiscount' not in st.session_state:
     st.session_state.analysiscount = 0
 tab1, tab2, tab3, tab4 = st.tabs(['Analysis', 'Results 1st dataset', 'Results 2nd dataset', 'Parameter Choices'])
-tabs = st.tabs(['Analysis'] + [f'analysis{x}' for x in range(st.session_state.analysiscount)] + ['ParameterChoices'])
+#tabs = st.tabs(['Analysis'] + [f'analysis{x}' for x in range(st.session_state.analysiscount)] + ['ParameterChoices'])
+
 ################
 ### Analysis ###
 ################
@@ -263,9 +199,7 @@ with tab1:
     aps.update({'omicstype': list(st.session_state.ap['dataset_params'][aps['organism']].keys())[0]}) # analysis params    
     if not w_testdata:
         datasets = bulk.get_data(w_inputformat)
-        #st.write(datasets)
-        if len(datasets) != 0:
-            
+        if len(datasets) != 0:       
             def get_acts_perDs(datasets):
                 cols = st.columns(len(datasets)) 
                 for i in range(0, len(datasets)):
