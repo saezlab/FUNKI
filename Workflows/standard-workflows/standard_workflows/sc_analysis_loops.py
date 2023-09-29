@@ -136,6 +136,48 @@ def plot_umap(data):
     _plot_umap()
 
 
+## TODO: REDUNDANT TO UMAP :`((
+@loop('analysis.datasets', False)
+def plot_violin(data, groupby):
+    display(Markdown(f'## Estimated activities for {data.name}'))
+    @loop(data.acts, False)
+    def _plot_violin(act):
+        display(Markdown(f'{act.modeltype} with parameter {act.modelparams} and method {act.namedmethod}.'))
+        dirpath = path.join(act.paths['actdir'], 'violins')
+        dirpath = str(dirpath).replace('results', 'figures')
+        dirpath = path.join(dirpath, groupby)
+        if not exists(dirpath):
+            makedirs(dirpath)
+        sc.settings.set_figure_params(dpi=100, fontsize=10, dpi_save=300, figsize=(5,4), format='pdf')
+        sc.settings.figdir = dirpath
+        sc.settings.verbosity = 3    
+        
+        if(len(act.data.var_names) <= 16):
+            if not exists(f'{dirpath}/violin.pdf'):
+                try:
+                    sc.pl.violin(act.data, keys=act.data.var_names, groupby=groupby, save = True, show = True)
+                except Exception as e: 
+                    import sys
+                    def eprint(*args, **kwargs):
+                        print(*args, file=sys.stderr, **kwargs)
+                    eprint('File should be saved here: ', dirpath, 'as violin.pdf\n', e)
+                    raise
+        else: 
+            @loop(act.data.var_names, False) # don't write: 'act.data.var_names' -> act wouldn't be found anymore 
+            def _plot_pervar(varname):
+                if not exists(f'{dirpath}/violin_{varname}.pdf'):
+                    try: 
+                        sc.pl.violin(act.data, keys=varname, groupby=groupby, save = f'_{varname}.pdf', show = False)
+                    except Exception as e: 
+                        import sys
+                        def eprint(*args, **kwargs):
+                            print(*args, file=sys.stderr, **kwargs)
+                        eprint('File should be saved here: ', dirpath, 'as', varname, '\n', e)
+                        raise
+            _plot_pervar()
+        
+    _plot_violin()
+
 
 @loop ('analysis.datasets', True)
 def plot_meta_barplots(data, col1, col2):

@@ -12,12 +12,10 @@ from gui.utils import utilities as util
 import pandas as pd
 import decoupler as dc
 #import openpyxl
-import logging
 import plotly.express as px
 import numpy as np
-import kaleido
-import subprocess
-import glob
+import kaleido, subprocess, glob
+
 #########################
 # TODO: allow tsv input #
 #########################
@@ -146,6 +144,26 @@ def get_data(w_inputformat)->list[dict] :
     def increment_analysiscount():
         st.session_state.analysiscount += 1
     match w_inputformat:
+        case UiVal.H5AD: 
+            analysispath = st.session_state.ap['proj_params']['paths']['analysis_path']
+            
+            proj_id = st.session_state.ap['proj_params']['proj_id']
+            ap_dir =  os.path.join(analysispath, proj_id, 'v01', 'analysis')
+            ap_path = os.path.join(ap_dir, 'analysis_params.yaml')
+            if not os.path.exists(ap_dir):
+                os.makedirs(ap_dir)
+            with open(ap_path, 'w+') as file: 
+                yaml.dump(st.session_state.ap, file, sort_keys=False)
+            dc_dataset = sc_classes.Analysis.new_dataset(sc_classes.Baseanalysis, dcu.Decoupler) 
+            analysis = sc_classes.Analysis(datasets=[
+                                            ('01', 'SingleCellRNAseq', 'human', dc_dataset)
+                                            ], params_path = ap_dir)
+            scl.analysis = analysis
+            scl.get_acts()
+            scl.plot_umap()
+            #scl.plot_violin('seurat_clusters')
+            scl.get_mean_acts()
+            scl.plot_mean_acts()
         case UiVal.GENES | UiVal.KINASES:
             w_elementlist = st.text_area("Please paste your list of comma separated element names (i.e. DEGs,...) here:", key= "elementlist", placeholder= "element1, element2") #on_change=lambda x:send_genelist(x), args=(st.session_state["genelist"]))
             data = w_elementlist.split(', ')

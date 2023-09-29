@@ -29,13 +29,13 @@ class UiVal:
     # w_omicstype
     BULKRNA = 'BulkRNAseq'
     PHOSPHO = 'Phosphoproteomics'
-    SCRNA = 'SingleCellRNAseq (tbd.)'
+    SCRNA = 'SingleCellRNAseq'
     # w_inputformat
     GENES = 'Gene list'
     KINASES = 'Genesymbol_phosphosite list'
     MATRIX = 'Matrix'
     CSV = '.csv'
-    H5AD = 'h5ad (tbd.)'
+    H5AD = 'h5ad'
     EXCEL = '.xlsx'
     TSV = '.tsv'
 
@@ -49,6 +49,7 @@ def get_analysis_params(w_organism = UiVal.HUMAN.lower(), w_omicstype = UiVal.BU
             'data_root_path': './data/example_inputs/'#path.abspath('./example_inputs') #+ '/<default>'  # for example path to SDS mounted location: .../mounted/projects/
         },
         'use_pickle_data': True,    # h5ad files are read and then saved as pickle, the pickle files are used from there on
+        'datasetname_default': '01',
         'priorKnowledge':{
             'pathways': {
                 'progeny':{
@@ -82,7 +83,6 @@ def get_analysis_params(w_organism = UiVal.HUMAN.lower(), w_omicstype = UiVal.BU
     'dataset_params': {
         w_organism: { # organism (human, mouse)
             w_omicstype: { # seqType (scRNA, bulkRNA)
-                '01':{}, # datasetname
                 'priorKnowledge':{
                     'pathways': {
                         'progeny':{
@@ -130,7 +130,7 @@ def set_priorKnwldg(w_omicstype, analysis_params) -> dict:
         return analysis_params
 
     match w_omicstype:
-        case UiVal.BULKRNA: 
+        case UiVal.BULKRNA | UiVal.SCRNA: 
             return set_priorKnwldg_bykeys(['pathways', 'transcription_factors'])
         case UiVal.PHOSPHO:
             return set_priorKnwldg_bykeys(['kinase_substrate'])

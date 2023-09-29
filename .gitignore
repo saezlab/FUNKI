@@ -1,7 +1,7 @@
-
-
-Workflows/ignore
-
+FUNKI
+FUNKI/*
+Workflows/ignore/
+Workflows/ignore/*
 CTLA4/
 *.h5ad
 .DS_Store

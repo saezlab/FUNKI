@@ -100,7 +100,7 @@ class Baseanalysis:
             "priorknowledge":     path.join(self._paths["analysis_path"], middlepath, "priorKnowledge"), # TODO: change this to storage path 
             "priorknowledge_tmp": path.join(self._paths["analysis_path"], middlepath, "priorKnowledge") 
         })
-
+        
         self.data = "" # is set in __init__ of analysis obj
         super().__init__()
     
@@ -185,7 +185,7 @@ class Analysis:
             datapath_tmp = self._paths["datapath_tmp"]
             datafilepath_tmp = self._paths["datafilepath_tmp"]
             datafilepath = self._paths["datafilepath"]
-
+            print(self._paths)
             # Read data
             fileextension = path.splitext(datafilepath_tmp)[1]
             if(path.exists(datafilepath_tmp)):
@@ -241,7 +241,7 @@ class Analysis:
             if "seurat_clusters" in dataset.data.obs.columns : dataset.data.obs["seurat_clusters"] = dataset.data.obs.seurat_clusters.astype("category")
                         # to be sure that the sources and targets from the model match with the names used in the data, convert to lowercase
             dataset.data.var_names = [x.lower() for x in list(dataset.data.var_names)]
-            dataset.data.raw.var.index = dataset.data.raw.var._index
+            # dataset.data.raw.var.index = dataset.data.raw.var._index
             dataset.data.raw.var.index = [x.lower() for x in list(dataset.data.raw.var.index)]
         clean()
 

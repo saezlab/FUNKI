@@ -40,13 +40,14 @@ class Decoupler:
     def get_all_acts(self, new = False):
         """ Create new Activity object for all parameter combinations. """
         pk = self.analysis_params['priorKnowledge']
-        for modeltype in pk:
-            for modelparams in pk[modeltype].values():
-                for param in modelparams: 
-                    for method in self.analysis_params['decoupler']['methods']:
-                        model = self._getmodel(modeltype, param)
-                        print(f'Activity calculation starts for modeltype **{modeltype}** with parameter **{param}** and method **{method}**')
-                        self._get_acts(model, modeltype, param, method, deepcopy(self._paths), new)   
+        for modelcategory in pk: # pathways, tfs etc.
+            for modeltype in pk[modelcategory]: # collectri, progeny, ...
+                for modelparams in pk[modelcategory][modeltype].values():
+                    for param in modelparams: 
+                        for method in self.analysis_params['decoupler']['methods']:
+                            model = self._getmodel(modeltype, param)
+                            print(f'Activity calculation starts for modeltype **{modeltype}** with parameter **{param}** and method **{method}**')
+                            self._get_acts(model, modeltype, param, method, deepcopy(self._paths), new)   
 
     # priorKnowledge
     def _getmodel(self, modeltype, param):
@@ -67,6 +68,10 @@ class Decoupler:
             organism = self.organism
             #if(modeltype == 'progeny'):
             #    organism = "Mus musculus"
+            if str(param) == 'false':
+                param = 'False'
+            if str(param) == 'true':
+                param = 'True'
             model = eval('dc.get_' + modeltype + '(organism,' + str(param) + ')')
             if not exists(dirpath):
                 makedirs(dirpath)
@@ -89,7 +94,7 @@ class Decoupler:
         # Define method names
         methods = list(methods) # Decoupler needs list as input, not tuple
         methodnames = deepcopy(methods)
-        
+
         if(len(methods) >= 2):
             is_consensus = True
             # add name for consensus method; it is the concatenation of the methods

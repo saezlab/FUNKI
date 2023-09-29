@@ -57,33 +57,36 @@ def show_advanced_options(ap, organism, omicstype):
     with st.form('advanced_params', clear_on_submit=False):
         st.caption('Advanced Settings')
         st.warning("This feature is work in progress. You can see changes, that you do here, in the 'Analysis Parameters' tab but the data isn't saved, yet.")
-        w_datasetname_default = list(ap['dataset_params'][organism][omicstype].keys())[0]
+        w_datasetname_default = ap['proj_params']['datasetname_default']
         w_projname_default = ap['proj_params']['proj_id']
         w_projname    = st.text_input(UiVal.PROJ, placeholder = w_projname_default)
         w_datasetname = st.text_input('Dataset Name', placeholder = w_datasetname_default)  #datasetnames)
+        w_inputpath = st.text_input('Input Path', placeholder = '/Users/MaxMustermann/Documents/myProj/01.h5ad')
         w_resultspath = st.text_input('Results Path', placeholder = '/Users/MaxMustermann/Documents/')
+        w_topn = st.text_input('top n', placeholder = '300, 500')
         w_save_parameters = st.form_submit_button('Save Parameters')
-
-        #TODO: topn = st.text_input('top n', '')
-        #TODO: st.write('You chose the following parameters for topN: ', list(topn.split(',')))
-    
+        
         if(w_save_parameters):
             if w_projname != '':
                 util.update_param('proj_id', w_projname, ap)
             else:
                 w_projname = w_projname_default
-            #datasetnames   = list(st.session_state.ap['dataset_params'][w_organism][w_omicstype].keys())
-            #datasetnames.pop() # drop the prior knowledge element
 
             if w_datasetname == '':
                 w_datasetname = w_datasetname_default 
             ap['dataset_params'][w_organism][w_omicstype][w_datasetname] = {}
 
+            if w_topn != '':
+                ap['dataset_params'][organism][omicstype]['priorKnowledge']['pathways']['progeny'] = {'top': [int(x) for x in list(w_topn.split(','))]}
+
+            ap['proj_params']['paths']['data_root_path'] = w_inputpath
             ap['proj_params']['paths']['analysis_path'] = w_resultspath
-            if w_resultspath != '':
+            if w_resultspath != '' & w_inputpath != '':
                 st.success(f'The results will be saved in **{w_resultspath}/{w_projname}/{w_datasetname}/**.')
+                st.session_state.isScEnabled = True
             else:
-                st.warning('Please provide a "Results Path" if the results shall be saved')        
+                st.warning('Please provide a "Results Path" and an "Input Path" if the results shall be saved.')        
+                st.session_state.isScEnabled = False
         st.session_state.ap = ap # as long as the form was not sent, 'ap' doesn't change
 
 
@@ -100,15 +103,19 @@ def fill_tab4(ap):
 
         organism = list(ap['dataset_params'].keys())[0]
         omicstype = list(ap['dataset_params'][organism].keys())[0]
-        dataset = list(ap['dataset_params'][organism][omicstype].keys())[0]
+        datasetnames = [k for k in list(st.session_state.ap['dataset_params'][w_organism][w_omicstype].keys()) if k != 'priorKnowledge']
+        if len(datasetnames) >= 1:
+            datasetnames = datasetnames[0]
+        else: 
+            datasetnames = ''
         analysispath = ap['proj_params']['paths']['analysis_path']
         priorKnowledge = ap['dataset_params'][organism][omicstype]['priorKnowledge']
-        projid = ap['proj_params']['proj_id']
+        proj_id = ap['proj_params']['proj_id']
         
-        data = {'ProjectID': projid,
+        data = {'ProjectID': proj_id,
                  'Organism': organism,
                  'OmicsType': omicstype, 
-                 'DatasetID': dataset,
+                 'DatasetID': datasetnames,
                  'AnalysisPath': analysispath}
         
         st.dataframe(data)
@@ -119,9 +126,8 @@ def fill_tab4(ap):
         st.write('### Internal Representation of Parameters')
         st.write(ap)
         st.write('### Merged')
-        #if 'w_datasetname' not in locals():
-        #    w_datasetname = w_datasetname_default
-        st.write(sc_funcs.merge_dicts(ap['proj_params'], ap['dataset_params'][organism][omicstype][dataset]) )
+        if(datasetnames != ''):
+            st.write(sc_funcs.merge_dicts(ap['proj_params'], ap['dataset_params'][organism][omicstype][datasetnames]) )
         st.write('### Session State')
         st.write(st.session_state)
         st.write('### Paths')
@@ -151,6 +157,7 @@ analysispage.init_page()
 
 if 'analysiscount' not in st.session_state:
     st.session_state.analysiscount = 0
+
 tab1, tab2, tab3, tab4 = st.tabs(['Analysis', 'Results 1st dataset', 'Results 2nd dataset', 'Parameter Choices'])
 #tabs = st.tabs(['Analysis'] + [f'analysis{x}' for x in range(st.session_state.analysiscount)] + ['ParameterChoices'])
 
@@ -178,6 +185,10 @@ with tab1:
         w_inputformat = st.selectbox('Input format  :page_with_curl:', inputformats)
         w_testdata    = st.checkbox('Use test data (human) :bar_chart:.\n\n*(Check the needed input formats*)')
 
+        if w_omicstype == UiVal.SCRNA:
+            st.warning("To use this option you need a .h5ad file where the adata raw field is not empty. Furthermore, you need to fill in the 'Input Path' and 'Results Path'. See 'Show all options' for those. The name of the .h5ad file must be '01.h5ad'. The results will be saved directly to the given results path. If you have single cell data that doesn't meet these conditions, please contact Hanna.")
+
+
     #---- INIT ANALYSIS_PARAMS ----#
 #if 'ap' not in st.session_state:
     analysis_params = util.get_analysis_params(w_organism, w_omicstype)
@@ -195,18 +206,22 @@ with tab1:
     #---- Get/Prepare Data ----#
 
     datasets = list()
-    aps = {'organism': list(st.session_state.ap['dataset_params'].keys())[0]}
-    aps.update({'omicstype': list(st.session_state.ap['dataset_params'][aps['organism']].keys())[0]}) # analysis params    
+    #aps = {'organism': list(st.session_state.ap['dataset_params'].keys())[0]}
+    #aps.update({'omicstype': list(st.session_state.ap['dataset_params'][aps['organism']].keys())[0]}) # analysis params    
     if not w_testdata:
-        datasets = bulk.get_data(w_inputformat)
-        if len(datasets) != 0:       
-            def get_acts_perDs(datasets):
-                with tab2:
-                    cols = st.columns(len(datasets)) 
-                    for i in range(0, len(datasets)):
-                        with cols[i]:
-                            bulk.get_acts(datasets[i])
-            get_acts_perDs(datasets)
+        if not (w_organism == UiVal.MOUSE) & (w_omicstype == UiVal.SCRNA):
+            if not (w_omicstype == UiVal.SCRNA) & (st.session_state.isScEnabled == False):
+                datasets = bulk.get_data(w_inputformat)
+                if len(datasets) != 0:       
+                    def get_acts_perDs(datasets):
+                        with tab2:
+                            cols = st.columns(len(datasets)) 
+                            for i in range(0, len(datasets)):
+                                with cols[i]:
+                                    bulk.get_acts(datasets[i])
+                    get_acts_perDs(datasets)
+        else:
+            sc.warning("You can't analyse single cell mouse data with FUNKI at the moment. If you want to do so, please write to Hanna and she'll notify you when this problem is fixed")
     else: # let gettestdata return 'datasets'
         datasets = bulk.get_testdata(w_inputformat, w_omicstype, datarootpath = st.session_state.ap['proj_params']['paths']['data_root_path'])
         st.write('The following data will be used for the analysis: ')
