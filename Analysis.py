@@ -81,7 +81,7 @@ def show_advanced_options(ap, organism, omicstype):
 
             ap['proj_params']['paths']['data_root_path'] = w_inputpath
             ap['proj_params']['paths']['analysis_path'] = w_resultspath
-            if w_resultspath != '' & w_inputpath != '':
+            if (w_resultspath != '') & (w_inputpath != ''):
                 st.success(f'The results will be saved in **{w_resultspath}/{w_projname}/{w_datasetname}/**.')
                 st.session_state.isScEnabled = True
             else:
