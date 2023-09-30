@@ -48,7 +48,7 @@ def get_analysis_params(w_organism = UiVal.HUMAN.lower(), w_omicstype = UiVal.BU
             'analysis_path': '' ,#path.abspath('../../'),   # path to 'projects' folder or the folder where the proj results shall be saved
             'data_root_path': './data/example_inputs/'#path.abspath('./example_inputs') #+ '/<default>'  # for example path to SDS mounted location: .../mounted/projects/
         },
-        'use_pickle_data': True,    # h5ad files are read and then saved as pickle, the pickle files are used from there on
+        'use_pickle_data': False,    # h5ad files are read and then saved as pickle, the pickle files are used from there on
         'datasetname_default': '01',
         'priorKnowledge':{
             'pathways': {

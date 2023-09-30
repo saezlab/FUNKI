@@ -200,36 +200,39 @@ class Analysis:
             else:
                 if not path.exists(datapath_tmp):
                     makedirs(datapath_tmp)
-                try: 
-                    self.data = sc.read(datafilepath, cache = True)
-                except OSError as e:
-                    # probably a new version number
-                    if not path.exists(self._paths["datapath"]):
-                        # get previous version number
-                        import re
-                        datapath = str(self._paths["datapath"])
-                        r = re.compile(".*v(..).*")
-                        numb = int((r.match(datapath)).group(1)) - 1
-                        numb = "v" + str(numb).zfill(2) 
-                        datapath_old = re.sub(r"v..", numb, datapath)                        
-                        # take data from old version
-                        import distutils.dir_util
-                        distutils.dir_util.copy_tree(datapath_old, datapath)
-                        # retry
+                if datapath != '':
+                    try: 
                         self.data = sc.read(datafilepath, cache = True)
-                    else:
-                        print(f"Datafilepath_tmp ({datafilepath_tmp}) does not exist. Datapath ({datapath}) exists but datafilepath ({datafilepath}) does not. If you wanted to create a new version, delete datapath.")
-                if  fileextension == '.pickle':
-                    with open(datafilepath_tmp, "wb") as dill_file:
-                        dill.dump(self.data, dill_file)
-                    print("Data was saved as pickle file.")
-                elif fileextension == '.h5ad':
-                    self.data = sc.write(datafilepath_tmp)
-                    print("Data was saved as h5ad file.")
-                else: 
-                    print(f"Please make sure that datafilepath_tmp ({datafilepath_tmp}) either ends with '.pickle' or with '.h5ad'.")
+                    except OSError as e:
+                        # probably a new version number
+                        if not path.exists(self._paths["datapath"]):
+                            # get previous version number
+                            import re
+                            datapath = str(self._paths["datapath"])
+                            r = re.compile(".*v(..).*")
+                            numb = int((r.match(datapath)).group(1)) - 1
+                            numb = "v" + str(numb).zfill(2) 
+                            datapath_old = re.sub(r"v..", numb, datapath)                        
+                            # take data from old version
+                            import distutils.dir_util
+                            distutils.dir_util.copy_tree(datapath_old, datapath)
+                            # retry
+                            self.data = sc.read(datafilepath, cache = True)
+                        else:
+                            print(f"Datafilepath_tmp ({datafilepath_tmp}) does not exist. Datapath ({datapath}) exists but datafilepath ({datafilepath}) does not. If you wanted to create a new version, delete datapath.")
+                    if  fileextension == '.pickle':
+                        with open(datafilepath_tmp, "wb") as dill_file:
+                            dill.dump(self.data, dill_file)
+                        print("Data was saved as pickle file.")
+                    elif fileextension == '.h5ad':
+                        self.data = sc.write(datafilepath_tmp)
+                        print("Data was saved as h5ad file.")
+                    else: 
+                        print(f"Please make sure that datafilepath_tmp ({datafilepath_tmp}) either ends with '.pickle' or with '.h5ad'.")
          
-                print("Data was read in from datapath and is now saved in datapath_tmp.")
+                    print("Data was read in from datapath and is now saved in datapath_tmp.")
+                else: 
+                    "Please be aware that no data was read in as no data_root_path was provided."
         init()
         self.clean_datasets()
 

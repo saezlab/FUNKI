@@ -58,12 +58,11 @@ if 'isScEnabled' not in st.session_state:
 def show_advanced_options(ap, organism, omicstype):
     with st.form('advanced_params', clear_on_submit=False):
         st.caption('Advanced Settings')
-        st.warning("This feature is work in progress. You can see changes, that you do here, in the 'Analysis Parameters' tab but the data isn't saved, yet.")
+        st.warning("This feature is work in progress. You can see changes, that you do here, in the 'Analysis Parameters' tab but ony single cell data gets saved so far.")
         w_datasetname_default = ap['proj_params']['datasetname_default']
         w_projname_default = ap['proj_params']['proj_id']
         w_projname    = st.text_input(UiVal.PROJ, placeholder = w_projname_default)
         w_datasetname = st.text_input('Dataset Name', placeholder = w_datasetname_default)  #datasetnames)
-        w_inputpath = st.text_input('Input Path', placeholder = '/Users/MaxMustermann/Documents/myProj/01.h5ad')
         w_resultspath = st.text_input('Results Path', placeholder = '/Users/MaxMustermann/Documents/')
         w_topn = st.text_input('top n', placeholder = '300, 500')
         w_save_parameters = st.form_submit_button('Save Parameters')
@@ -81,13 +80,12 @@ def show_advanced_options(ap, organism, omicstype):
             if w_topn != '':
                 ap['dataset_params'][organism][omicstype]['priorKnowledge']['pathways']['progeny'] = {'top': [int(x) for x in list(w_topn.split(','))]}
 
-            ap['proj_params']['paths']['data_root_path'] = w_inputpath
             ap['proj_params']['paths']['analysis_path'] = w_resultspath
-            if (w_resultspath != '') & (w_inputpath != ''):
+            if w_resultspath != '':
                 st.success(f'The results will be saved in **{w_resultspath}/{w_projname}/{w_datasetname}/**.')
                 st.session_state.isScEnabled = True
             else:
-                st.warning('Please provide a "Results Path" and an "Input Path" if the results shall be saved.')        
+                st.warning('Please provide a "Results Path" if the results shall be saved.')        
                 
         st.session_state.ap = ap # as long as the form was not sent, 'ap' doesn't change
 
@@ -188,7 +186,7 @@ with tab1:
         w_testdata    = st.checkbox('Use test data (human) :bar_chart:.\n\n*(Check the needed input formats*)')
 
         if w_omicstype == UiVal.SCRNA:
-            st.warning("To use this option you need a .h5ad file where the adata raw field is not empty. Furthermore, you need to fill in the 'Input Path' and 'Results Path'. See 'Show all options' for those. The name of the .h5ad file must be '01.h5ad'. The results will be saved directly to the given results path. If you have single cell data that doesn't meet these conditions, please contact Hanna.")
+            st.warning("To use this option you need a .h5ad file where the adata raw field contains the log transformed data. Furthermore, you need to fill in the 'Input Path' and 'Results Path'. The results will be saved directly to the given results path. ")
 
 
     #---- INIT ANALYSIS_PARAMS ----#
@@ -201,6 +199,8 @@ with tab1:
     with paramcol2:
         # Project Specific Params
         w_show_all_opts = st.checkbox('Show all options')
+        if w_omicstype == UiVal.SCRNA:
+            w_show_all_opts = True
         if(w_show_all_opts): 
             show_advanced_options(analysis_params, w_organism, w_omicstype)
         else:
@@ -223,7 +223,7 @@ with tab1:
                                     bulk.get_acts(datasets[i])
                     get_acts_perDs(datasets)
         else:
-            sc.warning("You can't analyse single cell mouse data with FUNKI at the moment. If you want to do so, please write to Hanna and she'll notify you when this problem is fixed")
+            st.warning("You can't analyse single cell mouse data with FUNKI at the moment. If you want to do so, please write to Hanna and she'll notify you when this problem is fixed")
     else: # let gettestdata return 'datasets'
         datasets = bulk.get_testdata(w_inputformat, w_omicstype, datarootpath = st.session_state.ap['proj_params']['paths']['data_root_path'])
         st.write('The following data will be used for the analysis: ')
