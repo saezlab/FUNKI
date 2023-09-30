@@ -145,8 +145,12 @@ def get_data(w_inputformat)->list[dict] :
         st.session_state.analysiscount += 1
     match w_inputformat:
         case UiVal.H5AD: 
+            st.caption('Please provide a .h5ad file.')
+            uploaded_files = st.file_uploader("Choose a file", accept_multiple_files=True, type = ['.xlsx', '.h5ad']) 
+            st.write(uploaded_files)
             analysispath = st.session_state.ap['proj_params']['paths']['analysis_path']
-            
+            import scanpy
+            st.write(scanpy.read_h5ad(uploaded_files[0]))
             proj_id = st.session_state.ap['proj_params']['proj_id']
             ap_dir =  os.path.join(analysispath, proj_id, 'v01', 'analysis')
             ap_path = os.path.join(ap_dir, 'analysis_params.yaml')

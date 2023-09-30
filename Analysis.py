@@ -52,7 +52,9 @@ from io import StringIO
 # - if not 'Run' button, don't change any params or results.
 # - Extend to multiple datasets at once? Not really necessary. Maybe one tab per ds results?
 ###################################################################################################################
-st.session_state.isScEnabled = False
+if 'isScEnabled' not in st.session_state:
+    st.session_state.isScEnabled = False
+
 def show_advanced_options(ap, organism, omicstype):
     with st.form('advanced_params', clear_on_submit=False):
         st.caption('Advanced Settings')
