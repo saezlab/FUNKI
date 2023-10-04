@@ -232,7 +232,8 @@ class Analysis:
          
                     print("Data was read in from datapath and is now saved in datapath_tmp.")
                 else: 
-                    "Please be aware that no data was read in as no data_root_path was provided."
+                    self.data = []
+                    print("Please be aware that no data was read in as no data_root_path was provided.")
         init()
         self.clean_datasets()
 
@@ -241,11 +242,12 @@ class Analysis:
         """ correct datatypes """
         @loop(self.datasets, True)
         def clean (dataset) : 
-            if "seurat_clusters" in dataset.data.obs.columns : dataset.data.obs["seurat_clusters"] = dataset.data.obs.seurat_clusters.astype("category")
-                        # to be sure that the sources and targets from the model match with the names used in the data, convert to lowercase
-            dataset.data.var_names = [x.lower() for x in list(dataset.data.var_names)]
-            # dataset.data.raw.var.index = dataset.data.raw.var._index
-            dataset.data.raw.var.index = [x.lower() for x in list(dataset.data.raw.var.index)]
+            if len(dataset.data) >= 1:
+                if "seurat_clusters" in dataset.data.obs.columns : dataset.data.obs["seurat_clusters"] = dataset.data.obs.seurat_clusters.astype("category")
+                            # to be sure that the sources and targets from the model match with the names used in the data, convert to lowercase
+                dataset.data.var_names = [x.lower() for x in list(dataset.data.var_names)]
+                # dataset.data.raw.var.index = dataset.data.raw.var._index
+                dataset.data.raw.var.index = [x.lower() for x in list(dataset.data.raw.var.index)]
         clean()
 
 

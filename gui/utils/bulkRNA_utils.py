@@ -147,26 +147,22 @@ def get_data(w_inputformat)->list[dict] :
         case UiVal.H5AD: 
             st.caption("Please provide a .h5ad file that contains the log transformed data in its raw attribute. If you have single cell data that doesn't meet this condition, please contact Hanna.")
             uploaded_files = st.file_uploader("Choose a file", accept_multiple_files=True, type = ['.xlsx', '.h5ad']) 
-            st.write(uploaded_files)
+            #st.write(uploaded_files)
             if len(uploaded_files) >= 1:
                 analysispath = st.session_state.ap['proj_params']['paths']['analysis_path']
                 st.session_state.ap['proj_params']['paths']['data_root_path'] = ''
-
                 import scanpy
                 data = scanpy.read_h5ad(uploaded_files[0])
-                st.write(data)
+                #st.write(data)
                 proj_id = st.session_state.ap['proj_params']['proj_id']
                 ap_dir =  os.path.join(analysispath, proj_id, 'v01', 'analysis')
                 ap_path = os.path.join(ap_dir, 'analysis_params.yaml')
-                
                 import yaml
-
                 if not os.path.exists(ap_dir):
                     os.makedirs(ap_dir)
                 with open(ap_path, 'w+') as file: 
                     yaml.dump(st.session_state.ap, file, sort_keys=False)
-
-                
+ 
                 with open(ap_path) as stream:
                     apsfile = yaml.load(stream, Loader=yaml.BaseLoader)
                 st.write(apsfile)

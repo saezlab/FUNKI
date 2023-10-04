@@ -157,9 +157,11 @@ class Decoupler:
                     new = False # When consensus is newly calculated 'new' is set to false so that the single methods that are part of the consensus calculation don't get recalculated. 
 
                 # to be sure that the sources and targets from the model match with the names used in the data, convert to lowercase
-                model['target'] = [x.lower() for x in list(model['target'])]
-                model['source'] = [x.lower() for x in list(model['source'])]
-
+                #model['target'] = [x.lower() for x in list(model['target'])]
+                #model['source'] = [x.lower() for x in list(model['source'])]
+                print(model)
+                print(self.data)
+                print(self.data.var)
                 dc.decouple(mat = self.data, net = model, methods=methods, consensus = is_consensus, use_raw = True) 
                 # rename new obsm properties (consensus and all the rest)
                 self.data.obsm[pvalkey] = self.data.obsm.pop(namedmethod[1] + '_pvals')
