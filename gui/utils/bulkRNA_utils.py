@@ -158,10 +158,19 @@ def get_data(w_inputformat)->list[dict] :
                 proj_id = st.session_state.ap['proj_params']['proj_id']
                 ap_dir =  os.path.join(analysispath, proj_id, 'v01', 'analysis')
                 ap_path = os.path.join(ap_dir, 'analysis_params.yaml')
+                
+                import yaml
+
                 if not os.path.exists(ap_dir):
                     os.makedirs(ap_dir)
                 with open(ap_path, 'w+') as file: 
                     yaml.dump(st.session_state.ap, file, sort_keys=False)
+
+                
+                with open(ap_path) as stream:
+                    apsfile = yaml.load(stream, Loader=yaml.BaseLoader)
+                st.write(apsfile)
+
                 dc_dataset = sc_classes.Analysis.new_dataset(sc_classes.Baseanalysis, dcu.Decoupler) 
                 analysis = sc_classes.Analysis(datasets=[
                                                 ('01', 'SingleCellRNAseq', 'human', dc_dataset)
@@ -175,6 +184,33 @@ def get_data(w_inputformat)->list[dict] :
                 scl.get_mean_acts()
                 scl.plot_mean_acts()
                 st.write(analysis.datasets[0].get_paths())
+                import zipfile
+                from zipfile import ZipFile
+
+                def zipDirectory(path, zippedFileName):
+                    # traversing over all the files in a directory
+                    for folderName, subfolders, filenames in os.walk(path):
+                        for file in filenames:
+                            # adding the current file to be zipped
+                            zippedFileName.write(os.path.join(folderName, file))
+                    print('Zipped the files!')
+                # calling the constructor to create an object of the ZipFile class.
+
+                filename_zip = f'{proj_id}.zip'
+                zippedFileName = zipfile.ZipFile(filename_zip, 'w', zipfile.ZIP_DEFLATED)
+
+                # calling the zipDirectory function by passing the path of the current directory and zipped file name.
+                zipDirectory(f'./{proj_id}', zippedFileName)
+                zippedFileName.close()
+
+                if os.path.exists(filename_zip,):
+                    with open(filename_zip, 'rb') as fp:
+                        btn = st.download_button(
+                            label='Download ZIP',
+                            data=fp,
+                            file_name=filename_zip,
+                            mime='application/zip'
+                        )       
         case UiVal.GENES | UiVal.KINASES:
             w_elementlist = st.text_area("Please paste your list of comma separated element names (i.e. DEGs,...) here:", key= "elementlist", placeholder= "element1, element2") #on_change=lambda x:send_genelist(x), args=(st.session_state["genelist"]))
             data = w_elementlist.split(', ')

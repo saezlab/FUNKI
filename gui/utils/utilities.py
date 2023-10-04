@@ -45,7 +45,7 @@ def get_analysis_params(w_organism = UiVal.HUMAN.lower(), w_omicstype = UiVal.BU
         'proj_id': 'FUNKI',    # always one folder above, projID should be 2 to 8 capital letters or underscores
         'version': 'v01', 
         'paths': {
-            'analysis_path': '' ,#path.abspath('../../'),   # path to 'projects' folder or the folder where the proj results shall be saved
+            'analysis_path': './' ,#path.abspath('../../'),   # path to 'projects' folder or the folder where the proj results shall be saved
             'data_root_path': './data/example_inputs/'#path.abspath('./example_inputs') #+ '/<default>'  # for example path to SDS mounted location: .../mounted/projects/
         },
         'use_pickle_data': False,    # h5ad files are read and then saved as pickle, the pickle files are used from there on
