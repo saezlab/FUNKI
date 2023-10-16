@@ -212,11 +212,14 @@ def merge_dicts(dict_1: dict, dict_2: dict) -> dict:
     #merged.update(dict_2)
     if(dict_2 and (next(iter(dict_2)) not in dict_1.keys())):
         p = getpath(deepcopy(dict_1), next(iter(dict_2)), search_value=False)
-        p = p[:len(p)-1]
-        d = deep_get(dict_1,p)
-        if(keys == None):
-            merge(d, merge(deepcopy(d), deepcopy(dict_2)))
-            return deepcopy(dict_1)
+        if p != None:
+            p = p[:len(p)-1]
+            d = deep_get(dict_1,p)
+            if(keys == None):
+                merge(d, merge(deepcopy(d), deepcopy(dict_2)))
+                return deepcopy(dict_1)
+        else: 
+            d = dict_1
     else: 
         d = dict_1
     if(keys != None): 
@@ -250,7 +253,7 @@ def replace_dictvalues(target, placeholder = 'REPLACEMENTS') -> dict:
     >>>                    'replacements_2': {'color': 'orange'},
     >>>                    'cat': {'name': 'Miezy', 'food': ['add', 'mice'], 'color': 'pink & yellow stripes', 'child': {
     >>>                         'babyCat': {'name': 'MiniMiez', 'food': ['milk'], 'color': 'yellow with pink dots'}}}}}
-    >>> replace_dictvalues(dict_2)
+    >>> replace_dictvalues(dict_2, 'replacements')
     {'pets': {'snail': {'name': 'Schnucki', 'food': ['Löwenzahn', 'water'], 'sound': ['knusper']},
                 'dog': {'sound': ['kikerikii'], 'name': 'LittleWauWau'},
                 'cat': {'name': 'LittleWauWau', 'food': ['add', 'mice'], 'color': 'orange', , 'sound': ['kikerikii'], 'child': {
@@ -273,7 +276,7 @@ def replace_dictvalues(target, placeholder = 'REPLACEMENTS') -> dict:
                 merged = merge_dicts(sub_dict, replacement_values)
                 target = dict_replace(deepcopy(target), merged, replacements_path+[k]) # cp
         dict_delete_key(target, replacements_path_fordeletion)
-        return replace_dictvalues(target)
+        return replace_dictvalues(target, placeholder)
     else: 
         return target
 

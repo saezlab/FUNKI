@@ -3,7 +3,6 @@
 import sys, yaml, dill, re
 #sys.path.insert(1, '/Users/hanna/Documents/projects/Workflows/Python/scUtilities/v4')
 #from scUtilities import analysis_params
-#import sc_analysis_baseclass as sc_classes
 #import sc_analysis_loops as scl
 from copy import deepcopy
 from pathlib import Path
@@ -12,6 +11,29 @@ from os import path, makedirs
 import collections
 from . import *
 import scanpy as sc, numpy as np, decoupler as dc, matplotlib.pyplot as plt, seaborn as sns, matplotlib as mpl, pandas as pd
+
+
+
+
+class NfCore:
+    """ This class prepares all needed files for running a nf-core pipeline. """
+    def __init__(self):
+        super().__init__()
+        
+
+    def run_pipeline(self, pipeline_name:str):
+        """_summary_
+
+        Args:
+            pipeline_name (_type_): name of the nf-core pipeline
+        """
+        pipeline = f"nfcore_{pipeline_name}"
+        pipeline_version = self.analysis_params['cluster']['nfcore']['pipeline'][pipeline_name]['version']           # used for naming the folder
+        pipeline_version_name = self.analysis_params['cluster']['nfcore']['pipeline'][pipeline_name]['version_name'] # used in the nf-core config file and must match the version given by nf-core
+        self._paths['cluster']['nfcore']['nfcore_path'] = path.join(pipeline_name,pipeline_version_name)
+        self._paths['exec_env_nfcore_path'] = path.join(self._paths['exec_env_data_path'], self._paths['nfcore_path'])
+        self._paths['full_local_path'] = path.join(self._paths['datapath_tmp'], self._paths['nfcore_path'])
+
 
 class Liana:
     """ This class is a wrapper around the tool Liana with some comfort functions. """

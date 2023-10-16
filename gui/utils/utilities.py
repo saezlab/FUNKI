@@ -45,11 +45,32 @@ def get_analysis_params(w_organism = UiVal.HUMAN.lower(), w_omicstype = UiVal.BU
         'proj_id': 'FUNKI',    # always one folder above, projID should be 2 to 8 capital letters or underscores
         'version': 'v01', 
         'paths': {
-            'analysis_path': './' ,#path.abspath('../../'),   # path to 'projects' folder or the folder where the proj results shall be saved
-            'data_root_path': './data/example_inputs/'#path.abspath('./example_inputs') #+ '/<default>'  # for example path to SDS mounted location: .../mounted/projects/
+            'analysis_path': './' ,                             #path.abspath('../../'),   # path to 'projects' folder or the folder where the proj results shall be saved #path to where the exec_env is mounted; used for creating the pipeline setup files there
+            'data_root_path': './data/example_inputs/',            #path.abspath('./example_inputs') #+ '/<default>'  # for example path to SDS mounted location: .../mounted/projects/
+            # nfcore module
+            'references_path': '/Volumes/sd22b002/projects/references',
+            'exec_env_path': '/sds_hd/sd22b002/guest/' # needed for nfcore, qiime etc.,  # execution environment path, for example the path on a cluster that leads to the project folder, used on execution of the pipeline
         },
         'use_pickle_data': False,    # h5ad files are read and then saved as pickle, the pickle files are used from there on
         'datasetname_default': '01',
+        'cluster':{
+            'email': 'hanna.schumacher@uni-heidelberg.de',
+            'nfcore':{
+                'nfcore_path'
+                'pipeline':{ # names of the nf-core pipelines
+                    'rnaseq':{
+                        'version': '3.12.0',       # used in the nf-core config file and must match the version given by nf-core
+                        'version_name': 'v031200'  # used for naming the folder
+                    },
+                    'atacseq':{
+
+                    },
+                    'hic':{
+
+                    }
+                }
+            }
+        },
         'priorKnowledge':{
             'pathways': {
                 'progeny':{

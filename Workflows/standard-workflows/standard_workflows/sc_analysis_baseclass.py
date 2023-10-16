@@ -9,11 +9,31 @@ from copy import deepcopy
 import scanpy as sc
 import dill, yaml
 
+from abc import ABC, abstractmethod
+
+
+class AnalysisI(ABC):
+    #@property
+    #@abstractmethod
+    #def _paths(self):
+    #    pass
+
+    @property
+    @abstractmethod
+    def analysis_params(self):
+        pass
+
+    @analysis_params.setter
+    @abstractmethod
+    def analysis_params(self, ap):
+        pass
+
+
 ############################
 #### Baseanalysis Class ####
 ############################
 
-class Baseanalysis:
+class Baseanalysis(AnalysisI):
     """The class that every *Dataset* inherits from."""
     def __init__(self, name, seq_type, organism, analysis_params, paths):
         """ Adds basic analysis information to a dataset (name, ..., params, paths)
@@ -69,6 +89,8 @@ class Baseanalysis:
         for dictentryname, foldername in zip(["datapath_tmp", "figpath", "resultpath", "loggingpath", "subsetspath"],  [datafoldername, "figures", "results", "logging", "subsets"]):
             self._paths.update({dictentryname: path.join(self._paths["analysis_path"], middlepath_dataset, foldername)})
         
+        self._paths.update({"exec_env_data_path": path.join(self._paths["exec_env_path"], middlepath_dataset, datafoldername)})
+
         # Set datapath (depends on data_root_path)
         if not path.basename(path.normpath(self._paths["data_root_path"])) == "<default>": #if path not ends with <default>
             self._paths.update({"datapath": self._paths["data_root_path"]}) # -> datapath is same as data_root_path, no default folder structure
@@ -96,6 +118,7 @@ class Baseanalysis:
         self._paths.update({
             "datasetpath":        middlepath_dataset, # path from projectname to datasetname: MBEN_T/v00/analysis/human/sn/all
             "datafilepath":       path.join(self._paths["datapath"], self._paths["data_root_filename"]),
+            "metadatapath":       path.join(self._paths["datapath"], "metadata"),
             "datafilepath_tmp":   datafilepath_tmp,
             "priorknowledge":     path.join(self._paths["analysis_path"], middlepath, "priorKnowledge"), # TODO: change this to storage path 
             "priorknowledge_tmp": path.join(self._paths["analysis_path"], middlepath, "priorKnowledge") 
@@ -103,6 +126,15 @@ class Baseanalysis:
         
         self.data = "" # is set in __init__ of analysis obj
         super().__init__()
+
+    @property
+    def analysis_params(self):
+        return self._analysis_params
+
+    @analysis_params.setter
+    def analysis_params(self, ap):
+        self._analysis_params = ap
+
     
     def get_paths(self) -> dict:
         return self._paths
