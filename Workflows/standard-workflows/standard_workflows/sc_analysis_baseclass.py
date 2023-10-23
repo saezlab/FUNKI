@@ -8,25 +8,11 @@ from . import memoize
 from copy import deepcopy
 import scanpy as sc
 import dill, yaml
-
 from abc import ABC, abstractmethod
-
-
+    
 class AnalysisI(ABC):
-    #@property
-    #@abstractmethod
-    #def _paths(self):
-    #    pass
-
-    @property
-    @abstractmethod
-    def analysis_params(self):
-        pass
-
-    @analysis_params.setter
-    @abstractmethod
-    def analysis_params(self, ap):
-        pass
+        analysis_params:dict
+        paths:dict
 
 
 ############################
@@ -69,10 +55,10 @@ class Baseanalysis(AnalysisI):
         ap_ds_org_seqtype = analysis_params["dataset_params"][self.organism][self.seq_type]
         if(self.name in ap_ds_org_seqtype):
             self.analysis_params = merge_dicts(self.analysis_params,           ap_ds_org_seqtype[self.name])
-            self._paths          = merge_dicts(analysis_params["proj_params"], ap_ds_org_seqtype[self.name])["paths"]
+            self.paths          = merge_dicts(analysis_params["proj_params"], ap_ds_org_seqtype[self.name])["paths"]
         else:
             #self.analysis_params = merge_dicts(self.analysis_params, {})
-            self._paths = deepcopy(paths)
+            self.paths = deepcopy(paths)
         
         # Add dataset properties to analysis_params
         self.analysis_params["organism"] = self.organism
@@ -81,31 +67,39 @@ class Baseanalysis(AnalysisI):
         
         # middlepath is the path between the path to the proj location and the file. 
         middlepath         = path.join(self.analysis_params["proj_id"], self.analysis_params["version"], "analysis", self.organism, self.seq_type) # MBEN_T/v00/analysis/human/sn
+        
+        
+        
+        self.paths.update({ "metadata_orig_path": path.join(self.paths["data_root_path"], middlepath, "metadata/metadata.tsv")})
+
+        #### combine subj and smaple meta and save as metadata_orig_path
+
         middlepath_dataset = path.join(middlepath, self.name)             # MBEN_T/v00/analysis/human/sn/all
 
         datafoldername = 'data'
 
         # Add more paths
         for dictentryname, foldername in zip(["datapath_tmp", "figpath", "resultpath", "loggingpath", "subsetspath"],  [datafoldername, "figures", "results", "logging", "subsets"]):
-            self._paths.update({dictentryname: path.join(self._paths["analysis_path"], middlepath_dataset, foldername)})
+            self.paths.update({dictentryname: path.join(self.paths["analysis_path"], middlepath_dataset, foldername)})
         
-        self._paths.update({"exec_env_data_path": path.join(self._paths["exec_env_path"], middlepath_dataset, datafoldername)})
+        self.paths["exec_env_data_path"] = path.join(self.paths["exec_env_path"], middlepath_dataset, datafoldername)
 
         # Set datapath (depends on data_root_path)
-        if not path.basename(path.normpath(self._paths["data_root_path"])) == "<default>": #if path not ends with <default>
-            self._paths.update({"datapath": self._paths["data_root_path"]}) # -> datapath is same as data_root_path, no default folder structure
+        if not path.basename(path.normpath(self.paths["data_root_path"])) == "<default>": #if path not ends with <default>
+            self.paths.update({"datapath": self.paths["data_root_path"]}) # -> datapath is same as data_root_path, no default folder structure
         else: 
-            self._paths["data_root_path"] = path.dirname(path.normpath(self._paths["data_root_path"])) # remove "<default>" 
-            self._paths.update({ 
-                "datapath": path.join(self._paths["data_root_path"], middlepath_dataset, datafoldername) # add MBEN_T/v00/analysis/human/sn/all/data
+            self.paths["data_root_path"] = path.dirname(path.normpath(self.paths["data_root_path"])) # remove "<default>" 
+            self.paths.update({ 
+                
+                "datapath": path.join(self.paths["data_root_path"], middlepath_dataset, datafoldername) # add MBEN_T/v00/analysis/human/sn/all/data
                 })  
-            self._paths["data_root_path"] = self._paths["datapath"]
+            self.paths["data_root_path"] = self.paths["datapath"]
 
         # Set data_root_filename (either given one or default)
-        if "data_root_filename" in self._paths.keys(): 
-            self._paths["data_root_filename"] = self._paths["data_root_filename"] 
+        if "data_root_filename" in self.paths.keys(): 
+            self.paths["data_root_filename"] = self.paths["data_root_filename"] 
         else: 
-            self._paths["data_root_filename"] = self.name + ".h5ad"    
+            self.paths["data_root_filename"] = self.name + ".h5ad"    
 
         # Set datafilepath_tmp based on use_pickle_data
         fileextension=""
@@ -113,31 +107,22 @@ class Baseanalysis(AnalysisI):
             fileextension = ".pickle"
         else: 
             fileextension = ".h5ad"
-        datafilepath_tmp = path.join(self._paths["datapath_tmp"], f"{self.name}{fileextension}")
+        datafilepath_tmp = path.join(self.paths["datapath_tmp"], f"{self.name}{fileextension}")
 
-        self._paths.update({
+        self.paths.update({
             "datasetpath":        middlepath_dataset, # path from projectname to datasetname: MBEN_T/v00/analysis/human/sn/all
-            "datafilepath":       path.join(self._paths["datapath"], self._paths["data_root_filename"]),
-            "metadatapath":       path.join(self._paths["datapath"], "metadata"),
+            "datafilepath":       path.join(self.paths["datapath"], self.paths["data_root_filename"]),
+            "metadatapath":       path.join(self.paths["datapath"], "metadata"),
             "datafilepath_tmp":   datafilepath_tmp,
-            "priorknowledge":     path.join(self._paths["analysis_path"], middlepath, "priorKnowledge"), # TODO: change this to storage path 
-            "priorknowledge_tmp": path.join(self._paths["analysis_path"], middlepath, "priorKnowledge") 
+            "priorknowledge":     path.join(self.paths["analysis_path"], middlepath, "priorKnowledge"), # TODO: change this to storage path 
+            "priorknowledge_tmp": path.join(self.paths["analysis_path"], middlepath, "priorKnowledge") 
         })
         
         self.data = "" # is set in __init__ of analysis obj
         super().__init__()
 
-    @property
-    def analysis_params(self):
-        return self._analysis_params
-
-    @analysis_params.setter
-    def analysis_params(self, ap):
-        self._analysis_params = ap
-
-    
     def get_paths(self) -> dict:
-        return self._paths
+        return self.paths
 
 ########################
 #### Analysis Class ####
@@ -178,7 +163,7 @@ class Analysis:
         """
         # Read analysis_params.yaml
         with open(path.join(params_path, "analysis_params.yaml")) as stream:
-            self.analysis_params = yaml.load(stream, Loader=yaml.BaseLoader)
+            self.analysis_params = yaml.load(stream, Loader=yaml.FullLoader)
 
         self.analysis_params = replace_dictvalues(self.analysis_params)
 
@@ -213,11 +198,11 @@ class Analysis:
                 save as pickle file
             """
             # Create tmp variables
-            datapath = self._paths["datapath"] 
-            datapath_tmp = self._paths["datapath_tmp"]
-            datafilepath_tmp = self._paths["datafilepath_tmp"]
-            datafilepath = self._paths["datafilepath"]
-            print(self._paths)
+            datapath = self.paths["datapath"] 
+            datapath_tmp = self.paths["datapath_tmp"]
+            datafilepath_tmp = self.paths["datafilepath_tmp"]
+            datafilepath = self.paths["datafilepath"]
+            print(self.paths)
             # Read data
             fileextension = path.splitext(datafilepath_tmp)[1]
             if(path.exists(datafilepath_tmp)):
@@ -237,10 +222,10 @@ class Analysis:
                         self.data = sc.read(datafilepath, cache = True)
                     except OSError as e:
                         # probably a new version number
-                        if not path.exists(self._paths["datapath"]):
+                        if not path.exists(self.paths["datapath"]):
                             # get previous version number
                             import re
-                            datapath = str(self._paths["datapath"])
+                            datapath = str(self.paths["datapath"])
                             r = re.compile(".*v(..).*")
                             numb = int((r.match(datapath)).group(1)) - 1
                             numb = "v" + str(numb).zfill(2) 
@@ -252,12 +237,13 @@ class Analysis:
                             self.data = sc.read(datafilepath, cache = True)
                         else:
                             print(f"Datafilepath_tmp ({datafilepath_tmp}) does not exist. Datapath ({datapath}) exists but datafilepath ({datafilepath}) does not. If you wanted to create a new version, delete datapath.")
+                            return
                     if  fileextension == '.pickle':
                         with open(datafilepath_tmp, "wb") as dill_file:
                             dill.dump(self.data, dill_file)
                         print("Data was saved as pickle file.")
                     elif fileextension == '.h5ad':
-                        self.data = sc.write(datafilepath_tmp)
+                        self.data = sc.write(datafilepath_tmp, self.data)
                         print("Data was saved as h5ad file.")
                     else: 
                         print(f"Please make sure that datafilepath_tmp ({datafilepath_tmp}) either ends with '.pickle' or with '.h5ad'.")

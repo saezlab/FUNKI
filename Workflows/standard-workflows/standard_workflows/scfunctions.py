@@ -47,7 +47,7 @@ def print_paths(paths):
     # paths.loc[paths["key"].startswith("/"), "key"] 
 
     paths = pandas.DataFrame({'key': paths.values(), '': paths.keys()})
-    paths['key'] = '/' + paths['key'].replace('^/', '', regex=True).replace('/$', '', regex=True)
+    paths['key'] = '/' + paths['key'].replace('^/', '', regex=True).replace('/$', '', regex=True).astype(str)
     paths = paths.groupby(['key'])[''].apply(', '.join).reset_index()
     paths['keyStart'] = paths['key'].str.split('/').str[1]
     grp=paths.groupby('keyStart')
@@ -110,7 +110,7 @@ def getpath(nested_dict, value, prepath=(), search_value = True) -> tuple:
                 p = getpath(v, value, path, search_value) # recursive call
                 if p is not None:
                     return p
-        elif value in v: # found value
+        elif str(value) in str(v): # found value
             return path
         elif hasattr(v, 'items'): # v is a dict
             p = getpath(v, value, path, search_value) # recursive call

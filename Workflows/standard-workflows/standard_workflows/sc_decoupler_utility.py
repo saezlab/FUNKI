@@ -1,4 +1,3 @@
-
 #from re import S
 import sys, yaml, dill, re
 #sys.path.insert(1, '/Users/hanna/Documents/projects/Workflows/Python/scUtilities/v4')
@@ -9,55 +8,35 @@ from pathlib import Path
 from os.path import exists
 from os import path, makedirs
 import collections
-from . import *
 import scanpy as sc, numpy as np, decoupler as dc, matplotlib.pyplot as plt, seaborn as sns, matplotlib as mpl, pandas as pd
+from .sc_analysis_baseclass import AnalysisI
+from .sc_analysis_baseclass import Baseanalysis
 
 
 
-
-class NfCore:
-    """ This class prepares all needed files for running a nf-core pipeline. """
-    def __init__(self):
-        super().__init__()
-        
-
-    def run_pipeline(self, pipeline_name:str):
-        """_summary_
-
-        Args:
-            pipeline_name (_type_): name of the nf-core pipeline
-        """
-        pipeline = f"nfcore_{pipeline_name}"
-        pipeline_version = self.analysis_params['cluster']['nfcore']['pipeline'][pipeline_name]['version']           # used for naming the folder
-        pipeline_version_name = self.analysis_params['cluster']['nfcore']['pipeline'][pipeline_name]['version_name'] # used in the nf-core config file and must match the version given by nf-core
-        self._paths['cluster']['nfcore']['nfcore_path'] = path.join(pipeline_name,pipeline_version_name)
-        self._paths['exec_env_nfcore_path'] = path.join(self._paths['exec_env_data_path'], self._paths['nfcore_path'])
-        self._paths['full_local_path'] = path.join(self._paths['datapath_tmp'], self._paths['nfcore_path'])
-
-
-class Liana:
+class Liana(AnalysisI):
     """ This class is a wrapper around the tool Liana with some comfort functions. """
     def __init__(self):
         super().__init__()
         # add an object that holds the results data
-        self._paths.update({'liana_resdir': path.join(self._paths['resultpath'], 'log', 'liana')})
-        self._paths.update({'liana_figdir': path.join(self._paths['figpath'], 'log', 'liana')})
-        self._paths.update({'liana_aggdir': path.join(self._paths['liana_resdir'], 'aggregated')})
+        (self.paths).update({'liana_resdir': path.join(self.paths['resultpath'], 'log', 'liana')})
+        self.paths.update({'liana_figdir': path.join(self.paths['figpath'], 'log', 'liana')})
+        self.paths.update({'liana_aggdir': path.join(self.paths['liana_resdir'], 'aggregated')})
 
-class Decoupler:
+class Decoupler(AnalysisI):
     """ This class is a wrapper around the tool Decoupler with some comfort functions. """
 
     def __init__(self):
         """ A Decoupler object has a list of activity objects and additional paths. """
         super().__init__()
         self.acts = []
-        self._paths.update({'dc': 'decoupler'})
-        self._paths.update({'actsdir': path.join(self._paths['resultpath'], 'log', self._paths['dc'])})
-        self._paths.update({'pseudobulkdir': path.join(self._paths['figpath'], 'counts', self._paths['dc'], 'pseudobulk')})
+        self.paths.update({'dc': 'decoupler'})
+        self.paths.update({'actsdir': path.join(self.paths['resultpath'], 'log', self.paths['dc'])})
+        self.paths.update({'pseudobulkdir': path.join(self.paths['figpath'], 'counts', self.paths['dc'], 'pseudobulk')})
         # liana
-        self._paths.update({'liana_resdir': path.join(self._paths['resultpath'], 'log', 'liana')})
-        self._paths.update({'liana_figdir': path.join(self._paths['figpath'], 'log', 'liana')})
-        self._paths.update({'liana_aggdir': path.join(self._paths['liana_resdir'], 'aggregated')})
+        self.paths.update({'liana_resdir': path.join(self.paths['resultpath'], 'log', 'liana')})
+        self.paths.update({'liana_figdir': path.join(self.paths['figpath'], 'log', 'liana')})
+        self.paths.update({'liana_aggdir': path.join(self.paths['liana_resdir'], 'aggregated')})
 
     def get_all_acts(self, new = False):
         """ Create new Activity object for all parameter combinations. """
@@ -69,7 +48,7 @@ class Decoupler:
                         for method in self.analysis_params['decoupler']['methods']:
                             model = self._getmodel(modeltype, param)
                             print(f'Activity calculation starts for modeltype **{modeltype}** with parameter **{param}** and method **{method}**')
-                            self._get_acts(model, modeltype, param, method, deepcopy(self._paths), new)   
+                            self._get_acts(model, modeltype, param, method, deepcopy(self.paths), new)   
 
     # priorKnowledge
     def _getmodel(self, modeltype, param):
@@ -80,7 +59,7 @@ class Decoupler:
         if type(param_name) == tuple:
             param_name = str.lower(''.join(param_name))
 
-        dirpath = path.join(self._paths['priorknowledge'], modeltype)
+        dirpath = path.join(self.paths['priorknowledge'], modeltype)
         filepath = path.join(dirpath, f"{param_name}.pickle")
         if(exists(filepath)):
             with open(filepath, 'rb') as file:
@@ -109,7 +88,7 @@ class Decoupler:
 
         # example: sn -> all_t -> raw -> decoupler -> Progeny -> 50_ulmmlm_estimate.pickle
         paths.update({'actsdir': path.join(paths['actsdir'], modeltype)})
-        dirpath = self._paths['actsdir']
+        dirpath = self.paths['actsdir']
         if not exists(dirpath):
                 makedirs(dirpath)
 
