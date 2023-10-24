@@ -9,6 +9,7 @@ from copy import deepcopy
 import scanpy as sc
 import dill, yaml
 from abc import ABC, abstractmethod
+import pandas as pd
     
 class AnalysisI(ABC):
         analysis_params:dict
@@ -69,13 +70,9 @@ class Baseanalysis(AnalysisI):
         middlepath         = path.join(self.analysis_params["proj_id"], self.analysis_params["version"], "analysis", self.organism, self.seq_type) # MBEN_T/v00/analysis/human/sn
         
         
-        
-        self.paths.update({ "metadata_orig_path": path.join(self.paths["data_root_path"], middlepath, "metadata/metadata.tsv")})
 
-        #### combine subj and smaple meta and save as metadata_orig_path
 
         middlepath_dataset = path.join(middlepath, self.name)             # MBEN_T/v00/analysis/human/sn/all
-
         datafoldername = 'data'
 
         # Add more paths
@@ -90,9 +87,17 @@ class Baseanalysis(AnalysisI):
         else: 
             self.paths["data_root_path"] = path.dirname(path.normpath(self.paths["data_root_path"])) # remove "<default>" 
             self.paths.update({ 
-                
+                "metadata_orig_path": path.join(self.paths["data_root_path"], middlepath, "metadata"),
                 "datapath": path.join(self.paths["data_root_path"], middlepath_dataset, datafoldername) # add MBEN_T/v00/analysis/human/sn/all/data
-                })  
+            })  
+            self.paths.update({ "metadata_orig_filepath": path.join(self.paths["metadata_orig_path"],"metadata.tsv")})  
+            
+            # read, merge and write meta  
+            meta_subj = pd.read_excel(path.join(self.paths["metadata_orig_path"], "metadata_subj.xlsx"))
+            meta_sample = pd.read_excel(path.join(self.paths["metadata_orig_path"], "metadata_sample.xlsx"))
+            meta = pd.merge(meta_sample, meta_subj, how="left", on = "subjID")
+            meta.to_csv(self.paths["metadata_orig_filepath"], sep = "\t", index = False)
+        
             self.paths["data_root_path"] = self.paths["datapath"]
 
         # Set data_root_filename (either given one or default)
