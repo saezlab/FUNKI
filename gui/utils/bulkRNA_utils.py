@@ -9,13 +9,13 @@ sys.path.append('../')
 from streamlit_extras.switch_page_button import switch_page
 from st_pages import Page, show_pages, _hide_pages
 from gui.utils import utilities as util
+#import utilities as util
 import pandas as pd
 import decoupler as dc
 #import openpyxl
 import plotly.express as px
 import numpy as np
 import kaleido, subprocess, glob
-
 #########################
 # TODO: allow tsv input #
 #########################
@@ -33,10 +33,11 @@ def get_acts(dataset):
     data = dataset['data']
     ap = st.session_state.ap
 
-    priorKnwldg = sc_funcs.deep_get(ap['dataset_params'], (sc_funcs.getpath(ap['dataset_params'], 'priorKnowledge')))['priorKnowledge'].keys()
+    priorKnwldg = sc_funcs.deep_get(ap['dataset_params'], (sc_funcs.getpath(ap['dataset_params'], 'priorKnowledge', search_value=False))).keys()
     organism = list(ap['dataset_params'].keys())[0]
+
     for resource_type in priorKnwldg:
-        resources = sc_funcs.deep_get(ap['dataset_params'], (sc_funcs.getpath(ap['dataset_params'], resource_type)))[resource_type].keys()
+        resources = sc_funcs.deep_get(ap['dataset_params'], sc_funcs.getpath(ap['dataset_params'], resource_type, search_value=False)).keys()
         datarootpath = st.session_state.ap['proj_params']['paths']['data_root_path']
 
         #subprocess.call([f'{datarootpath}getfrom_omnipath.R {resource} {organism}'], shell = True)
@@ -68,6 +69,7 @@ def get_acts(dataset):
             #st.write(net)
             method = dataset['method']
             figpath = f'{resource}.png'
+            targetfigurepaths=[]
             title = f'{resource_type.capitalize()} retrieved from {resource.capitalize()}'
             if method == 'ora_df':
                 d = data
@@ -110,7 +112,10 @@ def get_acts(dataset):
                     d = d.astype(float)
 
                     result = dc.decouple(d, net, methods=[method])
+                    
+                    #st.write(result)
                     print(result)
+
                     def decouple_result_totable(result):
                         result[f'{method}_pvals'].index = ['pvals']
                         
@@ -124,18 +129,27 @@ def get_acts(dataset):
                         df = pd.merge(result_pvals, result_estimate)
                         df.index = df[resource]
                         df = df.drop(resource, axis = 1)
+                        df = df.sort_values(by='t', axis=0, ascending=False, key = abs)
                         return df
                     df = decouple_result_totable(result)
                     
                     dc.plot_barplot(result[f'{method}_estimate'], result[f'{method}_estimate'].index[0], top=25, vertical=False, return_fig = False, save = figpath)
-                    
+                    #st.write(net)
+                    data.index = data['ID']
+                    targets_to_inspect = df.index
+                    if len(targets_to_inspect) >= 20:
+                        targets_to_inspect = targets_to_inspect[:20]
+                    for source_name in targets_to_inspect:  #[:9]: #iloc[:,0][:5]:
+                        targetfigurepath = f'{resource}_{source_name}.png'
+                        dc.plot_targets(data, stat='t', source_name=source_name, net=net, top=15, return_fig = False, save = targetfigurepath)
+                        targetfigurepaths = targetfigurepaths + [targetfigurepath]
                 except ValueError as ve:
                     try:
                         result = dc.decouple(d, net, methods=[method], min_n=2)
                         st.warning("Warning: All sources with at least two targets were taken into consideration. The default would be to have at least five targets per source. To go with the default you would need to add more genes.")
                     except ValueError as ve:
                         st.error("Error: There aren't any sources with the minimum of five targets. Please provide more genes.")
-            util.add_results(df, figpath, title, f"{title}{dataset['datasetid']}")
+            util.add_results(df, figpath, title, f"{title}{dataset['datasetid']}", targetfigurepaths)
             
 
 

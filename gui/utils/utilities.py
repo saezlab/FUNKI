@@ -10,7 +10,8 @@ from streamlit_extras.switch_page_button import switch_page
 from streamlit_extras.dataframe_explorer import dataframe_explorer 
 from st_pages import Page, show_pages, hide_pages
 import pandas as pd
-
+import matplotlib.pyplot as plt
+from PIL import Image
 
 #url('https://i.ibb.co/CP9qPhS/FUNKI.png');
 ##https://i.postimg.cc/vBp8mDdG/funki-human-And-Mice.jpg');#https://i.ibb.co/Hg8yqF0/funki-human-And-Mice.jpg');
@@ -135,7 +136,7 @@ def set_priorKnwldg(w_omicstype, analysis_params) -> dict:
     """
     def set_priorKnwldg_bykeys(keys:list)-> dict:
         """
-        1. Get all priorKnlwdg from project params.
+        1. Get priorKnwldg parameters from proj_params and subset to the wanted ones
         2. Subset priorKnwldg by given keys. 
         3. Set priorKnwldg for dataset.
 
@@ -143,12 +144,11 @@ def set_priorKnwldg(w_omicstype, analysis_params) -> dict:
             keys (List): The priorKnwldg that shall be used.
         Return: dict
         """
-        all_priorKnwldg = dict(analysis_params['proj_params']['priorKnowledge'].items())
-        subset = sc_funcs.subset_dict(all_priorKnwldg, keys)
-        priorKnwldg_dspath = sc_funcs.getpath(analysis_params['dataset_params'], 'priorKnowledge')
-        subset = sc_funcs.dict_replace(analysis_params['dataset_params'], subset, priorKnwldg_dspath + ('priorKnowledge',))
+        subset = sc_funcs.subset_dict(analysis_params['proj_params']['priorKnowledge'], keys)
+        priorKnwldg_dspath = sc_funcs.getpath(analysis_params['dataset_params'], 'priorKnowledge', search_value=False)
+        subset = sc_funcs.dict_replace(analysis_params['dataset_params'], subset, priorKnwldg_dspath)
         analysis_params['dataset_params'].update(subset)
-        return analysis_params
+        #return analysis_params
 
     match w_omicstype:
         case UiVal.BULKRNA | UiVal.SCRNA: 
@@ -183,11 +183,14 @@ def sentence_case(sentence):
 
 button_css = f""" 
         <style>
-            #button0 {{
+            a.button {{
                 background-color: rgb(255, 255, 255);
                 color: rgb(38, 39, 48);
                 padding: 0.25em 0.38em;
-                position: relative;
+                /* position: relative; */
+                display: flex;       /* serves centering of button together with justify-content */
+                justify-content: center;
+                /* margin: 0% 30%; */    /* regulates width of button (after centering the button takes the full width). But using this means that with a very small col the border gets smaller then the text / overlaps with it. */
                 text-decoration: none;
                 border-radius: 4px;
                 border-width: 1px;
@@ -195,19 +198,31 @@ button_css = f"""
                 border-color: rgb(230, 234, 241);
                 border-image: initial;
             }} 
-            #button0:hover {{
+            .button:hover {{
                 border-color: rgb(246, 51, 102);
                 color: rgb(246, 51, 102);
             }}
-            #button0:active {{
+            .button:active {{
                 box-shadow: none;
                 background-color: rgb(246, 51, 102);
                 color: white;
                 }}
         </style> """
 
+def get_downloadable_fig(figname):
+    with Image.open(figname) as im: 
+        st.image(im)
+        import base64
+        with open(figname, "rb") as image2string:
+            im64 = base64.b64encode(image2string.read())
+    with open(figname, 'wb') as im:
+        im64 = im64.decode("utf-8")
+        download_button_str = button_css + f'<a download="{figname}" class="button" href="data:image/png;base64,{im64}">Download</a><br></br>'
+        st.markdown(download_button_str, unsafe_allow_html=True)          
+           
+
 #@st.cache_data(experimental_allow_widgets=True) 
-def add_results(data, fig, title, download_key) -> None:
+def add_results(data, fig, title, download_key, targetfigurepaths) -> None:
     """Add a table with download button and the figure.
 
     Args:
@@ -217,27 +232,31 @@ def add_results(data, fig, title, download_key) -> None:
     """
     #title = sentence_case(title)
     st.markdown(f'### {title}')
-    col1, col2 = st.columns(2, gap = 'small')
-    with col1:
+    col_table, col_image = st.columns(2, gap = 'small')
+    with col_table:
         show_table(data, download_key)     
-    with col2:
+    with col_image:
         if isinstance(fig, str):
-            import matplotlib.pyplot as plt
-            from PIL import Image
             if fig != 'false':
-                with Image.open(fig) as im: 
-                    st.image(im)
-                    import base64
-                    with open(fig, "rb") as image2string:
-                        im64 = base64.b64encode(image2string.read())
-                with open(fig, 'wb') as im:
-                    im64 = im64.decode("utf-8")
-                    download_button_str = button_css + f'<a download="image.png" id="button0" href="data:image/png;base64,{im64}">Download</a><br></br>'
-                    st.markdown(download_button_str, unsafe_allow_html=True)          
+                get_downloadable_fig(fig)    
             else:
                 st.write('There are too many significant transcription factors. Therefore, no plot is produced.')
         else:
             st.plotly_chart(fig)
+    if targetfigurepaths != []:
+        st.write('**Inspect downstream targets** of the results with the strongest t values (max. 20 results shown): ')
+        target_numb = len(targetfigurepaths)
+        for x in range(0,target_numb,3):
+            exec(f"col{x}, col{x+1}, col{x+2} = st.columns(3)")
+        #col0, col1, col2 = st.columns(3)
+        #col3, col4, col5 = st.columns(3)
+        #col6, col7, col8 = st.columns(3)
+        for x in range(0,target_numb):
+            with eval(f'col{x}'):
+                get_downloadable_fig(targetfigurepaths[x])
+
+            
+
 
     
 # make any grid with a function

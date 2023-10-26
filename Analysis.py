@@ -7,6 +7,7 @@ st.set_page_config(layout="wide")
 # funki modules
 from standard_workflows import * 
 #from gui import pages, utils
+
 from gui.utils import utilities as util
 from gui.utils import bulkRNA_utils as bulk
 from gui.utils import web_utils as web
@@ -192,7 +193,7 @@ with tab1:
     #---- INIT ANALYSIS_PARAMS ----#
 #if 'ap' not in st.session_state:
     analysis_params = util.get_analysis_params(w_organism, w_omicstype)
-    analysis_params = util.set_priorKnwldg(w_omicstype, analysis_params)
+    util.set_priorKnwldg(w_omicstype, analysis_params)
 
 
     #---- ADVANCED OPTIONS ----#        

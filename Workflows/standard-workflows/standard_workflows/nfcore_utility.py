@@ -114,7 +114,7 @@ class NfCore(AnalysisI):
             "fasta": self.paths['fasta'],
             "gtf": self.paths['gtf'],
             "gencode": False,            # if GTF annotation is in GENCODE format
-            "gtf_extra_attributes": "gene_namee",
+            "gtf_extra_attributes": "gene_name",
             "gtf_group_features": "gene_id",
             "featurecounts_group_type": "gene_biotype",
             "featurecounts_feature_type": "exon",
@@ -192,16 +192,18 @@ class NfCore(AnalysisI):
         """Get content of config file
 
         Returns:
-            str: _description_
+            str: filecontent
         """
+        conf = self.analysis_params['nfcore']['pipeline'][pipeline_name]
         return f"params {{\n\
-            max_cpus   = 25\n\
-            max_memory = '210.GB'\n\
-            max_time   = '6.h'\n\
-            }}\n\n\
-            process{{\n\
-            executor = '{self.analysis_params['nfcore']['pipeline'][pipeline_name]['executor']}'\n\
-            }}"
+max_cpus   = {conf['max_cpus']}\n\
+max_memory = {conf['max_memory']}\n\
+max_time   = {conf['max_time']}\n\
+}}\n\n\
+process{{\n\
+{conf['process_config']}\n\
+executor = '{conf['executor']}'\n\
+}}"
 
     def get_run_sh(self, foldername:str, pipeline_name:str)->str:
         """Create content for run.sh file.

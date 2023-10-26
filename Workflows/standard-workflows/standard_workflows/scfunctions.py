@@ -14,15 +14,12 @@ import sys
 from io import StringIO
 from markdown import markdown
 from IPython.core.display import HTML
-
+import pandas as pd
 from pathlib import Path
 #from scUtilities import scfunctions_v1 as scfuncs
-import sys, itertools, logging.config, os, logging #, h5py, igraph, pandas, louvain, random, re, dill, functools, collections
+import sys, itertools, logging.config, os, logging #, h5py, igraph, louvain, random, re, dill, functools, collections
 import scanpy as sc, matplotlib.pyplot as plt, seaborn as sns, numpy as np
-
 #import pytest
-
-
 from functools import reduce
 from copy import deepcopy
 from mergedeep import merge
@@ -32,6 +29,7 @@ def print_paths(paths):
     The bigree.print_tree method can only handle paths that have the same root node. 
     Therefore the paths are grouped by their root and then each group is printed. 
     Paths that appear more than once get reduced to one by joining their values together. 
+    Sub dictionaries are ignored.
 
     Args:
         paths (dict): A dictionary with paths as values and the name of the path as key. 
@@ -41,13 +39,12 @@ def print_paths(paths):
         dict.fromkeys(paths, {"": 90} # creates a dictionary with the same keys and the given value.
     """
     import bigtree
-    import pandas
     #hm = copy.deepcopy(paths)
     #paths = {k: paths[k] for k in paths} # switch keys and values as the path must be the key
     # paths.loc[paths["key"].startswith("/"), "key"] 
 
-    paths = pandas.DataFrame({'key': paths.values(), '': paths.keys()})
-    paths['key'] = '/' + paths['key'].replace('^/', '', regex=True).replace('/$', '', regex=True).astype(str)
+    paths = pd.DataFrame({'key': paths.values(), '': paths.keys()})
+    paths['key'] = '/' + paths['key'].replace('^/', '', regex=True).replace('/$', '', regex=True).replace('//', '/', regex=True).astype(str)
     paths = paths.groupby(['key'])[''].apply(', '.join).reset_index()
     paths['keyStart'] = paths['key'].str.split('/').str[1]
     grp=paths.groupby('keyStart')
@@ -55,10 +52,12 @@ def print_paths(paths):
     temp_out = StringIO()
     sys.stdout = temp_out
 
-
     for k, item in grp:
-        p = bigtree.dataframe_to_tree(grp.get_group(k))
-        bigtree.print_tree(p, attr_list=[""], attr_bracket=["[", "]"])
+        p = grp.get_group(k)
+        p = p[~p['key'].astype(str).str.startswith('/{')] # remove sub dicts
+        if(not p.empty):
+            p = bigtree.dataframe_to_tree(p)
+            bigtree.print_tree(p, attr_list=[""], attr_bracket=["[", "]"])
 
     sys.stdout = sys.__stdout__
     return temp_out.getvalue()
@@ -130,7 +129,7 @@ def dict_delete_key(dict, path) -> dict:
     del (reduce(lambda d,i: d[path[i]], r, dict))[path[pathlen-1]]
 
 
-def subset_dict(dict, keys_to_extract)-> dict:
+def subset_dict(d, keys_to_extract)-> dict:
     """Subsetting dict to some of the keys in its first layer.
 
     Args:
@@ -140,11 +139,12 @@ def subset_dict(dict, keys_to_extract)-> dict:
     Returns:
         dict: subset
     """
-    subset = {}
-    for key, value in dict.items():
-        if key in keys_to_extract:
-            subset[key] = value
-    return subset
+    #subset = {}
+    #for key, value in dict.items():
+    #    if key in keys_to_extract:
+    #        subset[key] = value
+    return {key: d[key] for key in keys_to_extract} #subset
+
 
 def merge_dicts(dict_1: dict, dict_2: dict) -> dict:
     """
