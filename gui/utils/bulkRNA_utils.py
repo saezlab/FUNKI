@@ -134,14 +134,14 @@ def get_acts(dataset):
                     df = decouple_result_totable(result)
                     
                     dc.plot_barplot(result[f'{method}_estimate'], result[f'{method}_estimate'].index[0], top=25, vertical=False, return_fig = False, save = figpath)
-                    #st.write(net)
-                    data.index = data['ID']
+                    st.write(data)
+                    data.index = data[data.columns[0]]
                     targets_to_inspect = df.index
                     if len(targets_to_inspect) >= 20:
                         targets_to_inspect = targets_to_inspect[:20]
                     for source_name in targets_to_inspect:  #[:9]: #iloc[:,0][:5]:
                         targetfigurepath = f'{resource}_{source_name}.png'
-                        dc.plot_targets(data, stat='t', source_name=source_name, net=net, top=15, return_fig = False, save = targetfigurepath)
+                        dc.plot_targets(data, stat=data.columns[1], source_name=source_name, net=net, top=15, return_fig = False, save = targetfigurepath)
                         targetfigurepaths = targetfigurepaths + [targetfigurepath]
                 except ValueError as ve:
                     try:
