@@ -290,3 +290,5 @@ exec_env_nfcore_path={folderpath}\n\
         # run.sh
         with open(f'{path_to_folder}/run.sh', 'w+') as file:
             file.write(run_sh)
+
+        self.paths['nfcore'][foldername] = {'merged_gene_counts': path.join(path_to_folder, analysis_params['aligner'], f"{re.search(r'.*_(.*)', analysis_params['aligner'])[1]}.merged.gene_counts.tsv")}

@@ -23,6 +23,8 @@ import scanpy as sc, matplotlib.pyplot as plt, seaborn as sns, numpy as np
 from functools import reduce
 from copy import deepcopy
 from mergedeep import merge
+import bigtree
+from contextlib import redirect_stdout
 
 def print_paths(paths):
     """Prints the folder structure that the paths define together with the labels.
@@ -38,29 +40,29 @@ def print_paths(paths):
     Utility: 
         dict.fromkeys(paths, {"": 90} # creates a dictionary with the same keys and the given value.
     """
-    import bigtree
-    #hm = copy.deepcopy(paths)
-    #paths = {k: paths[k] for k in paths} # switch keys and values as the path must be the key
-    # paths.loc[paths["key"].startswith("/"), "key"] 
-
     paths = pd.DataFrame({'key': paths.values(), '': paths.keys()})
     paths['key'] = '/' + paths['key'].replace('^/', '', regex=True).replace('/$', '', regex=True).replace('//', '/', regex=True).astype(str)
     paths = paths.groupby(['key'])[''].apply(', '.join).reset_index()
     paths['keyStart'] = paths['key'].str.split('/').str[1]
     grp=paths.groupby('keyStart')
 
-    temp_out = StringIO()
-    sys.stdout = temp_out
+    # NOT WORKING -> print function doesn't print anymore after using this
+    #temp_out = StringIO()
+    #sys.stdout = temp_out
+    #...
+    #sys.stdout = sys.__stdout__
+    #sys.stdout.write(temp_out.getvalue())
+    #return temp_out.getvalue()
 
-    for k, item in grp:
-        p = grp.get_group(k)
-        p = p[~p['key'].astype(str).str.startswith('/{')] # remove sub dicts
-        if(not p.empty):
-            p = bigtree.dataframe_to_tree(p)
-            bigtree.print_tree(p, attr_list=[""], attr_bracket=["[", "]"])
-
-    sys.stdout = sys.__stdout__
-    return temp_out.getvalue()
+    with StringIO() as buf, redirect_stdout(buf):
+        for k, item in grp:
+            p = grp.get_group(k)
+            p = p[~p['key'].astype(str).str.startswith('/{')] # remove sub dicts
+            if(not p.empty):
+                p = bigtree.dataframe_to_tree(p)
+                bigtree.print_tree(p, attr_list=[""], attr_bracket=["[", "]"])
+        output = buf.getvalue()
+    return output
 
 def deep_get(dictionary, *keys):
     return reduce(lambda d, key: d.get(key) if d else None, *keys, dictionary)
@@ -115,6 +117,7 @@ def getpath(nested_dict, value, prepath=(), search_value = True) -> tuple:
             p = getpath(v, value, path, search_value) # recursive call
             if p is not None:
                 return p
+            
 
 def dict_replace(dict, v, path) -> dict:
     """ Fill in a value *v* into a dictionary *dict* at the position given by *path* """
