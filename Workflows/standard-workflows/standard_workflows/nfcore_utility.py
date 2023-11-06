@@ -251,11 +251,11 @@ exec_env_nfcore_path={folderpath}\n\
 "
 
 
-    def init_nfcore_run(self, update_content:dict, foldername:str):
+    def init_nfcore_run(self, foldername:str):
         """Creates the three needed files for running a nf-core pipeline. 
+        'nfcore_params' get updated with 'self.nfc_custom_params'
 
         Args:
-            update_content (dict): 'analysis_params' get updated with 'update_content'
             foldername (str): foldername for the three files and the results of the nf-core pipeline
         """
         import json
@@ -270,8 +270,11 @@ exec_env_nfcore_path={folderpath}\n\
 
         run_sh = self.get_run_sh(foldername, pipeline_name)
         config = self.get_config(pipeline_name)
-        analysis_params = eval(f"self.get_nfcore_params_{pipeline_name}('{foldername}', '{self.paths['nfcore']['samplesheet_name']}')")
-        analysis_params.update(update_content)
+        nfcore_params = eval(f"self.get_nfcore_params_{pipeline_name}('{foldername}', '{self.paths['nfcore']['samplesheet_name']}')")
+        if hasattr(self, 'nfc_custom_params'):
+            if 'custom_default' in self.nfc_custom_params.keys():
+                self.nfc_custom_params[foldername] = self.nfc_custom_params.pop('custom_default')
+            nfcore_params.update(self.nfc_custom_params[foldername])
 
         # prepare folder
         path_to_folder = f"{self.paths['full_local_nfcore_path']}/{foldername}/"
@@ -279,7 +282,7 @@ exec_env_nfcore_path={folderpath}\n\
             makedirs(path_to_folder)
             
         # params
-        params = json.dumps(analysis_params, indent=4)
+        params = json.dumps(nfcore_params, indent=4)
         with open(f'{path_to_folder}/params.json', 'w+') as file: 
             file.write(params)
 
@@ -291,4 +294,6 @@ exec_env_nfcore_path={folderpath}\n\
         with open(f'{path_to_folder}/run.sh', 'w+') as file:
             file.write(run_sh)
 
-        self.paths['nfcore'][foldername] = {'merged_gene_counts': path.join(path_to_folder, analysis_params['aligner'], f"{re.search(r'.*_(.*)', analysis_params['aligner'])[1]}.merged.gene_counts.tsv")}
+        self.paths['nfcore'][foldername] = {'merged_gene_counts': path.join(path_to_folder, nfcore_params['aligner'], f"{re.search(r'.*_(.*)', nfcore_params['aligner'])[1]}.merged.gene_counts.tsv")}
+
+

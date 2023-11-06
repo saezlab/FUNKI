@@ -3,13 +3,15 @@ Creating a new *Analysis* leads to reading the parameters, initializing the *Dat
 A dataset can inherit from various ...analysis classes but inherits always from the *Baseanalysis* class contained in this file."""
 from os import path, makedirs
 from .sc_analysis_loops import loop
-from .scfunctions import replace_dictvalues, merge_dicts, add_nested_key
+from .scfunctions import replace_dictvalues, merge_dicts, add_nested_key, print_paths
 from . import memoize
 from copy import deepcopy
 import scanpy as sc
 import dill, yaml
 from abc import ABC, abstractmethod
 import pandas as pd
+from IPython.display import display, Markdown 
+import json, yaml  
     
 class AnalysisI(ABC):
         analysis_params:dict
@@ -126,6 +128,13 @@ class Baseanalysis(AnalysisI):
         self.data = "" # is set in __init__ of analysis obj
         super().__init__()
 
+    def print_info(self):
+        display(Markdown(f'### Dataset {self.name}  '))
+        display(Markdown('**Analysis Parameters**  '))
+        print(json.dumps(self.analysis_params, indent=4, sort_keys=True, default=str))
+        display(Markdown('**Paths**  '))
+        print(print_paths(self.paths))
+
     def get_paths(self) -> dict:
         return self.paths
 
@@ -182,13 +191,26 @@ class Analysis:
         return self.__paths
 
     def save_paths(self):
-        """ Saves analysis params and paths from all datasets to yaml file. """
-        self.analysis_params["default"]["paths"] = self.get_paths()
-        for data in self.datasets:
-            data.analysis_params["dataset_params"][data.organism][data.seq_type][data.name]["paths"] <- data.get_paths()
-            with open(path.join(data.get_paths()["datasetpath"], "analysis_params_extended.yaml"), "w+") as file:
-                yaml.dump(data.analysis_params, file)
-    
+        """ Saves analysis params together with paths to yaml file. """
+        self.analysis_params['proj_params']['paths'] = self.get_paths()
+        with open(path.join(self.get_paths()['analysis_path'], self.analysis_params["proj_params"]["proj_id"], self.analysis_params["proj_params"]["version"], 'analysis_params_paths.yaml'), 'w+') as file:
+            yaml.dump(self.analysis_params, file)
+        for dataset in self.datasets:
+            dataset.analysis_params['paths'] = dataset.get_paths()
+            with open(path.join(dataset.paths['analysis_path'], dataset.paths['datasetpath'], 'analysis_params.yaml'), 'w+') as file:
+                yaml.dump(dataset.analysis_params, file)
+
+    def print_info(self):
+        """ Prints basic information about the analysis. """
+        display(Markdown('### Analysis Object '))
+        display(Markdown('**Analysis Parameters**  '))
+        print(json.dumps(self.analysis_params['proj_params'], indent=4, sort_keys=True, default=str))
+        display(Markdown('**Paths**  '))
+        print(json.dumps(self.get_paths(), indent=4, sort_keys=True, default=str))
+        for dataset in self.datasets:
+            dataset.print_info()
+
+        
     def init_datasets (self) -> None :
         """ Reads and cleans datasets """
         @loop(self.datasets, True)

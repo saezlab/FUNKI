@@ -64,7 +64,7 @@ def get_acts(data):
     data.get_all_acts(new = False)
     print('\n')
 
-# get_mean_acts
+
 @loop('analysis.datasets', True)
 def get_mean_acts(dataset):
     """ Loops over datasets and parameters to calculate the mean activities per activity. """
@@ -198,8 +198,6 @@ def plot_meta_barplots(data, col1, col2):
     plt.show()
 
 
-
-
 @loop ('analysis.datasets', True)
 def get_subsets(ds, dataset_class) -> tuple:
     """ Writes subsets to local subset folder if non existant. 
@@ -237,3 +235,24 @@ def get_subsets(ds, dataset_class) -> tuple:
             return (subsName, ds.type, ds.organism, dataset_class) # (all_t_clust12, 'sn', 'human', <<dc_dataset>>)
         
         [subset(cond) for cond in subsConds]
+
+
+
+@loop ('analysis.datasets', True)
+def prepare_nfcore(dataset, pipeline):
+    """Prepare run, create sample sheet, get reference genome. 
+    Initialise 'update_content' with the pipeline params from the ap file as new attribute of the dataset
+
+    Args:
+        dspos (int): dataset position in the dataset list of analysis obj.
+        pipeline (str): name of pipeline to prepare for
+    """
+    dataset.prepare_run(pipeline)
+    dataset.create_sample_sheet(pipeline)
+    dataset.get_reference()
+    dataset.nfc_custom_params = {}
+    dataset.nfc_custom_params['custom_default'] = dataset.analysis_params['nfcore']['pipeline'][pipeline]['params']
+    
+    display(Markdown(f'**Dataset {dataset.name}**'))
+    print(f'Parameters different from default: {dataset.nfc_custom_params}')
+
