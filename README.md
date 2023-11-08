@@ -118,46 +118,68 @@ Create a new python script here: *PROJ/v00/analysis/analysis_params.py*. While t
 
 ```python
 
-""" Analysis Parameters 
-Definition of default parameters and dataset specific parameters in a python dictionary that is saved as yaml file. 
-This is a non redundant representation of all analysis paths. 
-"""
-import yaml
 from os import path
-
+import yaml
 analysis_params = {
+#####################
+## Project Params ##
+#####################
     'proj_params': { 
-        'email' : 'hanna.schumacher@uni-heidelberg.de',
+        # name of the project
         'proj_id': path.basename(path.normpath(path.abspath("./../../../"))),    # always one folder above, projID should be 2 to 8 capital letters or underscores
+        # Don't change the version. A new version must have a new config file. 
         'version': path.basename(path.normpath(path.abspath("./../../"))), 
         'paths': {
-            'analysis_path': path.abspath('./../../../../'), #"/Volumes/sd22b002/guest/   # path to 'projects' folder or the folder where the proj results shall be saved
+            # path to 'projects' folder or the folder where the proj results shall be saved
+            'analysis_path': path.abspath('./../../../../'), #"/Volumes/sd22b002/guest/
+            # Your data is already placed correctly inside the folder structure and this file is placed in the same folder structure
+            # -> same as analysis path: path.abspath('./../../../../') + '/<default>'
+            # Your data is placed in the standard folder structure but on a mounted volume, while this file is placed locally 
+            # -> 'pathTo/FolderAbove/ProjectFolder' + '/<default>'
+            # Your data is not placed in the standard folder structure (be aware that fastq files will not be copied into the folder structure in contrast to other input data)
+            # -> 'path/to/data'
             'data_root_path': '/Volumes/sd22b002/guest/' + '/<default>', #path.abspath('./../../../../') + '/<default>',  # for example path to SDS mounted location: .../mounted/projects/
-            'gene_counts': '/star_salmon/salmon.merged.gene_counts.tsv',
+            # name of the metadata file
             'metadata': 'metadata.tsv',
-            # deseq2
-            'deseq2': '/diffExpr/deseq2/',
-            # needed by nfcore module
+            ###################
+            ## Nf-Core Paths ##
+            ###################
+            # Path to where the reference genome is placed. If you choose different references from the provided ones, make sure to overwrite the nf-core params accordingly.
             'references_path': '/mnt/sds-hd/sd22b002/projects/references',
-            'exec_env_path': '/mnt/sds-hd/sd22b002/guest/', # needed for nfcore, qiime etc.,  # execution environment path, for example the path on a cluster that leads to the project folder, used on execution of the pipeline
-            'rawpath': 'raw/F22FTSEUBEB0037_MUSrkqhR/soapnuke/clean/', # path to folders named by sample and containing paired end fastq files
+            # Path to the project at the timepoint of nfcore pipeline execution. (When you work with the project locally but want to run the nf-core pipeline on the cluster, provide here the project path on the cluster)
+            # The nf-core sample sheet will be based on this path so that the run script can find the fastq files.
+            'exec_env_path': '/mnt/sds-hd/sd22b002/guest/', 
+            # Your raw data is expected to be in the data folder. Provide the path to the folder that contains the samples starting from within the data foolder. (path to folders named by sample and containing paired end fastq files)
+            'rawpath': 'raw/F22FTSEUBEB0037_MUSrkqhR/soapnuke/clean/', 
             'nfcore':{
+                # Before you can use the generated run script for the nf-core pipeline, you have to install nextflow. Provide here the path to the executable.  
+                # This path is used by the run script
                 'nextflow_executable': '/home/hd/hd_hd/hd_ac294/nextflow', # binac: /beegfs/work/hd_ac294/nextflow 
-                'samplesheet_name': '', # without filetype! It is saved as .csv
+        #'samplesheet_name': '', # without filetype! It is saved as .csv
             }
         },
-        'use_pickle_data': False,    # h5ad files are read and then saved as pickle, the pickle files are used from there on
+        'use_pickle_data': False,    # if True h5ad files are read and then saved as pickle, the pickle files are used from there on
         'cluster':{
+            # Your email address for getting emails from the jobs
             'email': 'hanna.schumacher@uni-heidelberg.de'
         },
+        ####################
+        ## Nf-Core Params ##
+        ####################
         'nfcore':{
-            'pipeline':{                       # names of the nf-core pipelines
+            'pipeline':{                       
+                # name of the nf-core pipeline
                 'rnaseq':{
-                    'version': '3.12.0',       # used in the nf-core config file and must match the version given by nf-core
-                    'version_name': 'v031200',  # used for naming the folder
+                    # used in the nf-core config file and must match the version given by nf-core
+                    'version': '3.12.0',      
+                    # used as foldername 
+                    'version_name': 'v031200',  
                     'executor': 'slurm',
-                    'module_java': 'devel/java_jdk/1.18', # helix, binac would be devel/java_jdk/11.0.4
-                    'load_modules': "module load system/singularity/3.11.3", # 
+                    # check the modules of your cluster and write here the name of the java module
+                    'module_java': 'devel/java_jdk/1.18', # helix; binac would be devel/java_jdk/11.0.4
+                    # if more modules are needed, write them here. For example singularity.  
+                    'load_modules': "module load system/singularity/3.11.3", 
+                    # nf-core profile parameter
                     'profile': 'singularity', # BinAC cluster would have: binac,singularity as they have their own profile for nf-core jobs.
                     'process_config': "queue = 'single'", # queue = 'single' is needed for slurm on helix (otherwise you get the error that the time limit is not set correctly)
                     'max_cpus': 25,
@@ -172,6 +194,9 @@ analysis_params = {
                 }
             }
         },
+        #####################
+        ## Prior Knowledge ##
+        #####################
         'priorKnowledge':{
             'transcription_factors':{
                 'collectri':{
@@ -187,6 +212,9 @@ analysis_params = {
                 }
             }
         },
+        ###############
+        ## Decoupler ##
+        ###############
         'decoupler':{
             'methods': [('ulm', ),],
             #minsize
@@ -196,11 +224,17 @@ analysis_params = {
                 'minstd': [0.0]
             }
         },
+        ###########
+        ## Liana ##
+        ###########
         'liana': {
             "methods": [["natmi", "connectome", "logfc", "sca", "cellphonedb"]],
             "base": "exp(1)",
             "lig_rec": [["all"]]
         }, 
+        ###################
+        ## Preprocessing ##
+        ###################
         'preprocess': {
             'basicFilt': {
                 'group': None, 
@@ -210,17 +244,23 @@ analysis_params = {
                 'min_prop': 1
             }
         },
+        #############################
+        ## Differential Expression ##
+        #############################
         'diffExpr':{
             'deseq2': {
 
             }
         }
     },
+#####################
+## Dataset Params ##
+#####################
     'dataset_params': {
         'mouse': { # organism (human, mouse)
             'scRNA': {
                 'priorKnowledge':{
-                    'collectri':{
+                    'collectri':{ # can be left out?
 
                     },
                     'progeny':
@@ -231,9 +271,12 @@ analysis_params = {
             },
             'bulkRNA':{
                 '02': {
+                    ####################
+                    ## Nf-Core Params ##
+                    ####################
                     'hasUmi': False,
                     'nfcore':{
-                        'pipeline':{                       # names of the nf-core pipelines
+                        'pipeline':{   # names of the nf-core pipelines
                             'rnaseq':{
                                 'params':{
                                     'skip_trimming': True,
@@ -258,27 +301,10 @@ analysis_params = {
                         }
                     }
                 },
-                'priorKnowledge':{
-                    'collectri':{
-
-                    },
-                    'progeny':
-                        {
-                            'top':['ADD']
-                        }
-                }
             }
         }
     }  
 }
-
-def init():
-    with open('./../../analysis/analysis_params.yaml', 'w+') as file: 
-        yaml.dump(analysis_params, file, sort_keys=False)
-
-if __name__ == '__main__':
-    init()
-
 
 ```
 
