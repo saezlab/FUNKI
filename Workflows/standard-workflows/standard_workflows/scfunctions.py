@@ -89,7 +89,7 @@ def getpath(nested_dict, value, prepath=(), search_value = True) -> tuple:
         search_value (bool, optional): If the given 'value' to search for is a key or a value. Defaults to True.
 
     Returns:
-        path (tuple): The order of keys that leads to the value or key in the dict (when searching for a key the key is inclusive in the result path).
+        path (tuple): The order of keys that leads to the value or key in the dict (when searching for a key the key is inclusive in the result path). Returns only first appearance of the value.
     
     Use Case:
         workflows.scfunctions.getpath({1: {'name': 'John', 'age': '27', 'sex': 'Male'}, 2: {'name': 'Marie', 'age': '22', 'sex': 'Female'}}, 'Female')
@@ -105,19 +105,21 @@ def getpath(nested_dict, value, prepath=(), search_value = True) -> tuple:
         path = prepath + (k,)
         if(search_value == False): 
             # search for key instead of value
-            if (k == value) | (k.split('_')[0] == value): # to allow for using multiple similar keys in a dict like 'replacement_1', ...
+            if (str(k) == value) | (str(k).split('_')[0] == value): # to allow for using multiple similar keys in a dict like 'replacement_1', ...
                 return path
             elif hasattr(v, 'items'):
                 p = getpath(v, value, path, search_value) # recursive call
                 if p is not None:
                     return p
-        elif str(value) in str(v): # found value
-            return path
         elif hasattr(v, 'items'): # v is a dict
+            if value == v: # the value is a dict too
+                return path
             p = getpath(v, value, path, search_value) # recursive call
             if p is not None:
                 return p
-            
+        elif str(value) in str(v): # found value in list or string
+            return path 
+        
 
 def dict_replace(dict, v, path) -> dict:
     """ Fill in a value *v* into a dictionary *dict* at the position given by *path* """
@@ -209,18 +211,28 @@ def merge_dicts(dict_1: dict, dict_2: dict) -> dict:
     >>> merge_dicts(dict_1, dict_2)
     {'pets': {'dog': {'name': 'Wauwau', 'sound': ['wau', 'wuff', 'grrr'], 'isplayful': True}, 'cat': {'name': 'Miezy', 'food': ['fish', 'mice'], 'sound': 'maunz'}}}
     """
+    def subset_keys(dict_0, subsname = 'take_only'):
+        p = getpath(dict_0, subsname, search_value = False)
+        if p != None:
+            take_only = deep_get(dict_0, p)
+            p_val = deep_get(dict_0, p[:-1])
+            subs = {k:v for k,v in p_val.items() if k in take_only}
+            return dict_replace(dict_0, subs, p[:-1])
+        else:
+            return dict_0
+   
     placeholder = 'ADD'
     keys = getpath(dict_2, placeholder)
     #merged = deepcopy(dict_1)
     #merged.update(dict_2)
-    if(dict_2 and (next(iter(dict_2)) not in dict_1.keys())):
+    if(dict_2 and (next(iter(dict_2)) not in dict_1.keys())): # level difference
         p = getpath(deepcopy(dict_1), next(iter(dict_2)), search_value=False)
         if p != None:
             p = p[:len(p)-1]
             d = deep_get(dict_1,p)
             if(keys == None):
-                merge(d, merge(deepcopy(d), deepcopy(dict_2)))
-                return deepcopy(dict_1)
+                merged =  merge(d, merge(deepcopy(d), deepcopy(dict_2)))
+                return subset_keys(merged)
         else: 
             d = dict_1
     else: 
@@ -228,12 +240,14 @@ def merge_dicts(dict_1: dict, dict_2: dict) -> dict:
     if(keys != None): 
         value = list(deep_get(dict_2, keys))
         ind = value.index(placeholder)
-        value = list(set(value[:ind]+ deep_get(d, keys) + value[ind+1:]))
+        value = list(set(value[:ind]+ list(deep_get(d, keys)) + value[ind+1:]))
+        value = [str(v) for v in value]
+        value.sort() # the sort makes sure that the list has always the same order to be able to run assertion tests
         merged = dict_replace(deepcopy(dict_2), value, keys)
         return merge_dicts(d, merged)
     else: # no keys and no level differences
-        return merge(deepcopy(dict_1), deepcopy(dict_2)) # to get the missing keys from dict_1    
-
+        merged = merge(deepcopy(dict_1), deepcopy(dict_2)) # to get the missing keys from dict_1    
+    return subset_keys(merged)  
 
 
 def replace_dictvalues(target, placeholder = 'REPLACEMENTS') -> dict:

@@ -252,7 +252,5 @@ def prepare_nfcore(dataset, pipeline):
     dataset.get_reference()
     dataset.nfc_custom_params = {}
     dataset.nfc_custom_params['custom_default'] = dataset.analysis_params['nfcore']['pipeline'][pipeline]['params']
-    
-    display(Markdown(f'**Dataset {dataset.name}**'))
-    print(f'Parameters different from default: {dataset.nfc_custom_params}')
+
 

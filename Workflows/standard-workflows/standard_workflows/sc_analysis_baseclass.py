@@ -137,11 +137,76 @@ class Baseanalysis(AnalysisI):
 
     def get_paths(self) -> dict:
         return self.paths
+    
+    def add_metadata(self):
+        # read metadata
+        #metadata = pd.read_excel(paths['metadata_path'], sheet_name=0 )
+        metadata = pd.read_csv(self.paths['metadata_orig_filepath'], sep='\t')
+        # make sampleID same as sampleID in counts table
+        metadata['sampleID'] = metadata['sampleID'].astype('string') 
+
+        # prepare obs
+        obs = pd.DataFrame(self.data.obs, columns = ['sampleID']) # data.obs has only an index so far
+        obs['sampleID'] = obs.index
+        obs = obs.reset_index(drop=True)
+        # add metadata
+        self.data.obs = obs.merge(metadata, on='sampleID', how='left')
+        self.data.obs.index = self.data.obs['sampleID']
+        # test
+        self.data.obs.shape == metadata.shape
+
+    def read_data(self, filepath):
+        fileextension = path.splitext(filepath)[1]
+        if  fileextension == '.pickle':
+            with open(filepath, "rb") as f:
+                self.data = dill.load(f)
+            print("Data was read in from pickle file.")
+        elif fileextension == '.h5ad':
+            self.data = sc.read(filepath, cache = True)
+        elif fileextension == '.tsv':
+            self.data = pd.read_csv(filepath, sep='\t')
+            # set row names
+            gene_id = self.analysis_params['preprocessing']['gene_id']
+            self.data.index = self.data[gene_id]
+            # create table for gene name translations
+            if self.data.dtypes[0] == object and self.data.dtypes[1] == object:
+                self.gene_translations = self.data.iloc[:, 0:2]
+                print('The attribute "gene_translations" was added.')
+                # remove non count columns (first two)
+                #self.data = self.data.iloc[: , 2:]
+            self.data = self.data.select_dtypes(exclude=['object'])
+            # if cols are samples
+            if self.data.shape[0] > self.data.shape[1]: 
+                self.data = self.data.transpose()     
+            # to int 
+            self.data = self.data.astype(int)         # done after the formatting so that there are no string columns anymore. 
+
+            # to anndata
+            from anndata import AnnData
+            import numpy as np
+            self.data = AnnData(self.data, dtype=np.float32)
+            self.data.var_names_make_unique()
+            # test
+            #(data.var.index != self.gene_translations.index).sum()==0
+        else: 
+            return False
+        True
+
+    def save_data(self, filepath):
+        fileextension = path.splitext(filepath)[1]
+        if  fileextension == '.pickle':
+            with open(filepath, "wb") as dill_file:
+                dill.dump(self.data, dill_file)
+            print("Data was saved as pickle file.")
+        elif fileextension == '.h5ad':
+            self.data = sc.write(filepath, self.data)
+            print("Data was saved as h5ad file.")
+
 
 ########################
 #### Analysis Class ####
 ########################  
-class Analysis: 
+class Analysis(AnalysisI): 
     """The first step in an analysis is to create an *Analysis* object with this class."""
     @memoize.Memoize
     def new_dataset(*bases):
@@ -220,9 +285,15 @@ class Analysis:
             ### Pseudocode
             ----------
             read datafilepath_tmp (either pickle or h5ad file)
-                else read datafilepath
-                    else assume new version copy from mounted path of old version to new version, then read
-                save as pickle file
+                create datapath_tmp if not exists
+                if datapath != ''
+                    read datafilepath
+                    if error:
+                        if datapath not existing
+                            assume new version, copy from mounted path of old version to new version, then read
+                        else stop without reading data
+                    save data according to file extension of datafilepath_tmp (pickle or h5ad)
+                else: no data because there was no data_root_path
             """
             # Create tmp variables
             datapath = self.paths["datapath"] 
@@ -231,15 +302,8 @@ class Analysis:
             datafilepath = self.paths["datafilepath"]
             print(self.paths)
             # Read data
-            fileextension = path.splitext(datafilepath_tmp)[1]
             if(path.exists(datafilepath_tmp)):
-                if  fileextension == '.pickle':
-                    with open(datafilepath_tmp, "rb") as f:
-                        self.data = dill.load(f)
-                    print("Data was read in from pickle file.")
-                elif fileextension == '.h5ad':
-                    self.data = sc.read(datafilepath_tmp, cache = True)
-                else: 
+                if not self.read_data(datafilepath_tmp):
                     print(f"Please make sure that datafilepath_tmp ({datafilepath_tmp}) either ends with '.pickle' or with '.h5ad'.")
             else:
                 if not path.exists(datapath_tmp):
@@ -249,10 +313,10 @@ class Analysis:
                         self.data = sc.read(datafilepath, cache = True)
                     except OSError as e:
                         # probably a new version number
-                        if not path.exists(self.paths["datapath"]):
+                        if not path.exists(datapath):
                             # get previous version number
                             import re
-                            datapath = str(self.paths["datapath"])
+                            datapath = str(datapath)
                             r = re.compile(".*v(..).*")
                             numb = int((r.match(datapath)).group(1)) - 1
                             numb = "v" + str(numb).zfill(2) 
@@ -265,16 +329,8 @@ class Analysis:
                         else:
                             print(f"Datafilepath_tmp ({datafilepath_tmp}) does not exist. Datapath ({datapath}) exists but datafilepath ({datafilepath}) does not. If you wanted to create a new version, delete datapath.")
                             return
-                    if  fileextension == '.pickle':
-                        with open(datafilepath_tmp, "wb") as dill_file:
-                            dill.dump(self.data, dill_file)
-                        print("Data was saved as pickle file.")
-                    elif fileextension == '.h5ad':
-                        self.data = sc.write(datafilepath_tmp, self.data)
-                        print("Data was saved as h5ad file.")
-                    else: 
+                    if not self.save_data(datafilepath_tmp):
                         print(f"Please make sure that datafilepath_tmp ({datafilepath_tmp}) either ends with '.pickle' or with '.h5ad'.")
-         
                     print("Data was read in from datapath and is now saved in datapath_tmp.")
                 else: 
                     self.data = []
