@@ -26,6 +26,19 @@ def add_logo():
                 font-weight: 530;
             }
 
+            .st-emotion-cache-hps7pr{
+                height: 300px;
+            }
+
+            @media (min-width: 576px)
+            .st-emotion-cache-z5fcl4 {
+                padding: 0rem;
+            }
+            
+            .st-emotion-cache-z5fcl4 {
+                padding: 2rem 1rem 10rem;
+            }
+
             .css-1a1tcp.e1ewe7hr3{
                 color: black;
             }
@@ -54,6 +67,10 @@ def add_logo():
 
             .css-z5fcl4 {
                  padding: 2rem 2rem;
+            }
+
+            [data-testid="stIFrame"] {
+                height: 280px;
             }
 
             [data-testid="column"] {

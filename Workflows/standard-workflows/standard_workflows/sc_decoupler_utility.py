@@ -11,7 +11,8 @@ import collections
 import scanpy as sc, numpy as np, decoupler as dc, matplotlib.pyplot as plt, seaborn as sns, matplotlib as mpl, pandas as pd
 from .sc_analysis_baseclass import AnalysisI
 from .sc_analysis_baseclass import Baseanalysis
-
+from . import sc_classes
+from . import sc_analysis_loops as scl
 
 
 class Liana(AnalysisI):

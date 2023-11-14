@@ -95,10 +95,16 @@ class Baseanalysis(AnalysisI):
             self.paths.update({ "metadata_orig_filepath": path.join(self.paths["metadata_orig_path"],"metadata.tsv")})  
             
             # read, merge and write meta  
-            meta_subj = pd.read_excel(path.join(self.paths["metadata_orig_path"], "metadata_subj.xlsx"))
-            meta_sample = pd.read_excel(path.join(self.paths["metadata_orig_path"], "metadata_sample.xlsx"))
-            meta = pd.merge(meta_sample, meta_subj, how="left", on = "subjID")
-            meta.to_csv(self.paths["metadata_orig_filepath"], sep = "\t", index = False)
+            self.paths["metadata_subj_path"] = path.join(self.paths["metadata_orig_path"], "metadata_subj.xlsx")
+            self.paths["metadata_sample_path"] = path.join(self.paths["metadata_orig_path"], "metadata_sample.xlsx")
+            meta_subj, meta_sample = '', ''
+            if path.exists(self.paths["metadata_subj_path"]):
+                meta_subj = pd.read_excel(self.paths["metadata_subj_path"])
+            if path.exists(self.paths["metadata_sample_path"]):
+                meta_sample = pd.read_excel(self.paths["metadata_sample_path"])
+            if len(meta_subj) > 0 & len(meta_sample) > 0:
+                meta = pd.merge(meta_sample, meta_subj, how="left", on = "subjID")
+                meta.to_csv(self.paths["metadata_orig_filepath"], sep = "\t", index = False)
         
             self.paths["data_root_path"] = self.paths["datapath"]
 

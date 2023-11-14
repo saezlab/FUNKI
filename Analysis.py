@@ -227,9 +227,9 @@ with tab1:
             st.warning("You can't analyse single cell mouse data with FUNKI at the moment. If you want to do so, please write to Hanna and she'll notify you when this problem is fixed")
     else: # let gettestdata return 'datasets'
         datasets = bulk.get_testdata(w_inputformat, w_omicstype, datarootpath = st.session_state.ap['proj_params']['paths']['data_root_path'])
-        st.write('The following data will be used for the analysis: ')
+        #st.write('The following data will be used for the analysis: ')
         st.write(datasets['datasetname'])
-        st.write(datasets['data'])
+        #st.write(datasets['data'])
         bulk.get_acts(datasets)
     
 fill_tab4(st.session_state.ap)

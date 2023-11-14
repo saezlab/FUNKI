@@ -32,7 +32,7 @@ def walking_footprints():
                 }
 
                 #rightfoot{
-                left:146px;
+                left: 86px;
                 top: 184px;
                 visibility: hidden;
                 width: 20px;
@@ -40,7 +40,7 @@ def walking_footprints():
                 }
 
                 #leftfoot{
-                left:90px;
+                left:30px;
                 top: 184px;
                 visibility: hidden;
                 width: 20px;
@@ -48,7 +48,7 @@ def walking_footprints():
                 }
 
                 #frontrightfoot{
-                left:136px;
+                left:76px;
                 top: 164px;
                 visibility: hidden;
                 width: 20px;
@@ -56,7 +56,7 @@ def walking_footprints():
                 }
 
                 #frontleftfoot{
-                left:95px;
+                left:35px;
                 top: 164px;
                 visibility: hidden;
                 width: 20px;
