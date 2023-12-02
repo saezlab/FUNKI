@@ -13,6 +13,7 @@ from .sc_analysis_baseclass import AnalysisI
 from .sc_analysis_baseclass import Baseanalysis
 from . import sc_classes
 from . import sc_analysis_loops as scl
+import pandas as pd
 
 
 class Liana(AnalysisI):
@@ -52,7 +53,7 @@ class Decoupler(AnalysisI):
                             self._get_acts(model, modeltype, param, method, deepcopy(self.paths), new)   
 
     # priorKnowledge
-    def _getmodel(self, modeltype, param):
+    def _getmodel(self, modeltype, param, filetype = 'csv'):
         """ Get prior knowledge model with the fitting get method of decoupler. """
         # pickle to  decoupler/priorKnowledge/progeny_topvalue
         # add to paths
@@ -61,15 +62,18 @@ class Decoupler(AnalysisI):
             param_name = str.lower(''.join(param_name))
 
         dirpath = path.join(self.paths['priorknowledge'], modeltype)
-        filepath = path.join(dirpath, f"{param_name}.pickle")
+        filepath = path.join(dirpath, f"{param_name}.{filetype}")
+        
         if(exists(filepath)):
-            with open(filepath, 'rb') as file:
-                model = dill.load(file)
-            print('Prior Knowledge was read in from pickle files.')
+            if filetype == 'pickle':
+                with open(filepath, 'rb') as file:
+                    model = dill.load(file)
+                print('Prior Knowledge was read in from pickle files.')
+            else:
+                model = pd.read_csv(filepath)
+                print('Prior Knowledge was read in from csv files.')
         else:
             organism = self.organism
-            #if(modeltype == 'progeny'):
-            #    organism = "Mus musculus"
             if str(param) == 'false':
                 param = 'False'
             if str(param) == 'true':
@@ -77,10 +81,42 @@ class Decoupler(AnalysisI):
             model = eval('dc.get_' + modeltype + '(organism,' + str(param) + ')')
             if not exists(dirpath):
                 makedirs(dirpath)
-            with open(filepath, "wb") as dill_file:
-                dill.dump(model, dill_file)
+            if filetype == 'pickle':
+                with open(filepath, "wb") as dill_file:
+                    dill.dump(model, dill_file)
+            else:
+                model.to_csv(filepath)
             print('Prior Knowledge was read in from Omnipath via Decoupler.')
         return model
+
+    def get_msigdb(self, files:list, substr = 'immune')-> pd.DataFrame:
+        """Creates a table (source, target) from multiple MSigDB gmt files for use with Decoupler.
+
+        Args:
+            files (list): gmt files from MSigDB
+            substr (str, optional): Substring that must be contained in collection. Defaults to 'immune'.
+
+        Returns:
+            pd.DataFrame: source, target table for decoupler
+        """
+        dirpath = path.join(self.get_paths()['priorknowledge'], 'MSigDB')
+        if not path.exists(dirpath):
+            makedirs(dirpath)
+        net = pd.DataFrame()
+        for filename in files:
+            genesets_dict = {}
+            netpath = path.join(dirpath, filename)
+            with open(netpath) as genesets:
+                for line in genesets:
+                    entries = line.strip().split("\t")
+                    genesets_dict[entries[0]] = set(entries[2:]) 
+            for key in genesets_dict.keys():
+                if substr in key.lower():
+                    df = pd.DataFrame({'target': list(genesets_dict[key])})
+                    df ['source'] = key
+                    net = pd.concat([net, df], axis=0)
+        net.to_csv(path.join(dirpath, f'MSigDB_{substr}.csv'))
+        return net    
 
     def _get_acts(self, model, modeltype, modelparams, methods, paths, new):
         """ Create new Activity object and add it to dataset. """
@@ -118,11 +154,11 @@ class Decoupler(AnalysisI):
         # Caution: Consensus can get out of date when the results that it's based on get updated. 
 
         def create_actanndata(base, estimatekey, paths):
-                    data = dc.get_acts(base, obsm_key= estimatekey) # with estimates and drop estimates from obsm and save acts
-                    data.obsm.pop(estimatekey)
-                    # Write anndata
-                    data.write(paths['acts_data'])
-                    return data
+            data = dc.get_acts(base, obsm_key= estimatekey) # with estimates and drop estimates from obsm and save acts
+            data.obsm.pop(estimatekey)
+            # Write anndata
+            data.write(paths['acts_data'])
+            return data
 
         namedmethods = list(zip(methodnames, methods))
         for namedmethod in namedmethods: 

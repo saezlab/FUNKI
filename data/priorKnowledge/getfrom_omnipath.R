@@ -9,14 +9,12 @@ library(decoupleR)
 sapply(c("mouse", "human"), FUN = function(organism){
   # progeny
   sapply(c(300, 500), FUN = function(top){
-    res <- get_progeny(organism, top=300)
+    res <- get_progeny(organism, top=top)
     write.csv(res, paste0("progeny", '_', organism, '_', top, '.csv'))
   })
   # collectri
   res <- get_collectri(organism)
   write.csv(res, paste0("collectri", '_', organism,'.csv'))
-  
-  res <- decoupleR::get_resource('MSigDB')
 })
 
 # ksn

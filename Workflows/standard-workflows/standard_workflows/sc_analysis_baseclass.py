@@ -12,8 +12,10 @@ from abc import ABC, abstractmethod
 import pandas as pd
 from IPython.display import display, Markdown 
 import json, yaml  
+import pathlib
     
 class AnalysisI(ABC):
+        data:type
         analysis_params:dict
         paths:dict
 
@@ -70,9 +72,6 @@ class Baseanalysis(AnalysisI):
         
         # middlepath is the path between the path to the proj location and the file. 
         middlepath         = path.join(self.analysis_params["proj_id"], self.analysis_params["version"], "analysis", self.organism, self.seq_type) # MBEN_T/v00/analysis/human/sn
-        
-        
-
 
         middlepath_dataset = path.join(middlepath, self.name)             # MBEN_T/v00/analysis/human/sn/all
         datafoldername = 'data'
@@ -88,30 +87,27 @@ class Baseanalysis(AnalysisI):
             self.paths.update({"datapath": self.paths["data_root_path"]}) # -> datapath is same as data_root_path, no default folder structure
         else: 
             self.paths["data_root_path"] = path.dirname(path.normpath(self.paths["data_root_path"])) # remove "<default>" 
-            self.paths.update({ 
-                "metadata_orig_path": path.join(self.paths["data_root_path"], middlepath, "metadata"),
-                "datapath": path.join(self.paths["data_root_path"], middlepath_dataset, datafoldername) # add MBEN_T/v00/analysis/human/sn/all/data
-            })  
-            self.paths.update({ "metadata_orig_filepath": path.join(self.paths["metadata_orig_path"],"metadata.tsv")})  
-            
-            # read, merge and write meta  
-            self.paths["metadata_subj_path"] = path.join(self.paths["metadata_orig_path"], "metadata_subj.xlsx")
-            self.paths["metadata_sample_path"] = path.join(self.paths["metadata_orig_path"], "metadata_sample.xlsx")
-            meta_subj, meta_sample = '', ''
-            if path.exists(self.paths["metadata_subj_path"]):
-                meta_subj = pd.read_excel(self.paths["metadata_subj_path"])
-            if path.exists(self.paths["metadata_sample_path"]):
-                meta_sample = pd.read_excel(self.paths["metadata_sample_path"])
-            if len(meta_subj) > 0 & len(meta_sample) > 0:
-                meta = pd.merge(meta_sample, meta_subj, how="left", on = "subjID")
-                meta.to_csv(self.paths["metadata_orig_filepath"], sep = "\t", index = False)
+            self.paths["datapath"] = path.join(self.paths["data_root_path"], middlepath_dataset, datafoldername) # add MBEN_T/v00/analysis/human/sn/all/data
         
-            self.paths["data_root_path"] = self.paths["datapath"]
+        self.paths["metadata_orig_path"] = path.join(self.paths["analysis_path"], middlepath, "metadata")
+        self.paths.update({ "metadata_orig_filepath": path.join(self.paths["metadata_orig_path"],"metadata.tsv")})  
+        
+        # read, merge and write meta  
+        self.paths["metadata_subj_path"] = path.join(self.paths["metadata_orig_path"], "metadata_subj.xlsx")
+        self.paths["metadata_sample_path"] = path.join(self.paths["metadata_orig_path"], "metadata_sample.xlsx")
+        meta_subj, meta_sample = '', ''
+        if path.exists(self.paths["metadata_subj_path"]):
+            meta_subj = pd.read_excel(self.paths["metadata_subj_path"])
+        if path.exists(self.paths["metadata_sample_path"]):
+            meta_sample = pd.read_excel(self.paths["metadata_sample_path"])
+        if len(meta_subj) > 0 & len(meta_sample) > 0:
+            meta = pd.merge(meta_sample, meta_subj, how="left", on = "subjID")
+            meta.to_csv(self.paths["metadata_orig_filepath"], sep = "\t", index = False)
+    
+        self.paths["data_root_path"] = self.paths["datapath"]
 
         # Set data_root_filename (either given one or default)
-        if "data_root_filename" in self.paths.keys(): 
-            self.paths["data_root_filename"] = self.paths["data_root_filename"] 
-        else: 
+        if "data_root_filename" not in self.paths.keys(): 
             self.paths["data_root_filename"] = self.name + ".h5ad"    
 
         # Set datafilepath_tmp based on use_pickle_data
@@ -120,17 +116,15 @@ class Baseanalysis(AnalysisI):
             fileextension = ".pickle"
         else: 
             fileextension = ".h5ad"
-        datafilepath_tmp = path.join(self.paths["datapath_tmp"], f"{self.name}{fileextension}")
 
         self.paths.update({
             "datasetpath":        middlepath_dataset, # path from projectname to datasetname: MBEN_T/v00/analysis/human/sn/all
             "datafilepath":       path.join(self.paths["datapath"], self.paths["data_root_filename"]),
-            "metadatapath":       path.join(self.paths["datapath"], "metadata"),
-            "datafilepath_tmp":   datafilepath_tmp,
+            "metadatapath":       path.join(self.paths["datapath_tmp"], "metadata"),
             "priorknowledge":     path.join(self.paths["analysis_path"], middlepath, "priorKnowledge"), # TODO: change this to storage path 
             "priorknowledge_tmp": path.join(self.paths["analysis_path"], middlepath, "priorKnowledge") 
         })
-        
+        self.paths["datafilepath_tmp"] = path.join(self.paths["datapath_tmp"], f"{pathlib.Path(self.paths['datafilepath']).stem}{fileextension}")
         self.data = "" # is set in __init__ of analysis obj
         super().__init__()
 
@@ -143,23 +137,6 @@ class Baseanalysis(AnalysisI):
 
     def get_paths(self) -> dict:
         return self.paths
-    
-    def add_metadata(self):
-        # read metadata
-        #metadata = pd.read_excel(paths['metadata_path'], sheet_name=0 )
-        metadata = pd.read_csv(self.paths['metadata_orig_filepath'], sep='\t')
-        # make sampleID same as sampleID in counts table
-        metadata['sampleID'] = metadata['sampleID'].astype('string') 
-
-        # prepare obs
-        obs = pd.DataFrame(self.data.obs, columns = ['sampleID']) # data.obs has only an index so far
-        obs['sampleID'] = obs.index
-        obs = obs.reset_index(drop=True)
-        # add metadata
-        self.data.obs = obs.merge(metadata, on='sampleID', how='left')
-        self.data.obs.index = self.data.obs['sampleID']
-        # test
-        self.data.obs.shape == metadata.shape
 
     def read_data(self, filepath):
         fileextension = path.splitext(filepath)[1]
@@ -180,7 +157,7 @@ class Baseanalysis(AnalysisI):
                 print('The attribute "gene_translations" was added.')
                 # remove non count columns (first two)
                 #self.data = self.data.iloc[: , 2:]
-            self.data = self.data.select_dtypes(exclude=['object'])
+            self.data = self.data.select_dtypes(exclude=['object']) 
             # if cols are samples
             if self.data.shape[0] > self.data.shape[1]: 
                 self.data = self.data.transpose()     
@@ -196,7 +173,7 @@ class Baseanalysis(AnalysisI):
             #(data.var.index != self.gene_translations.index).sum()==0
         else: 
             return False
-        True
+        return True
 
     def save_data(self, filepath):
         fileextension = path.splitext(filepath)[1]
@@ -205,7 +182,7 @@ class Baseanalysis(AnalysisI):
                 dill.dump(self.data, dill_file)
             print("Data was saved as pickle file.")
         elif fileextension == '.h5ad':
-            self.data = sc.write(filepath, self.data)
+            sc.write(filepath, self.data)
             print("Data was saved as h5ad file.")
 
 
@@ -244,7 +221,7 @@ class Analysis(AnalysisI):
 
         Args:
             datasets (tuple): It contains datasetname (str), sequencingseq_type (str), organism (str), datasetClass (class)
-            params_path (str): path to analysis params
+            params_path (str): (relative) path to analysis params
         """
         # Read analysis_params.yaml
         with open(path.join(params_path, "analysis_params.yaml")) as stream:
@@ -306,7 +283,7 @@ class Analysis(AnalysisI):
             datapath_tmp = self.paths["datapath_tmp"]
             datafilepath_tmp = self.paths["datafilepath_tmp"]
             datafilepath = self.paths["datafilepath"]
-            print(self.paths)
+
             # Read data
             if(path.exists(datafilepath_tmp)):
                 if not self.read_data(datafilepath_tmp):
@@ -343,6 +320,7 @@ class Analysis(AnalysisI):
                     print("Please be aware that no data was read in as no data_root_path was provided.")
         init()
         self.clean_datasets()
+        self.add_metadata()
 
     ### Processing functions ###       
     def clean_datasets(self) :
@@ -352,11 +330,39 @@ class Analysis(AnalysisI):
             if len(dataset.data) >= 1:
                 if "seurat_clusters" in dataset.data.obs.columns : dataset.data.obs["seurat_clusters"] = dataset.data.obs.seurat_clusters.astype("category")
                             # to be sure that the sources and targets from the model match with the names used in the data, convert to lowercase
-                dataset.data.var_names = [x.lower() for x in list(dataset.data.var_names)]
-                # dataset.data.raw.var.index = dataset.data.raw.var._index
-                dataset.data.raw.var.index = [x.lower() for x in list(dataset.data.raw.var.index)]
+                #dataset.data.var_names = [x.lower() for x in list(dataset.data.var_names)]
+                #if dataset.data.raw != None:
+                #    dataset.data.raw.var.index = [x.lower() for x in list(dataset.data.raw.var.index)]
         clean()
 
+    def add_metadata(self):
+        """read metadata and save it in data.obs
+        """
+        @loop(self.datasets, True)
+        def add_meta (dataset) : 
+            if len(dataset.data.obs.columns) <=2: # no metadata loaded, yet
+                if path.exists(dataset.paths['metadata_orig_filepath']) and len(dataset.data) >= 1:
+                    metadata = pd.read_csv(dataset.paths['metadata_orig_filepath'], sep='\t')
+                    # make sampleID same as sampleID in counts table
+                    metadata['sampleID'] = metadata['sampleID'].astype('string') 
+
+                    # prepare obs
+                    obs = pd.DataFrame(dataset.data.obs, columns = ['sampleID']) # data.obs has only an index so far
+                    obs['sampleID'] = obs.index
+                    obs = obs.reset_index(drop=True)
+                    # add metadata
+                    dataset.data.obs = obs.merge(metadata, on='sampleID', how='left')
+                    dataset.data.obs.index = dataset.data.obs['sampleID']
+                    # test
+                    dataset.data.obs.shape == metadata.shape
+                else: 
+                    print(f"Either no data was read in or no metadata file exists here:{dataset.paths['metadata_orig_filepath']}. You can use the add_metadata() function of your analysis object and the read_data() function of your dataset(s) to fix this.")
+        add_meta()
+
+    def get(self, dataset_name):
+        for i in range(len(self.datasets)):
+            if self.datasets[i].name == dataset_name:
+                return self.datasets[i]
 
     ### Save & Load ###
     # These functions are for saving an intermediate status as pickle file. 

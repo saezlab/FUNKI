@@ -97,7 +97,7 @@ def getpath(nested_dict, value, prepath=(), search_value = True) -> tuple:
     Caution: 
         When the value is a key, another key is the same if it is exactly the same or if its prefix (before underscore) is the same. 
     
-    Code mostly taken from:
+    Code adjusted from:
         [Stackoverflow - answer from jsf](https://stackoverflow.com/questions/22162321/search-for-a-value-in-a-nested-dictionary-python)
     """
     
@@ -362,7 +362,31 @@ def run_networkclustering (adata, n_neighbors, algorithm) :
     sc.pp.neighbors(adata, n_neighbors = n_neighbors, knn = True) 
     eval("sc.tl." + algorithm + "(adata)")
     adata.obs.rename(columns={algorithm: "{}_{}".format(algorithm, n_neighbors)}, inplace=True)
-    
+
+def otsu_intraclass_variance(input, threshold):
+    """ Otsu’s intra-class variance.
+    If all pixels are above or below the threshold, this will throw a warning that can safely be ignored.
+    Code from here: https://en.wikipedia.org/wiki/Otsu%27s_method
+    """
+    return np.nansum([
+        np.mean(cls) * np.var(input, where=cls)
+        #   weight   ·  intra-class variance
+        for cls in [input>=threshold,input<threshold]
+    ])
+    # NaNs only arise if the class is empty, in which case the contribution should be zero, which `nansum` accomplishes.
+
+def get_otsu_threshold(input):
+    otsu_threshold = min(
+            range(np.min(input)+1, np.max(input)),
+            key = lambda th: otsu_intraclass_variance(input,th)
+        )
+
+    import matplotlib.pyplot as plt
+    plt.hist(input, bins='auto')  # arguments are passed to np.histogram
+    plt.title("Histogram with Otsu threshold")
+    plt.axvline(otsu_threshold, color='r', linestyle='--')
+    plt.show()
+    return otsu_threshold
 
     
 def docstringtest() -> int :

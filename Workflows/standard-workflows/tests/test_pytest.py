@@ -1,4 +1,7 @@
 import pytest
+#import standard_workflows
+#import importlib
+#importlib.reload(standard_workflows)
 from standard_workflows import sc_funcs
 
 
@@ -26,7 +29,7 @@ def test_getpath():
     assert sc_funcs.getpath(dict_2, 'Female', search_value = False) == (1, 'sex', 'Female')
     assert sc_funcs.getpath(dict_2, 'Female', search_value = True) == (2, 'sex')
     assert sc_funcs.getpath(dict_2, 'ADD', search_value = True) == (1, 'name', 'Mandoline')
-    assert sc_funcs.getpath(dict_2, ('Mandy', 'ADD'), search_value = True) == (1, 'name', 'Mandoline')
+    assert sc_funcs.getpath(dict_2, ('Mandy', 'ADD', 123), search_value = True) == (1, 'name', 'Mandoline')
     assert sc_funcs.getpath(dict_2, {'Male': 'm', 'Female': 'w', 'Zwitter': 'z'}, search_value = True) == (1, 'sex')
    
 def test_mergepaths():

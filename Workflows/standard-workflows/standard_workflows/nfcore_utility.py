@@ -33,7 +33,7 @@ class NfCore(AnalysisI):
         self.paths['full_local_nfcore_path'] = path.join(self.paths['datapath_tmp'], self.paths['nfcore']['nfcore_path'])
         self.paths['full_raw_path'] = path.join(self.paths['datapath_tmp'], self.paths['rawpath'])
 
-    def create_sample_sheet(self, pipeline_name:str):
+    def create_sample_sheet(self, pipeline_name:str, new:bool):
         """Create sample sheet for nf-core pipeline from fastq files. 
             The files must be in the following format: 
             rawpath must lead to folders named by sample. 
@@ -46,16 +46,21 @@ class NfCore(AnalysisI):
         import pandas as pd
 
         if pipeline_name == 'rnaseq':
-            samplesheet = pd.DataFrame()
-            samplesheet["sample"] = [p.name for p in pathlib.Path(self.paths['full_raw_path']).absolute().glob('*') if os.path.isdir(p)]
-            samplesheet["fastq_1"] = [file for file in pathlib.Path(self.paths['full_raw_path']).absolute().glob('*/*_1.fq.gz')]#[os.path.abspath(name) for name in os.listdir(path) if os.path.isdir(name)]
-            samplesheet["fastq_2"] = [file for file in pathlib.Path(self.paths['full_raw_path']).absolute().glob('*/*_2.fq.gz')]
-            samplesheet["strandedness"] = "auto"
-            samplesheet["fastq_1"] = path.join(self.paths['exec_env_data_path'], self.paths['rawpath'],'/'.join(samplesheet["fastq_1"][0].parts[-2:]))
-            samplesheet["fastq_2"] = path.join(self.paths['exec_env_data_path'], self.paths['rawpath'],'/'.join(samplesheet["fastq_2"][0].parts[-2:]))
-            #samplesheet["fastq_1"] = self.paths['exec_env_data_path'] + samplesheet["fastq_1"].astype(str)
-            self.paths["nfcore"]["samplesheet_path"] = path.join(self.paths['metadatapath'], f"{self.paths['nfcore']['samplesheet_name']}.csv")
-            samplesheet.to_csv(self.paths["nfcore"]["samplesheet_path"], index=False)
+            samplesheet_path = path.join(self.paths['metadatapath'], f"{self.paths['nfcore']['samplesheet_name']}.csv")
+            if not path.exists(samplesheet_path) or new:
+                samplesheet = pd.DataFrame()
+                samplesheet["sample"] = [p.name for p in pathlib.Path(self.paths['full_raw_path']).absolute().glob('*') if os.path.isdir(p)]
+                samplesheet["fastq_1"] = [file for file in pathlib.Path(self.paths['full_raw_path']).absolute().glob('*/*_1.fq.gz')]#[os.path.abspath(name) for name in os.listdir(path) if os.path.isdir(name)]
+                samplesheet["fastq_2"] = [file for file in pathlib.Path(self.paths['full_raw_path']).absolute().glob('*/*_2.fq.gz')]
+                samplesheet["strandedness"] = "auto"
+                #array_4 = ['-'.join(str(item) for item in column) for column in zip(*meta_array)]
+
+                samplesheet["fastq_1"] = [path.join(self.paths['exec_env_data_path'], self.paths['rawpath'],'/'.join(samplesheet["fastq_1"][i].parts[-2:])) for i in range(0,len(samplesheet.index))]
+                samplesheet["fastq_2"] = [path.join(self.paths['exec_env_data_path'], self.paths['rawpath'],'/'.join(samplesheet["fastq_2"][i].parts[-2:])) for i in range(0,len(samplesheet.index))]
+                #samplesheet["fastq_1"] = self.paths['exec_env_data_path'] + samplesheet["fastq_1"].astype(str)
+                samplesheet.to_csv(samplesheet_path, index=False)
+                print("A new sample sheet was created.")
+            self.paths["nfcore"]["samplesheet_path"] = samplesheet_path
 
 
     def get_mouse_ref(self):
@@ -126,11 +131,11 @@ class NfCore(AnalysisI):
             "save_trimmed": True,
             # alignment
             "aligner": "star_rsem",
-            "pseudo_aligner": "salmon",
+            #"pseudo_aligner": "salmon",
             "bam_csi_index": False,         # required for genomes with larger chromosome sizes like wheat
             "star_ignore_sjdbgtf": False,
             "min_mapped_reads": 5,
-            "extra_salmon_quant_args": "--seqBias --gcBias",
+            #"extra_salmon_quant_args": "--seqBias --gcBias",
             "stringtie_ignore_gtf": False,   # StringTie is not that popular? Using this option expands the results but not necessarily with true data.
             "rseqc_modules": "bam_stat,inner_distance,infer_experiment,junction_annotation,junction_saturation,read_distribution,read_duplication,tin"
             }
@@ -251,7 +256,7 @@ exec_env_nfcore_path={folderpath}\n\
 "
 
 
-    def init_nfcore_run(self, foldername:str, custom_params = {}):
+    def init_nfcore_run(self, foldername:str, custom_params = {}, new = False):
         """Creates the three needed files for running a nf-core pipeline. 
 
         Args:
@@ -280,19 +285,21 @@ exec_env_nfcore_path={folderpath}\n\
         path_to_folder = f"{self.paths['full_local_nfcore_path']}/{foldername}/"
         if not path.exists(path_to_folder):
             makedirs(path_to_folder)
-            
-        # params
-        params = json.dumps(nfcore_params, indent=4)
-        with open(f'{path_to_folder}/params.json', 'w+') as file: 
-            file.write(params)
+        if new:
+            # params
+            params = json.dumps(nfcore_params, indent=4)
+            with open(f'{path_to_folder}/params.json', 'w+') as file: 
+                file.write(params)
 
-        # config
-        with open(f'{path_to_folder}/config.config', 'w+') as file: 
-            file.write(config)
+            # config
+            with open(f'{path_to_folder}/config.config', 'w+') as file: 
+                file.write(config)
 
-        # run.sh
-        with open(f'{path_to_folder}/run.sh', 'w+') as file:
-            file.write(run_sh)
+            # run.sh
+            with open(f'{path_to_folder}/run.sh', 'w+') as file:
+                file.write(run_sh)
+
+            print(f"Parameter, config and run file are saved under {path_to_folder}.")
 
         match pipeline_name:
             case 'rnaseq':

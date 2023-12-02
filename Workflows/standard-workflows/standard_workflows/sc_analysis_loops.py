@@ -239,7 +239,7 @@ def get_subsets(ds, dataset_class) -> tuple:
 
 
 @loop ('analysis.datasets', True)
-def prepare_nfcore(dataset, pipeline):
+def prepare_nfcore(dataset, pipeline, new = True):
     """Prepare run, create sample sheet, get reference genome. 
     Initialise 'update_content' with the pipeline params from the ap file as new attribute of the dataset
 
@@ -248,7 +248,7 @@ def prepare_nfcore(dataset, pipeline):
         pipeline (str): name of pipeline to prepare for
     """
     dataset.prepare_run(pipeline)
-    dataset.create_sample_sheet(pipeline)
+    dataset.create_sample_sheet(pipeline, new)
     dataset.get_reference()
     dataset.nfc_custom_params = {}
     dataset.nfc_custom_params['custom_default'] = dataset.analysis_params['nfcore']['pipeline'][pipeline]['params']
