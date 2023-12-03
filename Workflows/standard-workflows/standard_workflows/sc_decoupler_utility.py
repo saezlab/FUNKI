@@ -35,11 +35,7 @@ class Decoupler(AnalysisI):
         self.paths.update({'dc': 'decoupler'})
         self.paths.update({'actsdir': path.join(self.paths['resultpath'], 'log', self.paths['dc'])})
         self.paths.update({'pseudobulkdir': path.join(self.paths['figpath'], 'counts', self.paths['dc'], 'pseudobulk')})
-        # liana
-        self.paths.update({'liana_resdir': path.join(self.paths['resultpath'], 'log', 'liana')})
-        self.paths.update({'liana_figdir': path.join(self.paths['figpath'], 'log', 'liana')})
-        self.paths.update({'liana_aggdir': path.join(self.paths['liana_resdir'], 'aggregated')})
-
+        
     def get_all_acts(self, new = False):
         """ Create new Activity object for all parameter combinations. """
         pk = self.analysis_params['priorKnowledge']
@@ -78,7 +74,10 @@ class Decoupler(AnalysisI):
                 param = 'False'
             if str(param) == 'true':
                 param = 'True'
-            model = eval('dc.get_' + modeltype + '(organism,' + str(param) + ')')
+            if modeltype == 'MSigDB':
+                model = eval('self.get_' + modeltype.lower() + '(organism,' + str(param) + ')')
+            else:
+                model = eval('dc.get_' + modeltype + '(organism,' + str(param) + ')')
             if not exists(dirpath):
                 makedirs(dirpath)
             if filetype == 'pickle':

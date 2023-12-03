@@ -184,6 +184,23 @@ class Baseanalysis(AnalysisI):
         elif fileextension == '.h5ad':
             sc.write(filepath, self.data)
             print("Data was saved as h5ad file.")
+    
+    def set_gene_names(self, ensembldata, gene_symbol = 'gene_name'):
+        """Replaces var_names with gene_names from Ensembl
+
+        Args:
+            ensembldata (EnsemblRelease): from pyensembl import EnsemblRelease. Install the needed release like this !pyensembl install --release 109 --species mouse
+            gene_symbol (str, optional): _description_. Defaults to 'gene_name'.
+        """
+        self.data.var[gene_symbol] = [ensembldata.gene_by_id(id).gene_name for id in self.data.var.index]
+        self.data.var['gene_id'] = self.data.var.index
+        # replace empty gene_names with gene_id. If this is not done and the gene_names are used for the index, the empty names are replaced with negative integers.
+        for i in range(len(self.data.var[gene_symbol])):
+            if self.data.var[gene_symbol][i] =='':
+                self.data.var[gene_symbol][i] = self.data.var['gene_id'][i]
+        self.data.var.index = self.data.var[gene_symbol]
+        self.data.var_names = self.data.var_names.astype(str)
+        self.data.var_names_make_unique()
 
 
 ########################

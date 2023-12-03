@@ -1,22 +1,49 @@
-#from re import S
-import sys, yaml, dill, re
-#sys.path.insert(1, '/Users/hanna/Documents/projects/Workflows/Python/scUtilities/v4')
-#from scUtilities import analysis_params
-#import sc_analysis_loops as scl
 from copy import deepcopy
 from pathlib import Path
 from os.path import exists
 from os import path, makedirs
-import collections
-import scanpy as sc, numpy as np, decoupler as dc, matplotlib.pyplot as plt, seaborn as sns, matplotlib as mpl, pandas as pd
+import decoupler as dc, pandas as pd
 from .sc_analysis_baseclass import AnalysisI
 from .sc_analysis_baseclass import Baseanalysis
-import .sc_analysis_baseclass as sc_classes
+from standard_workflows import sc_analysis_baseclass as sc_classes
+from standard_workflows import sc_analysis_loops as scl
 from pydeseq2.dds import DeseqDataSet
 from pydeseq2.ds import DeseqStats
-import dill
+import dill, itertools
 from IPython.display import display, Markdown 
-import decoupler as dc
+
+def init_contrasts(dds, design_factor):
+    """Formats contrasts for Deseq2.
+
+    Args:
+        dds (Deseq2DataSet): _description_
+        design_factor (str): _description_
+
+    Returns:
+        list: contrasts that are usable with DeseqStats function
+    """
+    contrasts = list(itertools.combinations(dds.obs[design_factor].unique(), 2))
+    def compare_strings(s):
+        """ To be used as *key* of the funciton *sorted* to sort a list of string by last character."""
+        return s[-1]
+    # sort contrasts by last character to order like this: treated vs. untreated, for example ['m_1', 'm_0']
+    contrasts = [sorted(list(cont), key=compare_strings, reverse = True) for cont in contrasts]
+    # add the design_factor to each element
+    return [[design_factor] + list(cont) for cont in contrasts]
+
+def subset_contrasts(dds, contrasts):
+    """Filter contrasts by the ones that are actually available.
+
+    Args:
+        dds (Deseq2DataSet): _description_
+        contrasts (str): _description_
+
+    Returns:
+        list: _description_
+    """
+    contrasts_str = [f'{c0}_{c1}_vs_{c2}' for c0,c1,c2 in contrasts] # make strings
+    flags = [e in dds.varm["LFC"].columns for e in contrasts_str] # compare with availabe LFC data
+    return [x for x, flag in zip(contrasts, flags) if flag]
 
 class DiffExpr(AnalysisI):
     """ This class provides methods to run DeSeq2 with bulk data. 
@@ -92,8 +119,83 @@ class DiffExpr(AnalysisI):
                 dill.dump(dds, f)
 
         dds_class = sc_classes.Analysis.new_dataset(Dds)
-        self.ddss[design_factor[0]] = dds_class(dds, design_factor[0], design_factor[1], deepcopy(self.paths), dds_dirpath)
+        self.ddss[f'{design_factor[0]}_{design_factor[1]}'] = dds_class(dds, design_factor[0], design_factor[1], deepcopy(self.paths), dds_dirpath)
         print(self)
+
+
+    def get_contrasts(self, key, gene_symbols = 'gene_name', new = True):
+        """Calculate contrasts
+
+        Args:
+            design_factor (_type_): _description_
+            gene_symbols (str, optional): _description_. Defaults to 'gene_name'.
+        """
+        dds = self.ddss[key]
+        design_factor = dds.design_factor
+        display(Markdown(f'Working on design factor {design_factor}'))
+        contrasts = subset_contrasts(dds.data, init_contrasts(dds.data, design_factor))
+
+        @scl.loop (contrasts, True)
+        def calc_contrasts(contrast, dds, new):
+            # Save contrast
+            contrast_str = f'{contrast[0]}_{contrast[1]}_vs_{contrast[2]}'
+            dirpath = path.join(dds.paths['resultpath'], 'contrasts', contrast_str)
+            file = 'contrast.csv'
+            filepath = path.join(dirpath, file)
+            if exists(filepath):
+                results_df = pd.read_csv(filepath)
+            else:
+                display(Markdown(f'Contrast: {contrast}'))
+
+                # Extract contrast 
+                stat_res = DeseqStats(dds.data, contrast = contrast, n_cpus=8)#, contrast=[design_factor, 'm_0', 'f_1'], n_cpus=8)
+                display(Markdown('**stat_res.summary**  '))
+                # Compute Wald test to get pvalues
+                # runs the whole statistical analysis, cooks filtering and multiple testing adjustement included
+                # result of this is in stat_res.results_df
+                stat_res.summary()
+                
+                d = pd.DataFrame(stat_res.results_df)
+                d.insert(0, d.index.name, d.index)
+
+                def save_tocsv(data, dirpath, file):
+                    filepath = path.join(dirpath, file)
+                    if not path.exists(dirpath):
+                        makedirs(dirpath)
+                    data.to_csv(filepath, index = False, header=True)
+                save_tocsv(d, dirpath, file)
+
+                # Shrink LFCs
+                # Running lfc_shrink() will overwrite a DeseqStats’ log fold changes (and standard errors) with shrunk values. This can be checked using the shrunk_LFCs flag.
+                # print(stat_res.shrunk_LFCs)  will be true when lfc_shrink was run
+                stat_res.lfc_shrink(coeff=contrast_str)
+                # Extract results
+                results_df = stat_res.results_df
+                # make index to column and remove index
+                results_df[gene_symbols] = results_df.index
+                results_df = results_df.reset_index(drop=True)
+                #gene_transl = gene_transl.reset_index(drop=True)
+                #save_tocsv(gene_transl, dirpath, 'gene_translation.csv')
+                # merge with gene names/symbols
+                #results_df = results_df.merge(gene_transl , on='gene_id', how='left')
+                #col = results_df.pop('gene_id')
+                #results_df.insert(0, 'gene_id', col)
+
+                col = results_df.pop(gene_symbols)
+                results_df.insert(0, gene_symbols, col)
+                save_tocsv(results_df, dirpath, 'contrast_shrunk.csv')
+
+                # for FUNKI
+                genelist = results_df.loc[:,[gene_symbols, 'log2FoldChange']]
+                save_tocsv(genelist, dirpath, 'genelist.csv')
+
+            display(Markdown('**Results**'))
+            display(results_df)
+            dds.contrasts[contrast_str] = results_df
+            display(Markdown(f'**{contrast}**'))
+            dds.plot_diffExpr(contrast_str)
+
+        calc_contrasts(dds = dds, new = new)
 
 
 class Dds(): 
@@ -107,15 +209,26 @@ class Dds():
         self.paths = paths
         self.paths['resultpath'] = obj_path
         self.paths['figpath'] = self.paths['resultpath'].replace("results", "figures")
-        self.results = pd.DataFrame()
+        self.contrasts = {}
 
-    def plot_diffExpr(self, x_vals='log2FoldChange', y_vals=['padj', 'pvalue'], top=30, sign_thr=0.05, gene_symbols = 'gene_name'):
-            figpath = path.join(self.paths['figpath'], 'volcano')
-            self.results.index = self.results[gene_symbols]
-            if not path.exists(figpath):
-                    makedirs(figpath)
-            figpath = path.join(figpath, f'top{top}_sig{int(sign_thr*100)}')
-            for y in y_vals:
-                filepath = figpath + '_' + y + '.pdf'
-                dc.plot_volcano_df(self.results, x='log2FoldChange', y=y, top=top, sign_thr=sign_thr, save=filepath )
+    def plot_diffExpr(self, contrast_str, x_vals='log2FoldChange', y_vals=['padj', 'pvalue'], top=30, sign_thr=0.05, gene_symbols = 'gene_name'):
+        """ Volcano plots for a specific contrast
+
+        Args:
+            contrast (_type_): _description_
+            x_vals (str, optional): _description_. Defaults to 'log2FoldChange'.
+            y_vals (list, optional): _description_. Defaults to ['padj', 'pvalue'].
+            top (int, optional): _description_. Defaults to 30.
+            sign_thr (float, optional): _description_. Defaults to 0.05.
+            gene_symbols (str, optional): _description_. Defaults to 'gene_name'.
+        """
+        contrast = self.contrasts[contrast_str]
+        figpath = path.join(self.paths['figpath'], 'contrasts', contrast_str, 'volcano')
+        contrast.index = contrast[gene_symbols]
+        if not path.exists(figpath):
+                makedirs(figpath)
+        figpath = path.join(figpath, f'top{top}_sig{int(sign_thr*100)}')
+        for y in y_vals:
+            filepath = figpath + '_' + y + '.pdf'
+            dc.plot_volcano_df(contrast, x='log2FoldChange', y=y, top=top, sign_thr=sign_thr, save=filepath )
        
