@@ -1,13 +1,7 @@
-import subprocess 
-#import webbrowser, glob, os, subprocess              #json, yaml, base64, re, sys, numba, logging, random, dill, logging.config
-from os import makedirs, path       
-#from copy import deepcopy
+from os import path       
 import streamlit as st
 st.set_page_config(layout="wide")
-# funki modules
 from standard_workflows import * 
-#from gui import pages, utils
-
 from gui.utils import utilities as util
 from gui.utils import bulkRNA_utils as bulk
 from gui.utils import web_utils as web

@@ -1,27 +1,8 @@
-import sys, yaml, dill, re
-#sys.path.insert(1, '/Users/hanna/Documents/projects/Workflows/Python/scUtilities/v4')
-#from scUtilities import analysis_params
-#import sc_analysis_loops as scl
-from copy import deepcopy
-from pathlib import Path
-from os.path import exists
-from os import path, makedirs
-import collections
-import scanpy as sc, numpy as np, decoupler as dc, matplotlib.pyplot as plt, seaborn as sns, matplotlib as mpl, pandas as pd
-from .sc_analysis_baseclass import AnalysisI
-from .sc_analysis_baseclass import Baseanalysis
-from . import sc_funcs
-from . import sc_classes
-from . import sc_analysis_loops as scl
-import joblib # parallelise
+import scanpy as sc, numpy as np, decoupler as dc, matplotlib.pyplot as plt, pandas as pd
+from .analysis_baseclass import AnalysisI
+from . import utility_functions
 import pathlib # create dirs
-import os # get ncpus
-import time # get execution time
-import numpy as np
-import decoupler as dc
-import matplotlib.pyplot as plt
-
-
+import os # cpu_count
 
 class Preprocessing(AnalysisI):
     """_summary_
@@ -226,7 +207,7 @@ class Preprocessing(AnalysisI):
             else:
                 index = self.data.var_names
             df_loadings = pd.DataFrame(self.data.varm['PCs'], index=index)
-            df_loadings.to_csv(path.join(sc.settings.writedir, 'loadings.csv'))
+            df_loadings.to_csv(os.path.join(sc.settings.writedir, 'loadings.csv'))
             top_pca_genes = self.pc_loadings(input_type=input_type, based_on_hvg = use_hvg, gene_symbols=gene_symbols, pc_max=pc_max)
             self.plot_pca(top_pca_genes, based_on_hvg = use_hvg, input_type = input_type, gene_symbols=gene_symbols, dimensions = dimensions)
         self.paths['figure_pca_path'] = sc.settings.figdir
@@ -323,7 +304,7 @@ class Preprocessing(AnalysisI):
         sc.pp.calculate_qc_metrics(self.data, qc_vars=params['qc_cols_var'], percent_top=None, log1p=False, inplace=True, parallel=True, use_raw=False)
 
         # obs: add 'isHighMT' (binary column for MT depending on otsu threshold)
-        otsu_threshold = sc_funcs.get_otsu_threshold(np.array(self.data.obs['pct_counts_mt']*100, dtype='int'))
+        otsu_threshold = utility_functions.get_otsu_threshold(np.array(self.data.obs['pct_counts_mt']*100, dtype='int'))
         self.data.obs['isHighMT'] = np.where(self.data.obs['total_counts_mt']>= otsu_threshold, 1, 0)
         params['qc_cols_obs'] += ['isHighMT']
 
@@ -350,11 +331,12 @@ class Preprocessing(AnalysisI):
             pca_dims (list, optional): PCA dimensions. Defaults to [].
             pc_max (int, optional): Maximal PCA dimension for plotting heatmaps. Defaults to 5.
         """
+        min_prop = 0
         params = self.analysis_params['preprocessing']
         input_type = f"{self.analysis_params['xType']}_prev{prev}"
         # prevalence filtering
-        dc.plot_filter_by_expr(self.data, large_n=prev)
-        genes_to_keep = dc.filter_by_expr(self.data, min_count = params['basicFilt']['min_count'], min_total_count=params['basicFilt']['min_total_count'], large_n=prev, min_prop=0)
+        dc.plot_filter_by_expr(self.data, min_count = params['basicFilt']['min_count'], min_total_count=params['basicFilt']['min_total_count'], large_n=prev, min_prop = min_prop)
+        genes_to_keep = dc.filter_by_expr(self.data, min_count = params['basicFilt']['min_count'], min_total_count=params['basicFilt']['min_total_count'], large_n=prev, min_prop=min_prop)
         print(f'Number of genes after prevalence filtering: {len(genes_to_keep)}')
         self.data = self.data[:, genes_to_keep]
 

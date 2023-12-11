@@ -1,18 +1,15 @@
 """Contains the classes for initializing an analysis. 
 Creating a new *Analysis* leads to reading the parameters, initializing the *Datasets*. 
-A dataset can inherit from various ...analysis classes but inherits always from the *Baseanalysis* class contained in this file."""
+A dataset can inherit from various analysis classes but inherits always from the *Baseanalysis* class contained in this file."""
 from os import path, makedirs
-from .sc_analysis_loops import loop
-from .scfunctions import replace_dictvalues, merge_dicts, add_nested_key, print_paths
+from .analysis_loops import loop
+from .utility_functions import replace_dictvalues, merge_dicts, add_nested_key, print_paths
 from . import memoize
 from copy import deepcopy
-import scanpy as sc
-import dill, yaml
-from abc import ABC, abstractmethod
-import pandas as pd
+import scanpy as sc, pandas as pd
+from abc import ABC
 from IPython.display import display, Markdown 
-import json, yaml  
-import pathlib
+import dill, yaml, json, yaml , pathlib
     
 class AnalysisI(ABC):
         data:type

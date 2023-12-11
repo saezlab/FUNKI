@@ -1,5 +1,4 @@
-import sys
-import functools, inspect, json
+import functools, inspect
 import scanpy as sc
 from os.path import exists
 from os import makedirs, path
@@ -9,8 +8,6 @@ from copy import deepcopy
 from multiprocessing import Pool
 from toolz import compose
 from pathos.threading import ThreadPool as Pool
-
-
 
 class AnalysisI():
     def __init__(self) -> None:

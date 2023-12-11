@@ -1,16 +1,16 @@
 from copy import deepcopy
 from pathlib import Path
 from os.path import exists
-from os import path, makedirs
+from os import path, makedirs, cpu_count
 import decoupler as dc, pandas as pd
-from .sc_analysis_baseclass import AnalysisI
-from .sc_analysis_baseclass import Baseanalysis
-from standard_workflows import sc_analysis_baseclass as sc_classes
-from standard_workflows import sc_analysis_loops as scl
+from IPython.display import display, Markdown 
 from pydeseq2.dds import DeseqDataSet
 from pydeseq2.ds import DeseqStats
 import dill, itertools
-from IPython.display import display, Markdown 
+from .analysis_baseclass import AnalysisI
+from standard_workflows import analysis_baseclass as baseclasses
+from standard_workflows import decoupler_utility as dcu
+from standard_workflows import analysis_loops as al
 
 def init_contrasts(dds, design_factor):
     """Formats contrasts for Deseq2.
@@ -104,7 +104,7 @@ class DiffExpr(AnalysisI):
                 ref_level = design_factor,
                 refit_cooks=refit_cooks,
                 min_replicates = min_replicates, 
-                n_cpus=None,
+                n_cpus=cpu_count(),
             )
 
             # fit dispersions and LFCs
@@ -118,8 +118,10 @@ class DiffExpr(AnalysisI):
             with open(dds_filepath, "wb") as f:
                 dill.dump(dds, f)
 
-        dds_class = sc_classes.Analysis.new_dataset(Dds)
-        self.ddss[f'{design_factor[0]}_{design_factor[1]}'] = dds_class(dds, design_factor[0], design_factor[1], deepcopy(self.paths), dds_dirpath)
+        dds_class = baseclasses.Analysis.new_dataset(Dds)
+        dds_paths = deepcopy(self.paths)
+        dds_paths['resultpath'] = dds_dirpath
+        self.ddss[f'{design_factor[0]}_{design_factor[1]}'] = dds_class(dds, design_factor[0], design_factor[1], deepcopy(self.analysis_params), dds_paths)
         print(self)
 
 
@@ -135,14 +137,14 @@ class DiffExpr(AnalysisI):
         display(Markdown(f'Working on design factor {design_factor}'))
         contrasts = subset_contrasts(dds.data, init_contrasts(dds.data, design_factor))
 
-        @scl.loop (contrasts, True)
+        @al.loop (contrasts, True)
         def calc_contrasts(contrast, dds, new):
             # Save contrast
             contrast_str = f'{contrast[0]}_{contrast[1]}_vs_{contrast[2]}'
             dirpath = path.join(dds.paths['resultpath'], 'contrasts', contrast_str)
             file = 'contrast.csv'
             filepath = path.join(dirpath, file)
-            if exists(filepath):
+            if exists(filepath) and not new:
                 results_df = pd.read_csv(filepath)
             else:
                 display(Markdown(f'Contrast: {contrast}'))
@@ -154,7 +156,6 @@ class DiffExpr(AnalysisI):
                 # runs the whole statistical analysis, cooks filtering and multiple testing adjustement included
                 # result of this is in stat_res.results_df
                 stat_res.summary()
-                
                 d = pd.DataFrame(stat_res.results_df)
                 d.insert(0, d.index.name, d.index)
 
@@ -189,29 +190,30 @@ class DiffExpr(AnalysisI):
                 genelist = results_df.loc[:,[gene_symbols, 'log2FoldChange']]
                 save_tocsv(genelist, dirpath, 'genelist.csv')
 
-            display(Markdown('**Results**'))
-            display(results_df)
-            dds.contrasts[contrast_str] = results_df
+            #display(Markdown('**Results**'))
+            #display(results_df)
+            dds.contrasts[contrast_str] = {'data': results_df, 'acts':[]}
             display(Markdown(f'**{contrast}**'))
-            dds.plot_diffExpr(contrast_str)
+            dds.plot_diffExpr(contrast_str, new = new)
 
         calc_contrasts(dds = dds, new = new)
 
 
 class Dds(): 
     """ Dds is a Dataset that holds an Anndata object that stores differential expression results."""
-    def __init__(self, data, design_factor, ref_level, paths, obj_path):
+    def __init__(self, data, design_factor, ref_level, ap, paths):
         """ Adds paths and reads in anndata object if it already exists or creates it newly via Decoupler. """
         super().__init__()
         self.data = data
         self.design_factor = design_factor
         self.ref_level = ref_level
+        self.analysis_params = ap
         self.paths = paths
-        self.paths['resultpath'] = obj_path
+        #self.paths['resultpath'] = obj_path
         self.paths['figpath'] = self.paths['resultpath'].replace("results", "figures")
         self.contrasts = {}
 
-    def plot_diffExpr(self, contrast_str, x_vals='log2FoldChange', y_vals=['padj', 'pvalue'], top=30, sign_thr=0.05, gene_symbols = 'gene_name'):
+    def plot_diffExpr(self, contrast_str, x_vals='log2FoldChange', y_vals=['padj', 'pvalue'], top=30, sign_thr=0.05, gene_symbols = 'gene_name', new = True):
         """ Volcano plots for a specific contrast
 
         Args:
@@ -222,13 +224,16 @@ class Dds():
             sign_thr (float, optional): _description_. Defaults to 0.05.
             gene_symbols (str, optional): _description_. Defaults to 'gene_name'.
         """
-        contrast = self.contrasts[contrast_str]
+        contrast = self.contrasts[contrast_str]['data']
         figpath = path.join(self.paths['figpath'], 'contrasts', contrast_str, 'volcano')
         contrast.index = contrast[gene_symbols]
         if not path.exists(figpath):
-                makedirs(figpath)
+            makedirs(figpath)
         figpath = path.join(figpath, f'top{top}_sig{int(sign_thr*100)}')
         for y in y_vals:
             filepath = figpath + '_' + y + '.pdf'
-            dc.plot_volcano_df(contrast, x='log2FoldChange', y=y, top=top, sign_thr=sign_thr, save=filepath )
+            if exists(filepath) and not new:
+                ...#read figures
+            else:
+                dc.plot_volcano_df(contrast, x=x_vals, y=y, top=top, sign_thr=sign_thr, save=filepath, return_fig=False)
        

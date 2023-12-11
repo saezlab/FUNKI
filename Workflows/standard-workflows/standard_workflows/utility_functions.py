@@ -6,25 +6,19 @@ Modules names should have short, all-lowercase names.  The module name may
 have underscores if this improves readability.
 
 """
-# for markdown magic
 from __future__ import absolute_import
-from IPython.core.getipython import get_ipython
+import sys, bigtree
 from IPython.core.magic import (Magics, magics_class,  cell_magic)
-import sys
 from io import StringIO
 from markdown import markdown
 from IPython.core.display import HTML
-import pandas as pd
-from pathlib import Path
-#from scUtilities import scfunctions_v1 as scfuncs
-import sys, itertools, logging.config, os, logging #, h5py, igraph, louvain, random, re, dill, functools, collections
-import scanpy as sc, matplotlib.pyplot as plt, seaborn as sns, numpy as np
-#import pytest
 from functools import reduce
 from copy import deepcopy
 from mergedeep import merge
-import bigtree
 from contextlib import redirect_stdout
+import pandas as pd
+import sys, itertools
+import scanpy as sc, numpy as np
 
 def print_paths(paths):
     """Prints the folder structure that the paths define together with the labels.
@@ -388,102 +382,9 @@ def get_otsu_threshold(input):
     plt.show()
     return otsu_threshold
 
-    
-def docstringtest() -> int :
-    r"""Summarize the function in one line.
-
-    Several sentences providing an extended description. Refer to
-    variables using back-ticks, e.g. `var`.
-
-    Parameters
-    ----------
-    var1 : array_like
-        Array_like means all those objects -- lists, nested lists, etc. --
-        that can be converted to an array.  We can also refer to
-        variables like `var1`.
-    var2 : int
-        The type above can either refer to an actual Python type
-        (e.g. ``int``), or describe the type of the variable in more
-        detail, e.g. ``(N,) ndarray`` or ``array_like``.
-    *args : iterable
-        Other arguments.
-    long_var_name : {'hi', 'ho'}, optional
-        Choices in brackets, default first when optional.
-
-    Returns
-    -------
-    type
-        Explanation of anonymous return value of type ``type``.
-    describe : type
-        Explanation of return value named `describe`.
-    out : type
-        Explanation of `out`.
-    type_without_description
-
-    Other Parameters
-    ----------------
-    only_seldom_used_keyword : int, optional
-        Infrequently used parameters can be described under this optional
-        section to prevent cluttering the Parameters section.
-    **kwargs : dict
-        Other infrequently used keyword arguments. Note that all keyword
-        arguments appearing after the first parameter specified under the
-        Other Parameters section, should also be described under this
-        section.
-
-    Raises
-    ------
-    BadException
-        Because you shouldn't have done that.
-
-    See Also
-    --------
-    numpy.array : Relationship (optional).
-    numpy.ndarray : Relationship (optional), which could be fairly long, in
-                    which case the line wraps here.
-    numpy.dot, numpy.linalg.norm, numpy.eye
-
-    Notes
-    -----
-    Notes about the implementation algorithm (if needed).
-
-    This can have multiple paragraphs.
-
-    You may include some math:
-
-    .. math:: X(e^{j\omega } ) = x(n)e^{ - j\omega n}
-
-    And even use a Greek symbol like :math:`\omega` inline.
-
-    References
-    ----------
-    Cite the relevant literature, e.g. [1]_.  You may also cite these
-    references in the notes section above.
-
-    .. [1] O. McNoleg, "The integration of GIS, remote sensing,
-       expert systems and adaptive co-kriging for environmental habitat
-       modelling of the Highland Haggis using object-oriented, fuzzy-logic
-       and neural-network techniques," Computers & Geosciences, vol. 22,
-       pp. 585-588, 1996.
-
-    Examples
-    --------
-    These are written in doctest format, and should illustrate how to
-    use the function.
-
-    >>> a = [1, 2, 3]
-    >>> print([x + 3 for x in a])
-    [4, 5, 6]
-    >>> print("a\nb")
-    a
-    b
-    """
-
 
 # code taken from: https://guido.vonrudorff.de/2015/ipython-notebook-code-output-as-markdown/
 # code can be found under codesnippets.ipyn as well.
-
-
 @magics_class
 class MarkdownMagics(Magics):
 

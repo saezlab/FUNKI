@@ -1,34 +1,19 @@
 import streamlit as st
-import os, base64, re, sys
-from os import makedirs, path
-#from copy import deepcopy
-#from IPython.display import display, Markdown   #, Latex # to display Markdown in code chunk
-# json, yaml, numba, logging, random, dill, logging.config
+import os, re, sys, glob
 from standard_workflows import *  
 sys.path.append('../')
-from streamlit_extras.switch_page_button import switch_page
-from st_pages import Page, show_pages, _hide_pages
 from gui.utils import utilities as util
-#import utilities as util
-import pandas as pd
-import decoupler as dc
-#import openpyxl
-import plotly.express as px
-import numpy as np
-import kaleido, subprocess, glob
-#########################
-# TODO: allow tsv input #
-#########################
+import pandas as pd, decoupler as dc, plotly.express as px, numpy as np
 
 UiVal = util.UiVal
-#@st.cache_data(experimental_allow_widgets=True)
 def get_acts(dataset):
-    """run decoupler
+    """Runs Decoupler
 
     Args:
-        w_matrix (DataFrame): first column gene names, second column p-values or other statistics
-        w_organism (_type_): _description_
-        group (_type_): _description_
+        dataset (dict): dataset
+
+    Returns:
+        None: 
     """
     data = dataset['data']
     ap = st.session_state.ap
@@ -65,8 +50,7 @@ def get_acts(dataset):
                 # st.write(f'**PriorKnowledge Resource {resource}**')
                 print(f'{resource}, {organism}, {str(list(param.values())[0][0])}')
                 net = eval(f'dc.get_{resource}(organism,' + str(list(param.values())[0][0]) + ')')
-            
-            #st.write(net)
+
             method = dataset['method']
             figpath = f'{resource}.png'
             targetfigurepaths=[]
@@ -157,6 +141,14 @@ def get_acts(dataset):
 
 
 def get_data(w_inputformat)->list[dict] :
+    """Read in and format data
+
+    Args:
+        w_inputformat (str): content of inputformat widget
+
+    Returns:
+        list[dict]: datasets
+    """
     datasets = list()
     def increment_analysiscount():
         st.session_state.analysiscount += 1
@@ -294,7 +286,16 @@ def get_data(w_inputformat)->list[dict] :
 
 
 def get_testdata(w_inputformat, w_omicstype, datarootpath):
-    """Read and process Testdata"""
+    """Read and process Testdata
+
+    Args:
+        w_inputformat (str): value from inputformat widget
+        w_omicstype (str): value from omicstype widget
+        datarootpath (str): path to the data files
+
+    Returns:
+        dict: datasets
+    """
     data = ''
     datasets = list()
     match w_inputformat:

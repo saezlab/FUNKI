@@ -1,17 +1,6 @@
-#from re import S
-import sys, yaml, dill, re
-#sys.path.insert(1, '/Users/hanna/Documents/projects/Workflows/Python/scUtilities/v4')
-#from scUtilities import analysis_params
-#import sc_analysis_loops as scl
-from copy import deepcopy
-from pathlib import Path
-from os.path import exists
+import re
 from os import path, makedirs
-import collections
-import scanpy as sc, numpy as np, decoupler as dc, matplotlib.pyplot as plt, seaborn as sns, matplotlib as mpl, pandas as pd
-from .sc_analysis_baseclass import AnalysisI
-from .sc_analysis_baseclass import Baseanalysis
-
+from .analysis_baseclass import AnalysisI
 
 class NfCore(AnalysisI):
     """ This class prepares all needed files for running a nf-core pipeline. """

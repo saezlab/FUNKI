@@ -18,7 +18,6 @@ __all__ = ['get_metadata']
 import os
 import pathlib
 import importlib.metadata
-
 import toml
 
 
