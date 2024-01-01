@@ -10,6 +10,7 @@ from . import analysis_loops as al
 import anndata
 from functools import partial
 from IPython.display import display, Markdown 
+import seaborn as sns
 
 class Liana(AnalysisI):
     """ This class is a wrapper around the tool Liana with some comfort functions. """
@@ -42,7 +43,7 @@ class Decoupler(AnalysisI):
                         for method in self.analysis_params['decoupler']['methods']:
                             if modeltype == 'MSigDB':
                                     model = eval('self.get_' + modeltype.lower() +'('+ '**all_params' + ')')
-                                    print(f'Activity calculation starts for modeltype **{modeltype}** with parameter **{param}** and method **{method}**')
+                                    print(f'Activity calculation starts for modeltype **{modeltype}** with parameter **{"_".join(all_params["substr"])}** and method **{method}**')
                                     self._get_acts(model, modeltype, '_'.join(all_params['substr']), method, min_n, deepcopy(self.paths), new)   
                             else:    
                                 for param in modelparams: 
@@ -200,25 +201,34 @@ class Decoupler(AnalysisI):
             result = dc.decouple(mat = input, net = model, methods=methods, min_n=min_n, consensus = is_consensus, weight = weight, use_raw = use_raw) 
             act_class = baseclasses.Analysis.new_dataset(Activity)   
             
+            paths.update({'acts_data': path.join(actpaths['actdir'], 'data.h5ad')})
+            paths.update({'mean_acts': path.join(actpaths['actdir'], 'mean_acts')}) 
+            actpaths.update({'acts_data': path.join(actpaths['actdir'], 'data.h5ad')})
+            actpaths.update({'mean_acts': path.join(actpaths['actdir'], 'mean_acts')}) 
+            actpaths.update({'acts_estimate': path.join(actpaths['actdir'], 'estimate.csv')})
+            actpaths.update({'acts_pvals': path.join(actpaths['actdir'], 'pvals.csv')})
+            if not path.exists(actpaths['actdir']):
+                makedirs(actpaths['actdir'])
             if result == None:
                 # rename new obsm properties (consensus and all the rest)
-                self.data.obsm[pvalkey] = self.data.obsm.pop(method_pval)
-                self.data.obsm[estimatekey] = self.data.obsm.pop(method_estimate)
+                dc_input.data.obsm[pvalkey] = dc_input.data.obsm.pop(method_pval)
+                dc_input.data.obsm[estimatekey] = dc_input.data.obsm.pop(method_estimate)
 
                 # Create anndata obj with activity as .X
-                data = create_actanndata(self.data, estimatekey, actpaths)
+                data = create_actanndata(dc_input.data, estimatekey, actpaths)
 
                 # save estimates and pvals separately, delete results from dataset obj
-                pvals = self.data.obsm.pop(pvalkey)
-                estimates = self.data.obsm.pop(estimatekey)
+                pvals = dc_input.data.obsm.pop(pvalkey)
+                estimates = dc_input.data.obsm.pop(estimatekey)
 
                 # Add activity              
-                self.acts.append(act_class(data, modeltype, modelparams, namedmethod, deepcopy(actpaths)))
+                dc_input.acts.append(act_class(data, modeltype, modelparams, namedmethod, deepcopy(actpaths)))
                 pvals.to_csv(actpaths['acts_pvals'])
                 estimates.to_csv(actpaths['acts_estimate']) 
+                for cond in dc_input.analysis_params['diffExpr']['conditions']:
+                    ranked = dc.rank_sources_groups(data, groupby=cond, reference='rest', method='t-test_overestim_var')
+                    ranked.to_csv(path.join(dc_input.acts[-1].paths['actdir'], f'{cond}.csv'))
             else: 
-                print(result)
-                print(type(result))
                 result[method_pval].to_csv(actpaths['acts_pvals'])
                 result[method_estimate].to_csv(actpaths['acts_estimate']) 
                 return act_class(result, modeltype, modelparams, namedmethod, deepcopy(actpaths))
@@ -276,13 +286,10 @@ class Decoupler(AnalysisI):
                 actpath = path.join(paths['actdir'], f'{paramname}_{namedmethod[0]}')    
                 if not exists(actpath):
                     makedirs(actpath) 
-                paths.update({'acts_data': path.join(actpath, 'data.h5ad')})
-                paths.update({'mean_acts': path.join(actpath, 'mean_acts')}) 
+                actpaths.update({'actdir': actpath})
                 actpaths.update({'acts_data': path.join(actpath, 'data.h5ad')})
-                actpaths.update({'mean_acts': path.join(actpath, 'mean_acts')}) 
                 actpaths.update({'acts_estimate': path.join(actpath, 'estimate.csv')})
                 actpaths.update({'acts_pvals': path.join(actpath, 'pvals.csv')})
-                actpaths.update({'actdir': actpath})
 
                 if(exists(actpaths['acts_data']) and not new): 
                     data = sc.read(actpaths['acts_data'], cache = True)
@@ -307,7 +314,7 @@ class Decoupler(AnalysisI):
                         weight = 'weight'
                     method_pval = namedmethod[1] + '_pvals'
                     method_estimate = namedmethod[1] + '_estimate'
-                    calc_func(self, methods, method_pval, method_estimate, pvalkey, estimatekey, namedmethod, actpaths, is_consensus, weight)
+                    calc_func(self, methods=methods, method_pval=method_pval, method_estimate=method_estimate, pvalkey=pvalkey, estimatekey=estimatekey, namedmethod=namedmethod, actpaths=actpaths, is_consensus=is_consensus, weight=weight)
 
         if hasattr(self, 'ddss'):
             for key in self.ddss.keys():

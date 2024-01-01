@@ -8,6 +8,8 @@ from copy import deepcopy
 from multiprocessing import Pool
 from toolz import compose
 from pathos.threading import ThreadPool as Pool
+import matplotlib.pyplot as plt
+import numpy as np
 
 class AnalysisI():
     def __init__(self) -> None:
@@ -92,8 +94,20 @@ def plot_mean_acts(dataset):
         print('\n')
     plot_peract() 
 
+
+def split_umap(adata, split_by, ncol=2, nrow=None, **kwargs):
+    categories = adata.obs[split_by].cat.categories
+    if nrow is None:
+        nrow = int(np.ceil(len(categories) / ncol))
+    fig, axs = plt.subplots(nrow, ncol, figsize=(5*ncol, 4*nrow))
+    axs = axs.flatten()
+    for i, cat in enumerate(categories):
+        ax = axs[i]
+        sc.pl.umap(adata[adata.obs[split_by] == cat], ax=ax, show=False, title=cat, **kwargs)
+    plt.tight_layout()
+
 @loop('analysis.datasets', False)
-def plot_umap(data):
+def plot_umap(data, groupby = None):
     display(Markdown(f'## Estimated activities for {data.name}'))
     @loop(data.acts, False)
     def _plot_umap(act):
@@ -121,7 +135,10 @@ def plot_umap(data):
             def _plot_pervar(varname):
                 if not exists(f'{dirpath}/umap_{varname}.pdf'):
                     try: 
-                        sc.pl.umap(act.data, color=varname, vcenter=0, cmap='coolwarm', save = f'_{varname}.pdf', show = False)
+                        if groupby == None:
+                            sc.pl.umap(act.data, color=varname, vcenter=0, cmap='coolwarm', save = f'_{varname}.pdf', show = False)
+                        else:
+                            split_umap(act.data, color = varname, split_by=groupby,legend_loc = "right margin")
                     except Exception as e: 
                         import sys
                         def eprint(*args, **kwargs):
@@ -205,31 +222,22 @@ def get_subsets(ds, dataset_class) -> tuple:
     """
     for metaCol in ds.analysis_params['subs']: 
         print('*The following subsets are calculated for dataset ', ds.name, ':*\n', ds.analysis_params['subs'][metaCol], sep='')
-        subsConds = deepcopy(ds.analysis_params['subs'][metaCol]) # subsetConditions, cluster: ['clust', (1,2)]
+        subsConds = deepcopy(ds.analysis_params['subs'][metaCol]) # subsetConditions, 'cluster': ['clust', (1,2)]
         subsNamePrefix = subsConds[0] # 'clust'
         del subsConds[0] # [(1,2)]
 
         def subset(cond): # cond = (1,2)
+            """Does not overwrite existing subsets"""
             # The name must contain the name of the dataset and the meta col as well so that it can be handled in the same list as the dataset that it's coming from.
             subsName = ds.name + '_' + subsNamePrefix + ''.join([str(e) for e in cond]) # all_t_clust12
             subs = ds.data[ds.data.obs[metaCol].isin(cond)]
-            path = Path(ds._paths['subsetspath'], subsNamePrefix) # MBEN/v01/human/sn/all_t/subsets/clust/
+            path = Path(ds.paths['subsetspath'], subsName, 'data') # MBEN/v01/human/sn/clust12/ 
             if not exists(path):
                 makedirs(path)
             path = str(path) + '/' + subsName + '.h5ad' # MBEN/v01/human/sn/all_t/subsets/clust/all_t_clust12.h5ad
             if not exists(path):
                 subs.write(path)
-
-            # as its own dataset:
-            path = path.join(ds._paths['analysispath_local'], subsName, 'data') # MBEN<currentlyHere>/v01/human/sn/all_t/subsets/clust/
-            if not exists(path):
-                makedirs(path)
-            path = str(path)
-            path = path + '/' + subsName + '.h5ad' # MBEN/v01/human/sn/all_t/subsets/clust/all_t_clust12.h5ad
-            if not exists(path):
-                subs.write(path)
-
-            return (subsName, ds.type, ds.organism, dataset_class) # (all_t_clust12, 'sn', 'human', <<dc_dataset>>)
+            return (subsName, ds.seq_type, ds.organism, dataset_class) # (all_t_clust12, 'sn', 'human', <<dc_dataset>>)
         
         [subset(cond) for cond in subsConds]
 

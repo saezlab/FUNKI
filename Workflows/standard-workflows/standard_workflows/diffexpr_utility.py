@@ -6,7 +6,7 @@ import decoupler as dc, pandas as pd
 from IPython.display import display, Markdown 
 from pydeseq2.dds import DeseqDataSet
 from pydeseq2.ds import DeseqStats
-import dill, itertools
+import dill, itertools, re
 from .analysis_baseclass import AnalysisI
 from standard_workflows import analysis_baseclass as baseclasses
 from standard_workflows import decoupler_utility as dcu
@@ -125,7 +125,7 @@ class DiffExpr(AnalysisI):
         print(self)
 
 
-    def get_contrasts(self, key, gene_symbols = 'gene_name', new = True):
+    def get_contrasts(self, key, gene_symbols = 'gene_name', new = True, same_start = False):
         """Calculate contrasts
 
         Args:
@@ -136,6 +136,15 @@ class DiffExpr(AnalysisI):
         design_factor = dds.design_factor
         display(Markdown(f'Working on design factor {design_factor}'))
         contrasts = subset_contrasts(dds.data, init_contrasts(dds.data, design_factor))
+        if same_start:
+            contrast_subset = []
+            for contrast in contrasts:
+                startof_part1 = re.search(r'(.*)_.*', contrast[1])
+                startof_part2 = re.search(r'(.*)_.*', contrast[2])
+                if startof_part1.group(1) == startof_part2.group(1):
+                    contrast_subset += [contrast]
+            contrasts = contrast_subset
+            print(f'contrasts: {contrasts}')
 
         @al.loop (contrasts, True)
         def calc_contrasts(contrast, dds, new):

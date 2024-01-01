@@ -74,9 +74,9 @@ class Baseanalysis(AnalysisI):
         datafoldername = 'data'
 
         # Add more paths
-        for dictentryname, foldername in zip(["datapath_tmp", "figpath", "resultpath", "loggingpath", "subsetspath"],  [datafoldername, "figures", "results", "logging", "subsets"]):
+        for dictentryname, foldername in zip(["datapath_tmp", "figpath", "resultpath", "loggingpath"],  [datafoldername, "figures", "results", "logging"]):
             self.paths.update({dictentryname: path.join(self.paths["analysis_path"], middlepath_dataset, foldername)})
-        
+        self.paths['subsetspath'] = path.join(self.paths["analysis_path"], middlepath_dataset)
         self.paths["exec_env_data_path"] = path.join(self.paths["exec_env_path"], middlepath_dataset, datafoldername)
 
         # Set datapath (depends on data_root_path)
@@ -97,7 +97,7 @@ class Baseanalysis(AnalysisI):
             meta_subj = pd.read_excel(self.paths["metadata_subj_path"])
         if path.exists(self.paths["metadata_sample_path"]):
             meta_sample = pd.read_excel(self.paths["metadata_sample_path"])
-        if len(meta_subj) > 0 & len(meta_sample) > 0:
+        if (len(meta_subj) > 0) & (len(meta_sample) > 0):
             meta = pd.merge(meta_sample, meta_subj, how="left", on = "subjID")
             meta.to_csv(self.paths["metadata_orig_filepath"], sep = "\t", index = False)
     
@@ -184,13 +184,29 @@ class Baseanalysis(AnalysisI):
     
     def set_gene_names(self, ensembldata, gene_symbol = 'gene_name'):
         """Replaces var_names with gene_names from Ensembl
+        
+        Pseudocode: 
+            Save current index as 'gene_id' column
+            Translate index and save result in gene_symbol column
+                If not in release, put gene_id on exclude list
+            Remove exclude genes based on index
+            Replace empty gene_symbols with gene_id
+            Set gene_symbols as index, convert to str and make unique
 
         Args:
             ensembldata (EnsemblRelease): from pyensembl import EnsemblRelease. Install the needed release like this !pyensembl install --release 109 --species mouse
-            gene_symbol (str, optional): _description_. Defaults to 'gene_name'.
+            gene_symbol (str, optional):  Defaults to 'gene_name'.
         """
-        self.data.var[gene_symbol] = [ensembldata.gene_by_id(id).gene_name for id in self.data.var.index]
+        exclude = []
         self.data.var['gene_id'] = self.data.var.index
+        for id in self.data.var.index:
+            try:
+                self.data.var.loc[id, gene_symbol] = ensembldata.gene_by_id(id).gene_name
+            except(ValueError): 
+                exclude += [id]
+        self.data = self.data[:, ~self.data.var_names.isin(exclude)]
+        print(f'Dropped the following genes because they are not part of the chosen release: {exclude}')
+        
         # replace empty gene_names with gene_id. If this is not done and the gene_names are used for the index, the empty names are replaced with negative integers.
         for i in range(len(self.data.var[gene_symbol])):
             if self.data.var[gene_symbol][i] =='':
@@ -354,23 +370,35 @@ class Analysis(AnalysisI):
         """
         @loop(self.datasets, True)
         def add_meta (dataset) : 
-            if len(dataset.data.obs.columns) <=2: # no metadata loaded, yet
-                if path.exists(dataset.paths['metadata_orig_filepath']) and len(dataset.data) >= 1:
-                    metadata = pd.read_csv(dataset.paths['metadata_orig_filepath'], sep='\t')
-                    # make sampleID same as sampleID in counts table
-                    metadata['sampleID'] = metadata['sampleID'].astype('string') 
+            if len(dataset.data) >= 1:
+                if len(dataset.data.obs.columns) <=2: # no metadata loaded, yet
+                    if path.exists(dataset.paths['metadata_orig_filepath']) and len(dataset.data) >= 1:
+                        metadata = pd.read_csv(dataset.paths['metadata_orig_filepath'], sep='\t')
+                        # make sampleID same as sampleID in counts table
+                        metadata['sampleID'] = metadata['sampleID'].astype('string') 
 
-                    # prepare obs
-                    obs = pd.DataFrame(dataset.data.obs, columns = ['sampleID']) # data.obs has only an index so far
-                    obs['sampleID'] = obs.index
-                    obs = obs.reset_index(drop=True)
-                    # add metadata
-                    dataset.data.obs = obs.merge(metadata, on='sampleID', how='left')
-                    dataset.data.obs.index = dataset.data.obs['sampleID']
-                    # test
-                    dataset.data.obs.shape == metadata.shape
-                else: 
-                    print(f"Either no data was read in or no metadata file exists here:{dataset.paths['metadata_orig_filepath']}. You can use the add_metadata() function of your analysis object and the read_data() function of your dataset(s) to fix this.")
+                        # prepare obs
+                        obs = pd.DataFrame(dataset.data.obs, columns = ['sampleID']) # data.obs has only an index so far
+                        isbulk = False
+                        if 'sampleID' not in dataset.data.obs.columns:
+                            obs['sampleID'] = obs.index
+                            obs = obs.reset_index(drop=True)
+                            isbulk = True
+                        # add metadata
+                        
+                        if isbulk == True:
+                            dataset.data.obs = obs.merge(metadata, on='sampleID', how='left')
+                            dataset.data.obs.index = dataset.data.obs['sampleID']
+                            # test
+                            dataset.data.obs.shape == metadata.shape
+                        else:
+                            obs['cellID'] = obs.index
+                            dataset.data.obs = obs.merge(metadata, on='sampleID', how='left')
+                            dataset.data.obs.index = obs['cellID']
+                            dataset.data.obs = dataset.data.obs.drop('cellID', axis = 1)
+
+                    else: 
+                        print(f"Either no data was read in or no metadata file exists here:{dataset.paths['metadata_orig_filepath']}. You can use the add_metadata() function of your analysis object and the read_data() function of your dataset(s) to fix this.")
         add_meta()
 
     def get(self, dataset_name):

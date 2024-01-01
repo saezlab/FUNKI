@@ -3,6 +3,7 @@ from .analysis_baseclass import AnalysisI
 from . import utility_functions
 import pathlib # create dirs
 import os # cpu_count
+import matplotlib
 
 class Preprocessing(AnalysisI):
     """_summary_
@@ -52,7 +53,9 @@ class Preprocessing(AnalysisI):
 
         def plot_violin(cond):
             self.data.obs[cond] = self.data.obs[cond].astype('category')
-            sc.pl.violin(self.data, self.analysis_params['preprocessing']['qc_cols_obs'], jitter=1, multi_panel=True, groupby = cond, stripplot = True, save=f'_{cond}.pdf', rotation=45, use_raw=use_raw, show=False)
+            fig_width= 2.5 + len(self.analysis_params['preprocessing']['qc_cols_obs'])
+            with matplotlib.pyplot.rc_context({'figure.figsize': (fig_width, 3)}):
+                sc.pl.violin(self.data, self.analysis_params['preprocessing']['qc_cols_obs'], jitter=1, multi_panel=True, groupby = cond, stripplot = True, save=f'_{cond}.pdf', rotation=45, use_raw=use_raw, show=False)
         # joblib needs more time 
         #import time
         #start_time = time.time()
@@ -113,7 +116,10 @@ class Preprocessing(AnalysisI):
 
         fig.savefig(os.path.join(dirpath, 'gene_expr.pdf'), bbox_inches='tight')
 
+
     def get_hvgs(self, batch_key, input_type):
+        """ Using a batch key results a simple batch correction where the hvgs are chosen per batch instead of overall.
+        """
         sc.settings.figdir = pathlib.Path(self.paths['figpath'], input_type, 'highly_variable_genes')
         sc.settings.figdir.mkdir(parents=True, exist_ok=True)        
         conds = self.analysis_params['diffExpr']['conditions']
@@ -123,7 +129,8 @@ class Preprocessing(AnalysisI):
                 sc.pl.highly_variable_genes(self.data, save=f'_{cond}.pdf')
         sc.pp.highly_variable_genes(self.data, batch_key=batch_key) # (re)compute with the chosen batch_key to have this as data in the AnnData object
 
-    def plot_pca(self, top_pca_genes, based_on_hvg, input_type, gene_symbols='gene_name', size = 1500, dimensions=[]):
+
+    def plot_pcas(self, top_pca_genes, based_on_hvg, input_type, gene_symbols='gene_name', size = 1500, dimensions=[], new = True):
         """Plots pca for all genes and cols in ['preprocessing']['qc_cols_obs'] and ['diffExpr']['conditions'].
 
         Args:
@@ -131,28 +138,32 @@ class Preprocessing(AnalysisI):
             gene_symbols (str, optional): _description_. Defaults to 'gene_name'.
             size (int, optional): _description_. Defaults to 1500.
         """
-        # set/create paths
-        figpath = pathlib.Path(self.paths['figpath'], input_type, f'pca_hvg{based_on_hvg}')
-        figpath.mkdir(parents=True, exist_ok=True)
+        if new:
+            # set/create paths
+            figpath = pathlib.Path(self.paths['figpath'], input_type, f'pca_hvg{based_on_hvg}')
+            figpath.mkdir(parents=True, exist_ok=True)
 
-        figpath_genes = os.path.join(figpath, 'genes')
-        figpath_metadata = os.path.join(figpath, 'metadata')
+            figpath_genes = os.path.join(figpath, 'genes')
+            figpath_metadata = os.path.join(figpath, 'metadata')
 
-        import joblib
-        # loop over genes
-        for pc, genes in top_pca_genes.items():
-            def plot_per_gene(gene):
-                sc.settings.figdir = figpath_genes
-                sc.pl.pca(self.data, color=gene, dimensions = [(pc-1,pc)], gene_symbols = gene_symbols, size = size, annotate_var_explained=True, save = f'_pc{pc}_{gene}.pdf', show = False)
-            joblib.Parallel(n_jobs=os.cpu_count())(joblib.delayed(plot_per_gene)(gene) for gene in genes)
-        # loop over metadata
-        dimensions = [(0,1), (0,2), (1,2), (2,3), (1,3), (3,4)] + dimensions
-        sc.settings.figdir = figpath_metadata
-        for o in self.analysis_params['preprocessing']['qc_cols_obs'] + self.analysis_params['diffExpr']['conditions']:
-            sc.pl.pca(self.data, color=o, dimensions=dimensions, save=f"_{o}.pdf", size = size, show = False)
-            sc.pl.pca(self.data, color=o, dimensions=(1,2,3), projection='3d', save=f"_{o}3d.pdf", size = size, show = False)
+            import joblib
+            # loop over genes
+            for pc, genes in top_pca_genes.items():
+                def plot_per_gene(gene):
+                    sc.settings.figdir = figpath_genes
+                    sc.pl.pca(self.data, color=gene, dimensions = [(pc-1,pc)], gene_symbols = gene_symbols, size = size, annotate_var_explained=True, save = f'_pc{pc}_{gene}.pdf', show = False)
+                joblib.Parallel(n_jobs=os.cpu_count())(joblib.delayed(plot_per_gene)(gene) for gene in genes)
+            # loop over metadata
+            dimensions = [(0,1), (0,2), (1,2), (2,3), (1,3), (3,4)] + dimensions
+            sc.settings.figdir = figpath_metadata
+            for o in self.analysis_params['preprocessing']['qc_cols_obs'] + self.analysis_params['diffExpr']['conditions']:
+                sc.pl.pca(self.data, color=o, dimensions=dimensions, save=f"_{o}.pdf", size = size, show = False)
+                sc.pl.pca(self.data, color=o, dimensions=(1,2,3), projection='3d', save=f"_{o}3d.pdf", size = size, show = False)
+        else:
+            print("Step 'plot_pcas' was skipped.")
 
-    def pc_loadings(self, based_on_hvg, input_type, top = 20, gene_symbols = 'gene_name', pc_max = 5)->dict:
+
+    def pc_loadings(self, based_on_hvg, input_type, top = 20, gene_symbols = 'gene_name', pc_max = 5, pca_key = 'X_pca')->dict:
         """Based on: self.data.varm['PCs']. 
         Plots heatmap for top genes per pc ordered by first condition in ['diffExpr']['conditions]
         Saves top genes per pc.
@@ -182,14 +193,14 @@ class Preprocessing(AnalysisI):
                 ].tolist()
             # order by position on that pc
             tempdata = self.data[np.argsort(
-                        self.data.obsm['X_pca'][:,pc-1] # X_pca: pca representation of data
+                        self.data.obsm[pca_key][:,pc-1] # X_pca: pca representation of data
                 ),]
             sc.pl.heatmap(tempdata, var_names = top_genes, groupby=groupby, save=f'_pc{pc}_{groupby}.pdf', swap_axes = True, use_raw=False, gene_symbols=gene_symbols, show=False)
             top_pca_genes[pc] = top_genes
             pd.DataFrame(top_genes).to_csv(os.path.join(sc.settings.writedir,f'pca_topGenes_pc{pc}_{groupby}.csv'))
         return top_pca_genes
     
-    def get_pcas(self, input_type, gene_symbols = 'gene_name', dimensions = [], pc_max = 5):
+    def get_pcas(self, input_type, gene_symbols = 'gene_name', dimensions = [], pc_max = 5, newplots = True, pca_key = 'X_pca'):
         """Calculates pca without using hvg. Saves loadings. Plots pca
 
         Args:
@@ -208,35 +219,41 @@ class Preprocessing(AnalysisI):
                 index = self.data.var_names
             df_loadings = pd.DataFrame(self.data.varm['PCs'], index=index)
             df_loadings.to_csv(os.path.join(sc.settings.writedir, 'loadings.csv'))
-            top_pca_genes = self.pc_loadings(input_type=input_type, based_on_hvg = use_hvg, gene_symbols=gene_symbols, pc_max=pc_max)
-            self.plot_pca(top_pca_genes, based_on_hvg = use_hvg, input_type = input_type, gene_symbols=gene_symbols, dimensions = dimensions)
+            top_pca_genes = self.pc_loadings(input_type=input_type, based_on_hvg = use_hvg, gene_symbols=gene_symbols, pc_max=pc_max, pca_key = pca_key)
+            size = self.analysis_params['preprocessing']['basicFilt']['pca_dot_size']
+            self.plot_pcas(top_pca_genes, based_on_hvg = use_hvg, input_type = input_type, gene_symbols=gene_symbols, size = size, dimensions = dimensions, new = newplots)
         self.paths['figure_pca_path'] = sc.settings.figdir
         self.paths['result_pca_path'] = sc.settings.writedir
-    
-    def get_pca_meta_associations(self):
-        keys = self.analysis_params['diffExpr']['conditions']
-        keys = [key for key in keys if len(set(self.data.obs[key])) <= 10]
-        dc.get_metadata_associations(
-            self.data,
-            obs_keys = keys, #metadata columns to associate to PCs
-            obsm_key='X_pca',  # where the PCs are stored
-            uns_key='pca_anova',  # where the results are stored
-            inplace=True
-        )
-        self.data.uns['pca_anova'].to_csv(os.path.join(self.paths['result_pca_path'], 'anova_metadata_associations.csv'))
-
-        plt.figure(figsize=(7,10))
-        ax, legend_axes = dc.plot_associations(
-            self.data,
-            uns_key='pca_anova',  # summary statistics from the anova tests
-            obsm_key='X_pca',  # where the PCs are stored
-            stat_col='p_adj',  # which summary statistic to plot
-            obs_annotation_cols = keys, # which sample annotations to plot
-            titles=['Adjusted p-values from ANOVA', 'Principle component scores']
-        )
         
-        plt.savefig(os.path.join(self.paths['figure_pca_path'], 'anova_metadata_associations.pdf') , bbox_inches='tight')
-        plt.show()
+    
+    def get_pca_meta_associations(self, pca_key = 'X_pca', new = True):
+        """Does not recalculate if plot is existing."""
+        if new:
+            keys = self.analysis_params['diffExpr']['conditions']
+            keys = [key for key in keys if len(set(self.data.obs[key])) <= 10]
+            dc.get_metadata_associations(
+                self.data,
+                obs_keys = keys, #metadata columns to associate to PCs
+                obsm_key=pca_key,  # where the PCs are stored
+                uns_key=f'{pca_key}_anova',  # where the results are stored
+                inplace=True
+            )
+            self.data.uns[f'{pca_key}_anova'].to_csv(os.path.join(self.paths['result_pca_path'], '{pca_key}_anova_metadata_associations.csv'))
+
+            plt.figure(figsize=(7,10))
+            ax, legend_axes = dc.plot_associations(
+                self.data,
+                uns_key=f'{pca_key}_anova',  # summary statistics from the anova tests
+                obsm_key=pca_key,  # where the PCs are stored
+                stat_col='p_adj',  # which summary statistic to plot
+                obs_annotation_cols = keys, # which sample annotations to plot
+                titles=['Adjusted p-values from ANOVA', 'Principle component scores']
+            )
+            
+            plt.savefig(os.path.join(self.paths['figure_pca_path'], f'{pca_key}_anova_metadata_associations.pdf'), bbox_inches='tight')
+            plt.show()
+        else:
+            print("Step 'meta_associations' was skipped.")
 
         # def plot_associations(self, keys):
         #     """Adjusted from dc.plot_associations. 
@@ -283,11 +300,11 @@ class Preprocessing(AnalysisI):
         #     c.save(os.path.join(self.paths['figure_pca_path'], 'anova_metadata_associations.pdf'))
         # plot_associations(self, keys)
 
-    def preprocess(self, gene_symbols = 'gene_name'):
+    def preprocess(self, gene_symbols = 'gene_name', input_type='counts'):
         """
         1. Plots highest_expr_genes
         2. Filters genes and 'cells', adds filtering attributes to ap
-        Adds mt to mark mitochondiral genes starting with Mt/MT and 'noname' to mark mouse genes starting with Gm or ending with Rik.
+        Adds mt to mark mitochondiral genes starting with mt-/MT- and 'noname' to mark mouse genes starting with Gm or ending with Rik.
         Args:
             gene_symbols (str, optional): _description_. Defaults to 'gene_name'.
             top (int, optional): _description_. Defaults to 30.
@@ -299,7 +316,7 @@ class Preprocessing(AnalysisI):
             self.get_highest_expr_genes(gene_symbols=gene_symbols)
 
         # var: add 'mt'
-        self.data.var['mt'] = self.data.var[gene_symbols].str.startswith('Mt') | self.data.var[gene_symbols].str.startswith('MT')
+        self.data.var['mt'] = self.data.var[gene_symbols].str.startswith('mt-') | self.data.var[gene_symbols].str.startswith('MT-')
         params['qc_cols_var'] = ['mt']
         sc.pp.calculate_qc_metrics(self.data, qc_vars=params['qc_cols_var'], percent_top=None, log1p=False, inplace=True, parallel=True, use_raw=False)
 
@@ -320,9 +337,13 @@ class Preprocessing(AnalysisI):
             params['qc_cols_obs'] += [f'total_counts_{var}'] + [f'pct_counts_{var}'] 
 
         # violins
-        self.plot_violins(use_raw=True)
+        self.plot_violins(use_raw=False, input_type=input_type)
 
-    def filter(self, prev, gene_symbols = 'gene_name', pca_dims = [], pc_max=5):
+        sc.pl.scatter(self.data, x='total_counts', y='pct_counts_mt')
+        sc.pl.scatter(self.data, x='total_counts', y='n_genes_by_counts')
+        sc.pl.scatter(self.data, x='pct_counts_mt', y='n_genes_by_counts')
+
+    def filter(self, prev, gene_symbols = 'gene_name', pca_dims = [], pc_max=5, newpcaplots = True, skipviolins = False):
         """Execute filtering + hvg + pca
 
         Args:
@@ -334,16 +355,26 @@ class Preprocessing(AnalysisI):
         min_prop = 0
         params = self.analysis_params['preprocessing']
         input_type = f"{self.analysis_params['xType']}_prev{prev}"
-        # prevalence filtering
-        dc.plot_filter_by_expr(self.data, min_count = params['basicFilt']['min_count'], min_total_count=params['basicFilt']['min_total_count'], large_n=prev, min_prop = min_prop)
-        genes_to_keep = dc.filter_by_expr(self.data, min_count = params['basicFilt']['min_count'], min_total_count=params['basicFilt']['min_total_count'], large_n=prev, min_prop=min_prop)
-        print(f'Number of genes after prevalence filtering: {len(genes_to_keep)}')
-        self.data = self.data[:, genes_to_keep]
+
+        if self.seq_type.lower() not in ['sc', 'scrna', 'sn', 'snrna', 'scrnaseq', 'snrnaseq']:
+            # prevalence filtering
+            dc.plot_filter_by_expr(self.data, min_count = params['basicFilt']['min_count'], min_total_count=params['basicFilt']['min_total_count'], large_n=prev, min_prop = min_prop)
+            genes_to_keep = dc.filter_by_expr(self.data, min_count = params['basicFilt']['min_count'], min_total_count=params['basicFilt']['min_total_count'], large_n=prev, min_prop=min_prop)
+            print(f'Number of genes after prevalence filtering: {len(genes_to_keep)}')
+            self.data = self.data[:, genes_to_keep]
+        else:
+            print("No prevalence filtering is applied for single cell data. You can remove the parameters 'min_total_count' and 'min_count'.")
 
         # filter: cells, genes, mito
         # params['n_vars_diff'] shows number of filtered out features
         n_vars_pre = self.data.n_vars
+
+        #if params['basicFilt']['max_genes'] == '':
+        #        max_genes = max(self.data.obs['n_genes_by_counts'])
+        #else: 
+        #    max_genes = params['basicFilt']['max_genes']
         sc.pp.filter_cells(self.data, min_genes = params['basicFilt']['min_genes'])
+        #sc.pp.filter_cells(self.data, max_genes = max_genes)
         sc.pp.filter_genes(self.data, min_cells = params['basicFilt']['min_cells'])
         self.data = self.data[self.data.obs.pct_counts_mt < 5, :]
         n_vars_diff = n_vars_pre - self.data.n_vars
@@ -363,15 +394,18 @@ class Preprocessing(AnalysisI):
         # highly variable genes
         self.get_hvgs(self.analysis_params['diffExpr']['conditions'][0], input_type=input_type)
 
+        self.data.layers['log'] = self.data.X
+
         # regress out and scale each gene to unit variance. Clip values exceeding standard deviation 10
         sc.pp.regress_out(self.data, ['total_counts', 'pct_counts_mt'])
         sc.pp.scale(self.data, max_value=10)
-        self.plot_violins(use_raw=False, input_type = input_type)
+        if not skipviolins:
+            self.plot_violins(use_raw=False, input_type = input_type)
         if len(set(self.data.var[gene_symbols])) != self.data.n_vars: # if not unique
             gene_symbols = None
-        self.get_pcas(input_type=input_type, gene_symbols=gene_symbols, dimensions=pca_dims, pc_max=pc_max)
+        self.get_pcas(input_type=input_type, gene_symbols=gene_symbols, dimensions=pca_dims, pc_max=pc_max, newplots=newpcaplots)
 
-        self.get_pca_meta_associations()
+        self.get_pca_meta_associations(new=newpcaplots)
         # save
         self.save_data(os.path.join(self.paths["datapath"], f'{input_type}.pickle'))
         
