@@ -1,5 +1,4 @@
 .DS_Store
 *.pyc
-
-legacy/
-**/.ipynb_checkpoints/
+*.svg
+*.pdf
