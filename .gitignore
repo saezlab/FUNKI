@@ -2,3 +2,5 @@
 *.pyc
 *.svg
 *.pdf
+*egg-info
+build/
