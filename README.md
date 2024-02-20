@@ -1,7 +1,10 @@
 # FUNKI <img style="float: right; margin-left: 3em" width="300" alt="funki logo" src="./images/funki_humanAndMice_whitebackground.jpg">
 
 FUNKI is a web application that connects prior knowledge with your datasets. It is written in python and uses the package *streamlit* to build the graphical user interface.  
-To provide feedback or ask for help, you can open an *issue* in this repository or write to *hanna.schumacher@uni-heidelberg.de* . 
+  
+Included in this repository is the 'standard-workflows' Python package which provides functions for preprocessing, differential expression and prior knowledge analysis for mouse or human, bulk or single cell data. The 'Template' folder includes the basic setup for a new analysis. You can find the scripts for a bulk, single cell and pseudobulk analysis there together with instructions on the needed adjustments for your analysis. Please make sure to use the 'dev' branch of the repository together with the template. The latest version of the standard-workflows package is not merged into the main branch, yet.   
+  
+To provide feedback or ask for help, you can open an *issue* in this repository or write to *hanna@schumacher-home.de* .   
   
 </br>
 </br>
