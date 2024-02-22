@@ -19,7 +19,9 @@ classifiers = [
 ]
 dependencies = [
     'numpy',
-    'pandas'
+    'pandas',
+    'anndata',
+    'loompy',
 ]
 
 [project.urls]
