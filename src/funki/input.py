@@ -28,7 +28,7 @@ class DataSet(anndata.AnnData):
     '''
 
     def __init__(self, X=None):
-        super(self.__class__, self).__init__(X)
+        super().__init__(X)
 
 
 def read(path, *args, **kwargs):

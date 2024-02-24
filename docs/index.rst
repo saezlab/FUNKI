@@ -11,6 +11,7 @@
    :caption: Contents:
 
    input
+   preprocessing
    analysis
    plots
    link_license

@@ -22,6 +22,7 @@ dependencies = [
     'pandas',
     'anndata',
     'loompy',
+    'scanpy',
 ]
 
 [project.urls]
