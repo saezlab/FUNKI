@@ -18,6 +18,9 @@ def sc_trans_filter(data, min_genes=None, max_genes=None, mito_pct=None):
         percentage above the threshold, it will be filtered out, defaults to
         ``None``
     :type mito_pct: int, optional
+    :returns: The resulting filtered data set after applying the specified
+        thresholds
+    :rtype: :class:`funki.input.DataSet`
     '''
 
     aux = data.copy()
@@ -33,5 +36,35 @@ def sc_trans_filter(data, min_genes=None, max_genes=None, mito_pct=None):
         sc.pp.calculate_qc_metrics(aux, qc_vars=['mt'], percent_top=None,
                                    log1p=False, inplace=True)
         aux =  aux[aux.obs.pct_counts_mt < mito_pct, :]
+
+    return aux
+
+def sc_trans_normalize_total(data, target_sum=1e6, log_transform=False):
+    '''
+    Normalizes the total counts per cell in a single-cell data set. The
+    normaliztion scales the counts so that the sum of all genes in a cell add up
+    to the specified `target_sum` (1e6 by default, equivalent to CPM
+    normalization). If `log_transform=True`, it also applies a :math:`\log(X+1)`
+    transformation to the resulting normailzed data.
+
+    :param data: A single-cell transcriptomic data set containing raw counts
+    :type data: :class:`funki.input.DataSet`
+    :param target_sum: The targeted total counts per cell to normalize for,
+        defaults to ``None``, which is equivalent to CPM normalization
+    :type target_sum: int | float, optional
+    :param log_transform: Whether to apply log-transformation after normalizing
+        the data, defaults to ``False``
+    :type log_transform: bool, optional
+    :returns: The resulting normalized (and log-transformed, if applicable)
+        data set
+    :rtype: :class:`funki.input.DataSet`
+    '''
+
+    aux = data.copy()
+
+    sc.pp.normalize_total(aux, target_sum=target_sum, inplace=True)
+
+    if log_transform:
+        sc.pp.log1p(aux)
 
     return aux

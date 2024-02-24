@@ -12,6 +12,7 @@
     <script src="_static/documentation_options.js?v=d45e8c67"></script>
     <script src="_static/doctools.js?v=888ff710"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -64,6 +65,41 @@ percentage above the threshold, it will be filtered out, defaults to
 <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The resulting filtered data set after applying the specified
+thresholds</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="input.html#funki.input.DataSet" title="funki.input.DataSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">funki.input.DataSet</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="funki.preprocessing.sc_trans_normalize_total">
+<span class="sig-prename descclassname"><span class="pre">funki.preprocessing.</span></span><span class="sig-name descname"><span class="pre">sc_trans_normalize_total</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_sum</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000000.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_transform</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#funki.preprocessing.sc_trans_normalize_total" title="Link to this definition">¶</a></dt>
+<dd><p>Normalizes the total counts per cell in a single-cell data set. The
+normaliztion scales the counts so that the sum of all genes in a cell add up
+to the specified <cite>target_sum</cite> (1e6 by default, equivalent to CPM
+normalization). If <cite>log_transform=True</cite>, it also applies a <span class="math notranslate nohighlight">\(\log(X+1)\)</span>
+transformation to the resulting normailzed data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<a class="reference internal" href="input.html#funki.input.DataSet" title="funki.input.DataSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">funki.input.DataSet</span></code></a>) – A single-cell transcriptomic data set containing raw counts</p></li>
+<li><p><strong>target_sum</strong> (<em>int</em><em> | </em><em>float</em><em>, </em><em>optional</em>) – The targeted total counts per cell to normalize for,
+defaults to <code class="docutils literal notranslate"><span class="pre">None</span></code>, which is equivalent to CPM normalization</p></li>
+<li><p><strong>log_transform</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to apply log-transformation after normalizing
+the data, defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code></p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The resulting normalized (and log-transformed, if applicable)
+data set</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="input.html#funki.input.DataSet" title="funki.input.DataSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">funki.input.DataSet</span></code></a></p>
+</dd>
 </dl>
 </dd></dl>
 
@@ -81,6 +117,7 @@ percentage above the threshold, it will be filtered out, defaults to
     <ul>
 <li><a class="reference internal" href="#">funki.preprocessing</a><ul>
 <li><a class="reference internal" href="#funki.preprocessing.sc_trans_filter"><code class="docutils literal notranslate"><span class="pre">sc_trans_filter()</span></code></a></li>
+<li><a class="reference internal" href="#funki.preprocessing.sc_trans_normalize_total"><code class="docutils literal notranslate"><span class="pre">sc_trans_normalize_total()</span></code></a></li>
 </ul>
 </li>
 </ul>

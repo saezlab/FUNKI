@@ -21,7 +21,7 @@ class DataSet(anndata.AnnData):
 
     :param X: An instance of `anndata.AnnData`_ or any other class accepted by
         `anndata.AnnData`_, defaults to ``None``.
-    :type X: anndata.AnnData, optional
+    :type X: `anndata.AnnData`_, optional
 
     .. _anndata.AnnData: https://anndata.readthedocs.io/en/latest/generated/ann\
         data.AnnData.html
@@ -47,9 +47,11 @@ def read(path, *args, **kwargs):
     :param \*\*kwargs: Other keyword arguments that can be required by the
         reading function, according to the data file format.
     :type \*\*kwargs: optional
+    :returns: The loaded data set object
+    :rtype: :class:`funki.input.DataSet`
 
-    .. _anndata reading: https://anndata.readthedocs.io/en/latest/api.htm\
-        l\#reading
+    .. _anndata reading: https://anndata.readthedocs.io/en/latest/api.html/#rea\
+        ding
     .. _anndata.read_text: https://anndata.readthedocs.io/en/latest/generated/a\
         nndata.read_text.html
     '''

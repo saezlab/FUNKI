@@ -51,7 +51,7 @@
 <dd><p>Data set class, inherits from <a class="reference external" href="https://anndata.readthedocs.io/en/latest/generated/anndata.AnnData.html">anndata.AnnData</a> class.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>X</strong> (<em>anndata.AnnData</em><em>, </em><em>optional</em>) – An instance of <a class="reference external" href="https://anndata.readthedocs.io/en/latest/generated/anndata.AnnData.html">anndata.AnnData</a> or any other class accepted by
+<dd class="field-odd"><p><strong>X</strong> (<a class="reference external" href="https://anndata.readthedocs.io/en/latest/generated/anndata.AnnData.html">anndata.AnnData</a>, optional) – An instance of <a class="reference external" href="https://anndata.readthedocs.io/en/latest/generated/anndata.AnnData.html">anndata.AnnData</a> or any other class accepted by
 <a class="reference external" href="https://anndata.readthedocs.io/en/latest/generated/anndata.AnnData.html">anndata.AnnData</a>, defaults to <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
 </dd>
 </dl>
@@ -60,10 +60,10 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="funki.input.read">
 <span class="sig-prename descclassname"><span class="pre">funki.input.</span></span><span class="sig-name descname"><span class="pre">read</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#funki.input.read" title="Link to this definition">¶</a></dt>
-<dd><p>Function takes a path to a file and uses the appropiate <a class="reference external" href="https://anndata.readthedocs.io/en/latest/api.html#reading">anndata reading</a>
+<dd><p>Function takes a path to a file and uses the appropiate <a class="reference external" href="https://anndata.readthedocs.io/en/latest/api.html/#reading">anndata reading</a>
 function according to the file extension provided in <code class="docutils literal notranslate"><span class="pre">path</span></code>. You can find
 further information on the available formats in the
-<a class="reference external" href="https://anndata.readthedocs.io/en/latest/api.html#reading">anndata reading</a> documentation. If file extension not recognized, it
+<a class="reference external" href="https://anndata.readthedocs.io/en/latest/api.html/#reading">anndata reading</a> documentation. If file extension not recognized, it
 defaults to <a class="reference external" href="https://anndata.readthedocs.io/en/latest/generated/anndata.read_text.html">anndata.read_text</a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -74,6 +74,12 @@ reading function, according to the data file format.</p></li>
 <li><p><strong>**kwargs</strong> (<em>optional</em>) – Other keyword arguments that can be required by the
 reading function, according to the data file format.</p></li>
 </ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The loaded data set object</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#funki.input.DataSet" title="funki.input.DataSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">funki.input.DataSet</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
