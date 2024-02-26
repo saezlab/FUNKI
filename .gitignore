@@ -1,7 +1,5 @@
 .DS_Store
 *.pyc
-*.svg
-*.pdf
 *egg-info
 build/
 test.py

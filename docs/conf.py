@@ -35,3 +35,8 @@ source_suffix = {
 
 html_theme = 'classic'
 html_static_path = ['_static']
+html_favicon = '_static/funki_favicon.ico'
+html_theme_options = {
+    'relbarbgcolor': '#007fa0ff',
+    'headbgcolor': '#12cbd0ff',
+}
