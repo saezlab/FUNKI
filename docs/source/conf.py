@@ -3,7 +3,7 @@ import sys
 
 from funki import __version__
 
-sys.path.insert(0, os.path.abspath('../src/'))
+sys.path.insert(0, os.path.abspath('../../src/'))
 
 # Configuration file for the Sphinx documentation builder.
 #
@@ -24,7 +24,7 @@ release = __version__
 extensions = ['sphinx.ext.autodoc', 'myst_parser']
 
 templates_path = ['_templates']
-exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
+exclude_patterns = []
 
 source_suffix = {
     '.rst': 'restructuredtext',
@@ -35,7 +35,7 @@ source_suffix = {
 
 html_theme = 'classic'
 html_static_path = ['_static']
-html_favicon = '_static/funki_favicon.ico'
+html_favicon = '_images/funki_favicon.ico'
 html_theme_options = {
     'relbarbgcolor': '#007fa0ff',
     'headbgcolor': '#12cbd0ff',

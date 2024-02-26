@@ -7,7 +7,7 @@
     :width: 1000
     :scale: 50%
 
-.. include:: ../README.md
+.. include:: ../../README.md
     :parser: myst_parser.sphinx_
     :start-line: 2
 
