@@ -45,6 +45,29 @@
             
   <section id="module-funki.analysis">
 <span id="funki-analysis"></span><h1>funki.analysis<a class="headerlink" href="#module-funki.analysis" title="Link to this heading">¶</a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="funki.analysis.sc_trans_qc_metrics">
+<span class="sig-prename descclassname"><span class="pre">funki.analysis.</span></span><span class="sig-name descname"><span class="pre">sc_trans_qc_metrics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">var_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mito'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#funki.analysis.sc_trans_qc_metrics" title="Link to this definition">¶</a></dt>
+<dd><p>Takes a single-cell transcriptomics data set and computes several quality
+control (QC) metrics according to the provided variable annotation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<a class="reference internal" href="input.html#funki.input.DataSet" title="funki.input.DataSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">funki.input.DataSet</span></code></a>) – A single-cell transcriptomic data set instance</p></li>
+<li><p><strong>var_name</strong> (<em>str</em><em>, </em><em>optional</em>) – The variable over which to compute the QC metrics. This
+name should exist in <code class="docutils literal notranslate"><span class="pre">DataSet.var_names</span></code>, defaults to <code class="docutils literal notranslate"><span class="pre">'mito'</span></code></p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The resulting filtered data set after applying the specified
+thresholds</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="input.html#funki.input.DataSet" title="funki.input.DataSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">funki.input.DataSet</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 
 
@@ -54,6 +77,16 @@
       </div>
       <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
         <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">funki.analysis</a><ul>
+<li><a class="reference internal" href="#funki.analysis.sc_trans_qc_metrics"><code class="docutils literal notranslate"><span class="pre">sc_trans_qc_metrics()</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
   <div>
     <h4>Previous topic</h4>
     <p class="topless"><a href="preprocessing.html"

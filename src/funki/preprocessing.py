@@ -1,5 +1,7 @@
 import scanpy as sc
 
+from funki.analysis import sc_trans_qc_metrics
+
 def sc_trans_filter(data, min_genes=None, max_genes=None, mito_pct=None):
     '''
     Applies quality control filters to a given single-cell transcriptomic data
@@ -32,10 +34,9 @@ def sc_trans_filter(data, min_genes=None, max_genes=None, mito_pct=None):
         sc.pp.filter_cells(aux, max_genes=max_genes, inplace=True)
 
     if mito_pct:
-        aux.var['mt'] = aux.var_names.str.startswith('MT-')
-        sc.pp.calculate_qc_metrics(aux, qc_vars=['mt'], percent_top=None,
-                                   log1p=False, inplace=True)
-        aux =  aux[aux.obs.pct_counts_mt < mito_pct, :]
+        aux.var['mito'] = aux.var_names.str.startswith('MT-')
+        aux = sc_trans_qc_metrics(aux, var_name='mito')
+        aux = aux[aux.obs['pct_counts_mito'] < mito_pct, :]
 
     return aux
 

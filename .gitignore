@@ -4,3 +4,4 @@
 *.pdf
 *egg-info
 build/
+test.py

@@ -14,8 +14,8 @@ sys.path.insert(0, os.path.abspath('../src/'))
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
 project = 'FUNKI'
-copyright = '2024, Nicolàs Palacio-Escat'
 author = 'Nicolàs Palacio-Escat'
+copyright = '2024, %s' % author
 release = __version__
 
 # -- General configuration ---------------------------------------------------
