@@ -34,7 +34,7 @@ source_suffix = {
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output
 
 html_theme = 'classic'
-html_title = 'FUNKI'
+html_title = 'FUNKI documentation'
 html_static_path = ['_static']
 html_favicon = '_images/funki_favicon.ico'
 html_theme_options = {

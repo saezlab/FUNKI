@@ -5,7 +5,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
-    <title>funki.input &#8212; FUNKI</title>
+    <title>funki.input &#8212; FUNKI documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b76e3c8a" />
     <link rel="stylesheet" type="text/css" href="_static/classic.css?v=7663fcb8" />
     
@@ -34,7 +34,7 @@
         <li class="right" >
           <a href="index.html" title="Welcome to FUNKI"
              accesskey="P">previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">FUNKI</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">FUNKI documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">funki.input</a></li> 
       </ul>
     </div>  
@@ -56,6 +56,16 @@
 <a class="reference external" href="https://anndata.readthedocs.io/en/latest/generated/anndata.AnnData.html">anndata.AnnData</a>, defaults to <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
 </dd>
 </dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="funki.input.DataSet.sum_duplicated_gene_counts">
+<span class="sig-name descname"><span class="pre">sum_duplicated_gene_counts</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#funki.input.DataSet.sum_duplicated_gene_counts" title="Link to this definition">¶</a></dt>
+<dd><p>Takes duplicated genes (as defined in DataSet.var_names) and sums their
+counts. NOTE: This should be applied to raw counts, prior to any
+normalization or preprocessing as is it assumed that e.g. different
+splicing variants of the same gene can be added  towards the counts of
+the same gene (e.g. gene symbol, UniProt ID, etc.).</p>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py function">
@@ -98,7 +108,10 @@ reading function, according to the data file format.</p></li>
     <h3><a href="index.html">Table of Contents</a></h3>
     <ul>
 <li><a class="reference internal" href="#">funki.input</a><ul>
-<li><a class="reference internal" href="#funki.input.DataSet"><code class="docutils literal notranslate"><span class="pre">DataSet</span></code></a></li>
+<li><a class="reference internal" href="#funki.input.DataSet"><code class="docutils literal notranslate"><span class="pre">DataSet</span></code></a><ul>
+<li><a class="reference internal" href="#funki.input.DataSet.sum_duplicated_gene_counts"><code class="docutils literal notranslate"><span class="pre">DataSet.sum_duplicated_gene_counts()</span></code></a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#funki.input.read"><code class="docutils literal notranslate"><span class="pre">read()</span></code></a></li>
 </ul>
 </li>
@@ -151,7 +164,7 @@ reading function, according to the data file format.</p></li>
         <li class="right" >
           <a href="index.html" title="Welcome to FUNKI"
              >previous</a> |</li>
-        <li class="nav-item nav-item-0"><a href="index.html">FUNKI</a> &#187;</li>
+        <li class="nav-item nav-item-0"><a href="index.html">FUNKI documentation</a> &#187;</li>
         <li class="nav-item nav-item-this"><a href="">funki.input</a></li> 
       </ul>
     </div>

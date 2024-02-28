@@ -30,6 +30,17 @@ class DataSet(anndata.AnnData):
     def __init__(self, X=None):
         super().__init__(X)
 
+    def sum_duplicated_gene_counts(self):
+        '''
+        Takes duplicated genes (as defined in DataSet.var_names) and sums their
+        counts. NOTE: This should be applied to raw counts, prior to any
+        normalization or preprocessing as is it assumed that e.g. different
+        splicing variants of the same gene can be added  towards the counts of
+        the same gene (e.g. gene symbol, UniProt ID, etc.).
+        '''
+
+        aux = DataSet(self.to_df().groupby(self.var_names, axis=1).sum())
+        self.__dict__.update(aux.__dict__)
 
 def read(path, *args, **kwargs):
     '''
