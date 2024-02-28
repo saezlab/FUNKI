@@ -23,6 +23,8 @@ dependencies = [
     'anndata',
     'loompy',
     'scanpy',
+    'leidenalg',
+    'louvain'
 ]
 
 [project.urls]

@@ -47,6 +47,28 @@
   <section id="module-funki.analysis">
 <span id="funki-analysis"></span><h1>funki.analysis<a class="headerlink" href="#module-funki.analysis" title="Link to this heading">¶</a></h1>
 <dl class="py function">
+<dt class="sig sig-object py" id="funki.analysis.sc_clustering">
+<span class="sig-prename descclassname"><span class="pre">funki.analysis.</span></span><span class="sig-name descname"><span class="pre">sc_clustering</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'leiden'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resolution</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#funki.analysis.sc_clustering" title="Link to this definition">¶</a></dt>
+<dd><p>Computes the clustering of the cells according to the selected algorithm and
+resolution parameter. You can plot the resulting clustering with your
+dimensionality reduction approach of choice (<a class="reference internal" href="plots.html#funki.plots.plot_pca" title="funki.plots.plot_pca"><code class="xref py py-func docutils literal notranslate"><span class="pre">funki.plots.plot_pca()</span></code></a>,
+<a class="reference internal" href="plots.html#funki.plots.plot_tsne" title="funki.plots.plot_tsne"><code class="xref py py-func docutils literal notranslate"><span class="pre">funki.plots.plot_tsne()</span></code></a> or <a class="reference internal" href="plots.html#funki.plots.plot_umap" title="funki.plots.plot_umap"><code class="xref py py-func docutils literal notranslate"><span class="pre">funki.plots.plot_umap()</span></code></a>) by passing
+the clustering algorithm name to the keyword argument <code class="docutils literal notranslate"><span class="pre">color</span></code> (e.g.:
+<code class="docutils literal notranslate"><span class="pre">plot_tsne(mydata,</span> <span class="pre">color='leiden')</span></code>)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<a class="reference internal" href="input.html#funki.input.DataSet" title="funki.input.DataSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">funki.input.DataSet</span></code></a>) – A single-cell transcriptomic data set instance</p></li>
+<li><p><strong>alg</strong> (<em>str</em><em>, </em><em>optional</em>) – The algorithm to use for computing the clusters, can be either
+<code class="docutils literal notranslate"><span class="pre">'leiden'</span></code> or <code class="docutils literal notranslate"><span class="pre">'louvain'</span></code>, defaults to <code class="docutils literal notranslate"><span class="pre">'leiden'</span></code></p></li>
+<li><p><strong>resolution</strong> (<em>float</em><em>, </em><em>optional</em>) – The resolution of the clustering, a higher number
+generates more and smaller clusters, defaults to <code class="docutils literal notranslate"><span class="pre">1.0</span></code></p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="funki.analysis.sc_trans_qc_metrics">
 <span class="sig-prename descclassname"><span class="pre">funki.analysis.</span></span><span class="sig-name descname"><span class="pre">sc_trans_qc_metrics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">var_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mito'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#funki.analysis.sc_trans_qc_metrics" title="Link to this definition">¶</a></dt>
 <dd><p>Takes a single-cell transcriptomics data set and computes several quality
@@ -82,6 +104,7 @@ thresholds</p>
     <h3><a href="index.html">Table of Contents</a></h3>
     <ul>
 <li><a class="reference internal" href="#">funki.analysis</a><ul>
+<li><a class="reference internal" href="#funki.analysis.sc_clustering"><code class="docutils literal notranslate"><span class="pre">sc_clustering()</span></code></a></li>
 <li><a class="reference internal" href="#funki.analysis.sc_trans_qc_metrics"><code class="docutils literal notranslate"><span class="pre">sc_trans_qc_metrics()</span></code></a></li>
 </ul>
 </li>
