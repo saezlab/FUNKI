@@ -2,6 +2,8 @@ import os
 
 import anndata
 
+# TODO: Implement concat function returning DataSet
+# TODO: Re-implement __repr__
 
 _read_ext = {
     '.csv': anndata.read_csv,
@@ -22,13 +24,47 @@ class DataSet(anndata.AnnData):
     :param X: An instance of `anndata.AnnData`_ or any other class accepted by
         `anndata.AnnData`_, defaults to ``None``.
     :type X: `anndata.AnnData`_, optional
+    :param \*\*kwargs: Other keyword arguments that can be passed to
+        `anndata.AnnData`_ class.
+    :type \*\*kwargs: optional
 
     .. _anndata.AnnData: https://anndata.readthedocs.io/en/latest/generated/ann\
         data.AnnData.html
     '''
 
-    def __init__(self, X=None):
-        super().__init__(X)
+    def __init__(self, X=None, **kwargs):
+        super().__init__(X, **kwargs)
+
+    def __getitem__(self, index):
+        '''
+        Returns a sliced view of the DataSet.
+        '''
+
+        oidx, vidx = self._normalize_indices(index)
+
+        X = self.X[oidx, vidx]
+        obs = self.obs.iloc[oidx]
+        var = self.var.iloc[vidx]
+        uns = self.uns
+        obsm = {k: v[odsx] for k, v in self.obsm.items()}
+        varm = {k: v[vidx] for k, v in self.varm.items()}
+        raw = self.raw
+        layers = self.layers
+        obsp = {k: v[odsx] for k, v in self.obsp.items()}
+        varp = {k: v[vidx] for k, v in self.varp.items()}
+
+        return DataSet(
+            X=X,
+            obs=obs,
+            var=var,
+            uns=uns,
+            obsm=obsm,
+            varm=varm,
+            raw=raw,
+            layers=layers,
+            obsp=obsp,
+            varp=varp,
+        )
 
     def sum_duplicated_gene_counts(self):
         '''

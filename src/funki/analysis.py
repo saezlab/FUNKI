@@ -1,5 +1,7 @@
 import scanpy as sc
 
+from .input import DataSet
+
 def sc_trans_qc_metrics(data, var_name='mito'):
     '''
     Takes a single-cell transcriptomics data set and computes several quality
@@ -20,7 +22,7 @@ def sc_trans_qc_metrics(data, var_name='mito'):
     sc.pp.calculate_qc_metrics(aux, qc_vars=[var_name], percent_top=None,
                                log1p=False, inplace=True)
 
-    return aux
+    return DataSet(aux)
 
 def sc_clustering(data, alg='leiden', resolution=1.0):
     '''

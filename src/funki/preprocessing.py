@@ -1,6 +1,7 @@
 import scanpy as sc
 
-from funki.analysis import sc_trans_qc_metrics
+from .analysis import sc_trans_qc_metrics
+from .input import DataSet
 
 def sc_trans_filter(data, min_genes=None, max_genes=None, mito_pct=None):
     '''
@@ -38,7 +39,7 @@ def sc_trans_filter(data, min_genes=None, max_genes=None, mito_pct=None):
         aux = sc_trans_qc_metrics(aux, var_name='mito')
         aux = aux[aux.obs['pct_counts_mito'] < mito_pct, :]
 
-    return aux
+    return DataSet(aux)
 
 def sc_trans_normalize_total(data, target_sum=1e6, log_transform=False):
     '''
@@ -68,4 +69,4 @@ def sc_trans_normalize_total(data, target_sum=1e6, log_transform=False):
     if log_transform:
         sc.pp.log1p(aux)
 
-    return aux
+    return DataSet(aux)
