@@ -1,5 +1,7 @@
 import scanpy as sc
 
+from .utils import del_meta
+
 def plot_pca(data, color=None, use_highly_variable=True, recalculate=False):
     '''
     Plots the dimensionality reduction PCA results of a data set.
@@ -21,8 +23,11 @@ def plot_pca(data, color=None, use_highly_variable=True, recalculate=False):
         html#matplotlib.figure.Figure
     '''
 
-    if 'X_pca' not in data.obsm or recalculate:
-        sc.tl.pca(data)
+    if recalculate:
+        data._del_meta({'obsm': 'X_pca'})
+
+    if 'X_pca' not in data.obsm:
+        sc.pp.pca(data, use_highly_variable=use_highly_variable)
 
     if use_highly_variable:
         sc.pp.highly_variable_genes(data, inplace=True)
@@ -50,7 +55,10 @@ def plot_tsne(data, color=None, perplexity=30, recalculate=False):
         html#matplotlib.figure.Figure
     '''
 
-    if 'X_tsne' not in data.obsm or recalculate:
+    if recalculate:
+        data._del_meta({'obsm': ['X_pca', 'X_tsne'], 'uns': 'tsne'})
+
+    if 'X_tsne' not in data.obsm:
         sc.tl.tsne(data, perplexity=perplexity)
 
     return sc.pl.tsne(data, color=color)
@@ -82,11 +90,15 @@ def plot_umap(data, color=None, min_dist=0.5, spread=1.0, alpha=1.0, gamma=1.0,
         html#matplotlib.figure.Figure
     '''
 
-    if not ('distances' in data.obsp and 'connectivities' in data.obsp) \
-        or recalculate:
+    if recalculate:
+        data._del_meta({'obsm': ['X_pca', 'X_umap'],
+                        'obsp': ['distances', 'connectivities'],
+                        'uns': ['umap', 'neighbors']})
+
+    if not ('distances' in data.obsp and 'connectivities' in data.obsp):
         sc.pp.neighbors(data)
 
-    if 'X_umap' not in data.obsm or recalculate:
+    if 'X_umap' not in data.obsm:
         sc.tl.umap(data, min_dist=min_dist, spread=spread, alpha=alpha,
                    gamma=gamma)
 
