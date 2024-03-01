@@ -1,6 +1,6 @@
 import scanpy as sc
 
-def plot_pca(data, color=None, use_highly_variable=True):
+def plot_pca(data, color=None, use_highly_variable=True, recalculate=False):
     '''
     Plots the dimensionality reduction PCA results of a data set.
 
@@ -11,6 +11,9 @@ def plot_pca(data, color=None, use_highly_variable=True):
     :param use_highly_variable: Whether to use highly variable genes only or all
         genes available, defaults to ``True``
     :type use_highly_variable: bool, optional
+    :param recalculate: Whether to recalculate the dimensionality reduction,
+        defaults to ``False``
+    :type recalculate: bool, optional
     :returns: The figure contataining the resulting PCA
     :rtype: `matplotlib.figure.Figure`_
 
@@ -18,7 +21,7 @@ def plot_pca(data, color=None, use_highly_variable=True):
         html#matplotlib.figure.Figure
     '''
 
-    if 'X_pca' not in data.obsm:
+    if 'X_pca' not in data.obsm or recalculate:
         sc.tl.pca(data)
 
     if use_highly_variable:
@@ -26,7 +29,7 @@ def plot_pca(data, color=None, use_highly_variable=True):
 
     return sc.pl.pca(data, color=color)
 
-def plot_tsne(data, color=None, perplexity=30):
+def plot_tsne(data, color=None, perplexity=30, recalculate=False):
     '''
     Plots the dimensionality reduction t-SNE results of a data set.
 
@@ -37,6 +40,9 @@ def plot_tsne(data, color=None, perplexity=30):
     :param perplexity: Perplexity hyperparmaeter for the t-SNE representation.
         Relates to the number of nearest neighbours, defaults to ``30``
     :type perplexity: int, optional
+    :param recalculate: Whether to recalculate the dimensionality reduction,
+        defaults to ``False``
+    :type recalculate: bool, optional
     :returns: The figure contataining the resulting t-SNE
     :rtype: `matplotlib.figure.Figure`_
 
@@ -44,12 +50,13 @@ def plot_tsne(data, color=None, perplexity=30):
         html#matplotlib.figure.Figure
     '''
 
-    if 'X_tsne' not in data.obsm:
+    if 'X_tsne' not in data.obsm or recalculate:
         sc.tl.tsne(data, perplexity=perplexity)
 
     return sc.pl.tsne(data, color=color)
 
-def plot_umap(data, color=None, min_dist=0.5, spread=1.0, alpha=1.0, gamma=1.0):
+def plot_umap(data, color=None, min_dist=0.5, spread=1.0, alpha=1.0, gamma=1.0,
+              recalculate=False):
     '''
     Plots the dimensionality reduction UMAP results of a data set.
 
@@ -65,6 +72,9 @@ def plot_umap(data, color=None, min_dist=0.5, spread=1.0, alpha=1.0, gamma=1.0):
     :type alpha: float, optional
     :param gamma: Weighting applied to negative samples for the optimization
     :type gamma: float, optional
+    :param recalculate: Whether to recalculate the dimensionality reduction,
+        defaults to ``False``
+    :type recalculate: bool, optional
     :returns: The figure contataining the resulting UMAP
     :rtype: `matplotlib.figure.Figure`_
 
@@ -72,10 +82,11 @@ def plot_umap(data, color=None, min_dist=0.5, spread=1.0, alpha=1.0, gamma=1.0):
         html#matplotlib.figure.Figure
     '''
 
-    if not ('distances' in data.obsp and 'connectivities' in data.obsp):
+    if not ('distances' in data.obsp and 'connectivities' in data.obsp) \
+        or recalculate:
         sc.pp.neighbors(data)
 
-    if 'X_umap' not in data.obsm:
+    if 'X_umap' not in data.obsm or recalculate:
         sc.tl.umap(data, min_dist=min_dist, spread=spread, alpha=alpha,
                    gamma=gamma)
 

@@ -48,7 +48,7 @@
 <span id="funki-plots"></span><h1>funki.plots<a class="headerlink" href="#module-funki.plots" title="Link to this heading">¶</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="funki.plots.plot_pca">
-<span class="sig-prename descclassname"><span class="pre">funki.plots.</span></span><span class="sig-name descname"><span class="pre">plot_pca</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_highly_variable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#funki.plots.plot_pca" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">funki.plots.</span></span><span class="sig-name descname"><span class="pre">plot_pca</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_highly_variable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recalculate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#funki.plots.plot_pca" title="Link to this definition">¶</a></dt>
 <dd><p>Plots the dimensionality reduction PCA results of a data set.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -57,6 +57,8 @@
 <li><p><strong>color</strong> (<em>str</em><em> | </em><em>list</em><em>[</em><em>str</em><em>]</em><em>, </em><em>optional</em>) – Variables or observations to color from, defaults to <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
 <li><p><strong>use_highly_variable</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to use highly variable genes only or all
 genes available, defaults to <code class="docutils literal notranslate"><span class="pre">True</span></code></p></li>
+<li><p><strong>recalculate</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to recalculate the dimensionality reduction,
+defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code></p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -70,7 +72,7 @@ genes available, defaults to <code class="docutils literal notranslate"><span cl
 
 <dl class="py function">
 <dt class="sig sig-object py" id="funki.plots.plot_tsne">
-<span class="sig-prename descclassname"><span class="pre">funki.plots.</span></span><span class="sig-name descname"><span class="pre">plot_tsne</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">perplexity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">30</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#funki.plots.plot_tsne" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">funki.plots.</span></span><span class="sig-name descname"><span class="pre">plot_tsne</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">perplexity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">30</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recalculate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#funki.plots.plot_tsne" title="Link to this definition">¶</a></dt>
 <dd><p>Plots the dimensionality reduction t-SNE results of a data set.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -79,6 +81,8 @@ genes available, defaults to <code class="docutils literal notranslate"><span cl
 <li><p><strong>color</strong> (<em>str</em><em> | </em><em>list</em><em>[</em><em>str</em><em>]</em><em>, </em><em>optional</em>) – Variables or observations to color from, defaults to <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
 <li><p><strong>perplexity</strong> (<em>int</em><em>, </em><em>optional</em>) – Perplexity hyperparmaeter for the t-SNE representation.
 Relates to the number of nearest neighbours, defaults to <code class="docutils literal notranslate"><span class="pre">30</span></code></p></li>
+<li><p><strong>recalculate</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to recalculate the dimensionality reduction,
+defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code></p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -92,7 +96,7 @@ Relates to the number of nearest neighbours, defaults to <code class="docutils l
 
 <dl class="py function">
 <dt class="sig sig-object py" id="funki.plots.plot_umap">
-<span class="sig-prename descclassname"><span class="pre">funki.plots.</span></span><span class="sig-name descname"><span class="pre">plot_umap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_dist</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spread</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gamma</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#funki.plots.plot_umap" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">funki.plots.</span></span><span class="sig-name descname"><span class="pre">plot_umap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_dist</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spread</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gamma</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recalculate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#funki.plots.plot_umap" title="Link to this definition">¶</a></dt>
 <dd><p>Plots the dimensionality reduction UMAP results of a data set.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -103,6 +107,8 @@ Relates to the number of nearest neighbours, defaults to <code class="docutils l
 <li><p><strong>spread</strong> (<em>float</em><em>, </em><em>optional</em>) – Effective scale of embedded points</p></li>
 <li><p><strong>alpha</strong> (<em>float</em><em>, </em><em>optional</em>) – Initial learning rate for the optimization</p></li>
 <li><p><strong>gamma</strong> (<em>float</em><em>, </em><em>optional</em>) – Weighting applied to negative samples for the optimization</p></li>
+<li><p><strong>recalculate</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to recalculate the dimensionality reduction,
+defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code></p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
