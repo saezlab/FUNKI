@@ -48,6 +48,29 @@
   <section id="module-funki.preprocessing">
 <span id="funki-preprocessing"></span><h1>funki.preprocessing<a class="headerlink" href="#module-funki.preprocessing" title="Link to this heading">¶</a></h1>
 <dl class="py function">
+<dt class="sig sig-object py" id="funki.preprocessing.harmonize">
+<span class="sig-prename descclassname"><span class="pre">funki.preprocessing.</span></span><span class="sig-name descname"><span class="pre">harmonize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vars_use</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_highly_variable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recalculate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#funki.preprocessing.harmonize" title="Link to this definition">¶</a></dt>
+<dd><p>Executes <a class="reference external" href="https://portals.broadinstitute.org/harmony/">Harmony</a> batch correction on the data set PCA embedding. NOTE:
+this method will overwrite the <code class="xref py py-attr docutils literal notranslate"><span class="pre">DataSet.obsm['X_pca']</span></code> matrix.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<a class="reference internal" href="input.html#funki.input.DataSet" title="funki.input.DataSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">funki.input.DataSet</span></code></a>) – The data set that which <a class="reference external" href="https://portals.broadinstitute.org/harmony/">Harmony</a> will be executed on</p></li>
+<li><p><strong>vars_use</strong> (<em>list</em><em>[</em><em>str</em><em>]</em>) – Variables over which to correct for (i.e. batches). Must
+correspond to column(s) defined in <code class="xref py py-attr docutils literal notranslate"><span class="pre">DataSet.obs</span></code></p></li>
+<li><p><strong>use_highly_variable</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to use highly variable genes only or all
+genes available. Only used if PCA has not been computed previously or if
+<code class="docutils literal notranslate"><span class="pre">recalculate=True</span></code>, defaults to <code class="docutils literal notranslate"><span class="pre">True</span></code></p></li>
+<li><p><strong>recalculate</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to recalculate the PCA dimensionality reduction,
+defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code></p></li>
+<li><p><strong>**kwargs</strong> (<em>optional</em>) – Other keyword arguments that can be passed to
+<code class="docutils literal notranslate"><span class="pre">harmonypy.run_harmony()</span></code></p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="funki.preprocessing.sc_trans_filter">
 <span class="sig-prename descclassname"><span class="pre">funki.preprocessing.</span></span><span class="sig-name descname"><span class="pre">sc_trans_filter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_genes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_genes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mito_pct</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#funki.preprocessing.sc_trans_filter" title="Link to this definition">¶</a></dt>
 <dd><p>Applies quality control filters to a given single-cell transcriptomic data
@@ -81,9 +104,9 @@ thresholds</p>
 <span class="sig-prename descclassname"><span class="pre">funki.preprocessing.</span></span><span class="sig-name descname"><span class="pre">sc_trans_normalize_total</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_sum</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000000.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">log_transform</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#funki.preprocessing.sc_trans_normalize_total" title="Link to this definition">¶</a></dt>
 <dd><p>Normalizes the total counts per cell in a single-cell data set. The
 normaliztion scales the counts so that the sum of all genes in a cell add up
-to the specified <cite>target_sum</cite> (1e6 by default, equivalent to CPM
-normalization). If <cite>log_transform=True</cite>, it also applies a <span class="math notranslate nohighlight">\(\log(X+1)\)</span>
-transformation to the resulting normailzed data.</p>
+to the specified <code class="docutils literal notranslate"><span class="pre">target_sum</span></code> (1e6 by default, equivalent to CPM
+normalization). If <code class="docutils literal notranslate"><span class="pre">log_transform=True</span></code>, it also applies a
+<span class="math notranslate nohighlight">\(\log(X+1)\)</span> transformation to the resulting normailzed data.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -117,6 +140,7 @@ data set</p>
     <h3><a href="index.html">Table of Contents</a></h3>
     <ul>
 <li><a class="reference internal" href="#">funki.preprocessing</a><ul>
+<li><a class="reference internal" href="#funki.preprocessing.harmonize"><code class="docutils literal notranslate"><span class="pre">harmonize()</span></code></a></li>
 <li><a class="reference internal" href="#funki.preprocessing.sc_trans_filter"><code class="docutils literal notranslate"><span class="pre">sc_trans_filter()</span></code></a></li>
 <li><a class="reference internal" href="#funki.preprocessing.sc_trans_normalize_total"><code class="docutils literal notranslate"><span class="pre">sc_trans_normalize_total()</span></code></a></li>
 </ul>

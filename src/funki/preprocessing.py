@@ -1,4 +1,5 @@
 import scanpy as sc
+import harmonypy as hm
 
 from .analysis import sc_trans_qc_metrics
 from .input import DataSet
@@ -45,9 +46,9 @@ def sc_trans_normalize_total(data, target_sum=1e6, log_transform=False):
     '''
     Normalizes the total counts per cell in a single-cell data set. The
     normaliztion scales the counts so that the sum of all genes in a cell add up
-    to the specified `target_sum` (1e6 by default, equivalent to CPM
-    normalization). If `log_transform=True`, it also applies a :math:`\log(X+1)`
-    transformation to the resulting normailzed data.
+    to the specified ``target_sum`` (1e6 by default, equivalent to CPM
+    normalization). If ``log_transform=True``, it also applies a
+    :math:`\log(X+1)` transformation to the resulting normailzed data.
 
     :param data: A single-cell transcriptomic data set containing raw counts
     :type data: :class:`funki.input.DataSet`
@@ -70,3 +71,36 @@ def sc_trans_normalize_total(data, target_sum=1e6, log_transform=False):
         sc.pp.log1p(aux)
 
     return DataSet(aux)
+
+def harmonize(data, vars_use, use_highly_variable=True, recalculate=False,
+              **kwargs):
+    '''
+    Executes `Harmony`_ batch correction on the data set PCA embedding. NOTE:
+    this method will overwrite the :attr:`DataSet.obsm['X_pca']` matrix.
+
+    :param data: The data set that which `Harmony`_ will be executed on
+    :type data: :class:`funki.input.DataSet`
+    :param vars_use: Variables over which to correct for (i.e. batches). Must
+        correspond to column(s) defined in :attr:`DataSet.obs`
+    :type vars_use: list[str]
+    :param use_highly_variable: Whether to use highly variable genes only or all
+        genes available. Only used if PCA has not been computed previously or if
+        ``recalculate=True``, defaults to ``True``
+    :type use_highly_variable: bool, optional
+    :param recalculate: Whether to recalculate the PCA dimensionality reduction,
+        defaults to ``False``
+    :type recalculate: bool, optional
+    :param \*\*kwargs: Other keyword arguments that can be passed to
+        ``harmonypy.run_harmony()``
+    :type \*\*kwargs: optional
+
+    .. _Harmony: https://portals.broadinstitute.org/harmony/
+    '''
+    if recalculate:
+        data._del_meta({'obsm': 'X_pca'})
+
+    if 'X_pca' not in data.obsm:
+        sc.pp.pca(data, use_highly_variable=use_highly_variable)
+
+    ho = hm.run_harmony(data.obsm['X_pca'], data.obs, vars_use, **kwargs)
+    data.obsm['X_pca'] = ho.Z_corr.T

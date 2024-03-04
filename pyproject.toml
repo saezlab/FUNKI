@@ -24,7 +24,8 @@ dependencies = [
     'loompy',
     'scanpy',
     'leidenalg',
-    'louvain'
+    'louvain',
+    'harmonypy',
 ]
 
 [project.urls]

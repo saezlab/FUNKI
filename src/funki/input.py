@@ -66,18 +66,6 @@ class DataSet(anndata.AnnData):
             varp=varp,
         )
 
-    def sum_duplicated_gene_counts(self):
-        '''
-        Takes duplicated genes (as defined in DataSet.var_names) and sums their
-        counts. NOTE: This should be applied to raw counts, prior to any
-        normalization or preprocessing as is it assumed that e.g. different
-        splicing variants of the same gene can be added  towards the counts of
-        the same gene (e.g. gene symbol, UniProt ID, etc.).
-        '''
-
-        aux = DataSet(self.to_df().groupby(self.var_names, axis=1).sum())
-        self.__dict__.update(aux.__dict__)
-
     def _del_meta(self, attrs):
         '''
         Deletes metadata table(s) from a DataSet object attributes. If the
@@ -100,6 +88,28 @@ class DataSet(anndata.AnnData):
 
                 except KeyError:
                     continue
+
+    def copy(self):
+        '''
+        Creates a copy of the current :class:`DataSet` instance.
+
+        :returns: The copy of the current object
+        :rtype: :class:`DataSet`
+        '''
+
+        return DataSet(self._mutated_copy())
+
+    def sum_duplicated_gene_counts(self):
+        '''
+        Takes duplicated genes (as defined in :attr:`DataSet.var_names`) and
+        sums their counts. NOTE: This should be applied to raw counts, prior to
+        any normalization or preprocessing as is it assumed that e.g. different
+        splicing variants of the same gene can be added  towards the counts of
+        the same gene (e.g. gene symbol, UniProt ID, etc.).
+        '''
+
+        aux = DataSet(self.to_df().groupby(self.var_names, axis=1).sum())
+        self.__dict__.update(aux.__dict__)
 
 
 def read(path, *args, **kwargs):
