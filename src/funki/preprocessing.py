@@ -99,6 +99,9 @@ def harmonize(data, vars_use, use_highly_variable=True, recalculate=False,
     if recalculate:
         data._del_meta({'obsm': 'X_pca'})
 
+    if use_highly_variable:
+        sc.pp.highly_variable_genes(data, inplace=True)
+
     if 'X_pca' not in data.obsm:
         sc.pp.pca(data, use_highly_variable=use_highly_variable)
 
