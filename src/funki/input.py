@@ -66,6 +66,23 @@ class DataSet(anndata.AnnData):
             varp=varp,
         )
 
+    def __repr__(self):
+        '''
+        Prints object info, adapted from anndata.AnnData._gen_repr
+        '''
+
+        o, v = self.n_obs, self.n_vars
+        descr = f'DataSet object with n_obs × n_vars = {o} × {v}'
+
+        for attr in ['obs', 'var', 'uns', 'obsm', 'varm', 'layers', 'obsp',
+                     'varp']:
+            keys = getattr(self, attr).keys()
+
+            if len(keys) > 0:
+                descr += f'\n    {attr}: {str(list(keys))[1:-1]}'
+
+        return descr
+
     def _del_meta(self, attrs):
         '''
         Deletes metadata table(s) from a DataSet object attributes. If the

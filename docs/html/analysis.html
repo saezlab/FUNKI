@@ -48,7 +48,7 @@
 <span id="funki-analysis"></span><h1>funki.analysis<a class="headerlink" href="#module-funki.analysis" title="Link to this heading">¶</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="funki.analysis.sc_clustering">
-<span class="sig-prename descclassname"><span class="pre">funki.analysis.</span></span><span class="sig-name descname"><span class="pre">sc_clustering</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'leiden'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resolution</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#funki.analysis.sc_clustering" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">funki.analysis.</span></span><span class="sig-name descname"><span class="pre">sc_clustering</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'leiden'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resolution</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#funki.analysis.sc_clustering" title="Link to this definition">¶</a></dt>
 <dd><p>Computes the clustering of the cells according to the selected algorithm and
 resolution parameter. You can plot the resulting clustering with your
 dimensionality reduction approach of choice (<a class="reference internal" href="plots.html#funki.plots.plot_pca" title="funki.plots.plot_pca"><code class="xref py py-func docutils literal notranslate"><span class="pre">funki.plots.plot_pca()</span></code></a>,
@@ -63,6 +63,8 @@ the clustering algorithm name to the keyword argument <code class="docutils lite
 <code class="docutils literal notranslate"><span class="pre">'leiden'</span></code> or <code class="docutils literal notranslate"><span class="pre">'louvain'</span></code>, defaults to <code class="docutils literal notranslate"><span class="pre">'leiden'</span></code></p></li>
 <li><p><strong>resolution</strong> (<em>float</em><em>, </em><em>optional</em>) – The resolution of the clustering, a higher number
 generates more and smaller clusters, defaults to <code class="docutils literal notranslate"><span class="pre">1.0</span></code></p></li>
+<li><p><strong>**kwargs</strong> (<em>optional</em>) – Other keyword arguments that passed to
+<a class="reference external" href="https://scanpy.readthedocs.io/en/latest/api/generated/scanpy.pp.neighbors.html">scanpy.pp.neighbors()</a> function</p></li>
 </ul>
 </dd>
 </dl>
