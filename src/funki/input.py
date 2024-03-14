@@ -74,8 +74,9 @@ class DataSet(anndata.AnnData):
         o, v = self.n_obs, self.n_vars
         descr = f'DataSet object with n_obs × n_vars = {o} × {v}'
 
-        for attr in ['obs', 'var', 'uns', 'obsm', 'varm', 'layers', 'obsp',
-                     'varp']:
+        attrs = ['obs', 'var', 'uns', 'obsm', 'varm', 'layers', 'obsp', 'varp']
+
+        for attr in attrs:
             keys = getattr(self, attr).keys()
 
             if len(keys) > 0:

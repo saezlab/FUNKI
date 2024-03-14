@@ -36,7 +36,7 @@ def sc_trans_filter(data, min_genes=None, max_genes=None, mito_pct=None):
         sc.pp.filter_cells(aux, max_genes=max_genes, inplace=True)
 
     if mito_pct:
-        aux.var['mito'] = aux.var_names.str.startswith('MT-')
+        aux.var['mito'] = aux.var_names.str.upper().str.startswith('MT-')
         aux = sc_trans_qc_metrics(aux, var_name='mito')
         aux = aux[aux.obs['pct_counts_mito'] < mito_pct, :]
 
