@@ -24,7 +24,7 @@ def sc_trans_qc_metrics(data, var_name='mito'):
 
     return DataSet(aux)
 
-def sc_clustering(data, alg='leiden', resolution=1.0):
+def sc_clustering(data, alg='leiden', resolution=1.0, **kwargs):
     '''
     Computes the clustering of the cells according to the selected algorithm and
     resolution parameter. You can plot the resulting clustering with your
@@ -41,10 +41,16 @@ def sc_clustering(data, alg='leiden', resolution=1.0):
     :param resolution: The resolution of the clustering, a higher number
         generates more and smaller clusters, defaults to ``1.0``
     :type resolution: float, optional
+    :param \*\*kwargs: Other keyword arguments that passed to
+        `scanpy.pp.neighbors()`_ function
+    :type \*\*kwargs: optional
+
+    .. _scanpy.pp.neighbors(): https://scanpy.readthedocs.io/en/latest/api/gene\
+        rated/scanpy.pp.neighbors.html
     '''
 
     if not ('distances' in data.obsp and 'connectivities' in data.obsp):
-        sc.pp.neighbors(data)
+        sc.pp.neighbors(data, **kwargs)
 
     if alg == 'leiden':
         sc.tl.leiden(data, resolution=resolution)
