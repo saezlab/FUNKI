@@ -2,7 +2,8 @@ import scanpy as sc
 
 from .utils import del_meta
 
-def plot_pca(data, color=None, use_highly_variable=True, recalculate=False):
+def plot_pca(data, color=None, use_highly_variable=True, recalculate=False,
+             **kwargs):
     '''
     Plots the dimensionality reduction PCA results of a data set.
 
@@ -16,9 +17,14 @@ def plot_pca(data, color=None, use_highly_variable=True, recalculate=False):
     :param recalculate: Whether to recalculate the dimensionality reduction,
         defaults to ``False``
     :type recalculate: bool, optional
+    :param \*\*kwargs: Other keyword arguments that can be passed to
+        `scanpy.pp.pca()`_
+    :type \*\*kwargs: optional
     :returns: The figure contataining the resulting PCA
     :rtype: `matplotlib.figure.Figure`_
 
+    .. _scanpy.pp.pca(): https://scanpy.readthedocs.io/en/latest/generated/scan\
+        py.pp.pca.html
     .. _matplotlib.figure.Figure: https://matplotlib.org/stable/api/figure_api.\
         html#matplotlib.figure.Figure
     '''
@@ -30,7 +36,7 @@ def plot_pca(data, color=None, use_highly_variable=True, recalculate=False):
         sc.pp.highly_variable_genes(data, inplace=True)
 
     if 'X_pca' not in data.obsm:
-        sc.pp.pca(data, use_highly_variable=use_highly_variable)
+        sc.pp.pca(data, use_highly_variable=use_highly_variable, **kwargs)
 
     return sc.pl.pca(data, color=color)
 
