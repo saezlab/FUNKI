@@ -96,6 +96,7 @@ def harmonize(data, vars_use, use_highly_variable=True, recalculate=False,
 
     .. _Harmony: https://portals.broadinstitute.org/harmony/
     '''
+
     if recalculate:
         data._del_meta({'obsm': 'X_pca'})
 
