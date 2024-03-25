@@ -1,7 +1,5 @@
 import scanpy as sc
 
-from .utils import del_meta
-
 def plot_pca(data, color=None, use_highly_variable=True, recalculate=False,
              **kwargs):
     '''
