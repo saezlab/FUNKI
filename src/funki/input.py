@@ -46,11 +46,11 @@ class DataSet(anndata.AnnData):
         obs = self.obs.iloc[oidx]
         var = self.var.iloc[vidx]
         uns = self.uns
-        obsm = {k: v[odsx] for k, v in self.obsm.items()}
+        obsm = {k: v[oidx] for k, v in self.obsm.items()}
         varm = {k: v[vidx] for k, v in self.varm.items()}
         raw = self.raw
         layers = self.layers
-        obsp = {k: v[odsx] for k, v in self.obsp.items()}
+        obsp = {k: v[oidx] for k, v in self.obsp.items()}
         varp = {k: v[vidx] for k, v in self.varp.items()}
 
         return DataSet(
