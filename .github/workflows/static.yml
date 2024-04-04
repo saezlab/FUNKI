@@ -23,7 +23,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Installing package and dependencies
       run: |
         python -m pip install --upgrade pip
@@ -40,8 +40,7 @@ jobs:
         git config --local user.name "github-actions[bot]"
         git commit -m "CI: Automated build push" -a | exit 0
     - name: Push changes
-      if: github.ref == 'refs/heads/master'
-      uses: ad-m/github-push-action@master
+      run: git push origin main
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
   deploy:
@@ -51,15 +50,6 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Setup Pages
-        uses: actions/configure-pages@v4
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          # Upload entire repository
-          path: '.'
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
