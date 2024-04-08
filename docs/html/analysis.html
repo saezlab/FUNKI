@@ -3,10 +3,10 @@
 <html lang="en" data-content_root="./">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <title>funki.analysis &#8212; FUNKI documentation</title>
-    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b76e3c8a" />
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="_static/classic.css?v=7663fcb8" />
     
     <script src="_static/documentation_options.js?v=d45e8c67"></script>
@@ -47,6 +47,38 @@
   <section id="module-funki.analysis">
 <span id="funki-analysis"></span><h1>funki.analysis<a class="headerlink" href="#module-funki.analysis" title="Link to this heading">¶</a></h1>
 <dl class="py function">
+<dt class="sig sig-object py" id="funki.analysis.enrich">
+<span class="sig-prename descclassname"><span class="pre">funki.analysis.</span></span><span class="sig-name descname"><span class="pre">enrich</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">net</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">methods</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#funki.analysis.enrich" title="Link to this definition">¶</a></dt>
+<dd><p>Performs enrichment analysis using <a class="reference external" href="https://decoupler-py.readthedocs.io/en/latest/index.html">Decoupler</a> based on a given network
+(e.g. gene set collection) and statistical method(s).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<a class="reference internal" href="input.html#funki.input.DataSet" title="funki.input.DataSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">funki.input.DataSet</span></code></a>) – The data set from which to perform the enrichment</p></li>
+<li><p><strong>net</strong> (<a class="reference external" href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html">pandas.DataFrame</a>) – The network linking the features of the data to the attributes
+(e.g. pathways, gene sets, transcription factors, etc.)</p></li>
+<li><p><strong>methods</strong> (<em>NoneType</em><em> | </em><em>str</em><em> | </em><em>list</em><em>[</em><em>str</em><em>]</em>) – Which statistical method(s) to use in order to compute the
+enrichment, defaults to <code class="docutils literal notranslate"><span class="pre">None</span></code>. If none is provided, uses <code class="docutils literal notranslate"><span class="pre">'mlm'</span></code>,
+<code class="docutils literal notranslate"><span class="pre">'ulm'</span></code> and <code class="docutils literal notranslate"><span class="pre">'wsum'</span></code>. The option <code class="docutils literal notranslate"><span class="pre">'all'</span></code> performs all methods. To
+see all the available methods, you can run <a class="reference external" href="https://decoupler-py.readthedocs.io/en/latest/generated/decoupler.show_methods.html#decoupler.show_methods">decoupler.show_methods()</a>
+function</p></li>
+<li><p><strong>**kwargs</strong> – Other keyword arguments that passed to</p></li>
+</ul>
+</dd>
+</dl>
+<p><a class="reference external" href="https://decoupler-py.readthedocs.io/en/latest/generated/decoupler.decouple.html#decoupler.decouple">decoupler.decouple()</a> function
+:type **kwargs: optional</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p><code class="docutils literal notranslate"><span class="pre">None</span></code>, results are stored inplace of the passed <code class="docutils literal notranslate"><span class="pre">data</span></code> object</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>NoneType</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="funki.analysis.sc_clustering">
 <span class="sig-prename descclassname"><span class="pre">funki.analysis.</span></span><span class="sig-name descname"><span class="pre">sc_clustering</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'leiden'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resolution</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#funki.analysis.sc_clustering" title="Link to this definition">¶</a></dt>
 <dd><p>Computes the clustering of the cells according to the selected algorithm and
@@ -66,6 +98,12 @@ generates more and smaller clusters, defaults to <code class="docutils literal n
 <li><p><strong>**kwargs</strong> (<em>optional</em>) – Other keyword arguments that passed to
 <a class="reference external" href="https://scanpy.readthedocs.io/en/latest/api/generated/scanpy.pp.neighbors.html">scanpy.pp.neighbors()</a> function</p></li>
 </ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">None</span></code>, results are stored inplace of the passed <code class="docutils literal notranslate"><span class="pre">data</span></code> object</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>NoneType</p>
 </dd>
 </dl>
 </dd></dl>
@@ -106,6 +144,7 @@ thresholds</p>
     <h3><a href="index.html">Table of Contents</a></h3>
     <ul>
 <li><a class="reference internal" href="#">funki.analysis</a><ul>
+<li><a class="reference internal" href="#funki.analysis.enrich"><code class="docutils literal notranslate"><span class="pre">enrich()</span></code></a></li>
 <li><a class="reference internal" href="#funki.analysis.sc_clustering"><code class="docutils literal notranslate"><span class="pre">sc_clustering()</span></code></a></li>
 <li><a class="reference internal" href="#funki.analysis.sc_trans_qc_metrics"><code class="docutils literal notranslate"><span class="pre">sc_trans_qc_metrics()</span></code></a></li>
 </ul>
