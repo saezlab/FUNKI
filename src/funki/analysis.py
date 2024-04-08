@@ -21,7 +21,7 @@ def enrich(data, net, methods=None, **kwargs):
         function
     :type methods: NoneType | str | list[str]
     :param \*\*kwargs: Other keyword arguments that passed to
-    `decoupler.decouple()`_ function
+        `decoupler.decouple()`_ function
     :type \*\*kwargs: optional
 
     :returns: ``None``, results are stored inplace of the passed ``data`` object
