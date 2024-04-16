@@ -68,7 +68,7 @@ def plot_tsne(data, color=None, perplexity=30, recalculate=False):
     return sc.pl.tsne(data, color=color)
 
 def plot_umap(data, color=None, min_dist=0.5, spread=1.0, alpha=1.0, gamma=1.0,
-              recalculate=False):
+              recalculate=False, **kwargs):
     '''
     Plots the dimensionality reduction UMAP results of a data set.
 
@@ -87,11 +87,16 @@ def plot_umap(data, color=None, min_dist=0.5, spread=1.0, alpha=1.0, gamma=1.0,
     :param recalculate: Whether to recalculate the dimensionality reduction,
         defaults to ``False``
     :type recalculate: bool, optional
+    :param \*\*kwargs: Other keyword arguments that can be passed to
+        `scanpy.pp.umap()`_
+    :type \*\*kwargs: optional
     :returns: The figure contataining the resulting UMAP
     :rtype: `matplotlib.figure.Figure`_
 
     .. _matplotlib.figure.Figure: https://matplotlib.org/stable/api/figure_api.\
         html#matplotlib.figure.Figure
+    .. _scanpy.pp.umap(): https://scanpy.readthedocs.io/en/latest/generated/scan\
+        py.pp.umap.html
     '''
 
     if recalculate:
@@ -106,4 +111,4 @@ def plot_umap(data, color=None, min_dist=0.5, spread=1.0, alpha=1.0, gamma=1.0,
         sc.tl.umap(data, min_dist=min_dist, spread=spread, alpha=alpha,
                    gamma=gamma)
 
-    return sc.pl.umap(data, color=color)
+    return sc.pl.umap(data, color=color, **kwargs)

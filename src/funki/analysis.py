@@ -43,9 +43,7 @@ def enrich(data, net, methods=None, **kwargs):
     
     # Updating back the results to the original DataSet object
     data.obsm.update(aux.obsm)
-
-
-
+ 
 def sc_trans_qc_metrics(data, var_name='mito'):
     '''
     Takes a single-cell transcriptomics data set and computes several quality
