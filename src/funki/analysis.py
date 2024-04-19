@@ -66,7 +66,8 @@ def sc_trans_qc_metrics(data, var_name='mito'):
 
     return DataSet(aux)
 
-def sc_clustering(data, alg='leiden', resolution=1.0, **kwargs):
+def sc_clustering(data, alg='leiden', resolution=1.0, neigh_kwargs={},
+                  alg_kwargs={}):
     '''
     Computes the clustering of the cells according to the selected algorithm and
     resolution parameter. You can plot the resulting clustering with your
@@ -83,25 +84,33 @@ def sc_clustering(data, alg='leiden', resolution=1.0, **kwargs):
     :param resolution: The resolution of the clustering, a higher number
         generates more and smaller clusters, defaults to ``1.0``
     :type resolution: float, optional
-    :param \*\*kwargs: Other keyword arguments that passed to
-        `scanpy.pp.neighbors()`_ function
-    :type \*\*kwargs: optional
-
+    :param \*\*neigh_kwargs: Other keyword arguments that are passed to
+        `scanpy.pp.neighbors()`_ function, defaults to ``{}``
+    :type \*\*neigh_kwargs: dict, optional
+    :param \*\*alg_kwargs: Other keyword arguments that are passed to the
+        clustering algorithm `scanpy.tl.louvain()`_ or `scanpy.tl.leiden()`_
+        functions, defaults to ``{}``
+    :type \*\*alg_kwargs: dict, optional
+    
     :returns: ``None``, results are stored inplace of the passed ``data`` object
     :rtype: NoneType
 
     .. _scanpy.pp.neighbors(): https://scanpy.readthedocs.io/en/latest/api/gene\
         rated/scanpy.pp.neighbors.html
+    .. _scanpy.tl.louvain(): https://scanpy.readthedocs.io/en/latest/api/genera\
+        ted/scanpy.tl.louvain.html
+    .. _scanpy.tl.leiden(): https://scanpy.readthedocs.io/en/latest/api/generat\
+        ed/scanpy.tl.leiden.html
     '''
 
     if not ('distances' in data.obsp and 'connectivities' in data.obsp):
-        sc.pp.neighbors(data, **kwargs)
+        sc.pp.neighbors(data, **neigh_kwargs)
 
     if alg == 'leiden':
-        sc.tl.leiden(data, resolution=resolution)
+        sc.tl.leiden(data, resolution=resolution, **alg_kwargs)
 
     elif alg == 'louvain':
-        sc.tl.louvain(data, resolution=resolution)
+        sc.tl.louvain(data, resolution=resolution, **alg_kwargs)
 
     else:
         print('Algorithm not recognized, please use "leiden" or "louvain".')
