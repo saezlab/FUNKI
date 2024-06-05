@@ -7,7 +7,10 @@ name = 'funki'
 dynamic = ['version']
 description = ''
 authors = [
-    { name = 'Nicolàs Palacio-Escat', email = 'nicolas.palacio-escat@uni-heidelberg.de' },
+    {
+        name = 'Nicolàs Palacio-Escat',
+        email = 'nicolas.palacio-escat@uni-heidelberg.de'
+    },
 ]
 license = { file = 'LICENSE' }
 readme = 'README.md'
@@ -27,6 +30,7 @@ dependencies = [
     'louvain',
     'harmonypy',
     'decoupler',
+    'dash'
 ]
 
 [project.urls]
