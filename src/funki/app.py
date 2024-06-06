@@ -2,8 +2,11 @@ import dash
 from dash import html
 from dash import dcc
 
+from funki import _colors
 from pages.home import tab_home
-from pages.data_load import tab_data_load
+from pages.data import tab_data
+from utils.style import global_style
+
 
 app = dash.Dash(
     name=__name__,
@@ -14,7 +17,7 @@ app.layout = html.Div(
     children=[
         html.Img(
             src='assets/logos/funki_logo.svg',
-            style={'width': '50%', 'padding': '10px'}
+            style={'width': '50%', 'padding': 10}
         ),
         html.Br(),
         dcc.Tabs(
@@ -23,10 +26,19 @@ app.layout = html.Div(
             vertical=True,
             children=[
                 tab_home,
-                tab_data_load,
-            ]
+                tab_data,
+            ],
+            style={
+                'padding': 15,
+            },
+            colors={
+                'background': _colors['white'],
+                'border': _colors['blue'],
+                'primary': _colors['aqua'],
+            }
         )
-    ]
+    ],
+    style=global_style,
 )
 
 if __name__ == '__main__':
