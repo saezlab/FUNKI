@@ -2,6 +2,7 @@ import os
 import sys
 
 from funki import __version__
+from funki import _colors
 
 sys.path.insert(0, os.path.abspath('../../src/'))
 
@@ -38,6 +39,6 @@ html_title = 'FUNKI documentation'
 html_static_path = ['_static']
 html_favicon = '_images/funki_favicon.ico'
 html_theme_options = {
-    'relbarbgcolor': '#007fa0ff',
-    'headbgcolor': '#12cbd0ff',
+    'relbarbgcolor': _colors['blue'],
+    'headbgcolor': _colors['aqua'],
 }
