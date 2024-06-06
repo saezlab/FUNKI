@@ -1,3 +1,8 @@
+import os
+import base64
+import io
+
+import pandas as pd
 import dash
 from dash import html
 from dash import dcc
@@ -16,6 +21,7 @@ tab_data = dcc.Tab(
     value='tab-data',
     children=[
         html.H1('Data loading'),
+        html.Br(),
         html.Div('Please upload your data file here:'),
         dcc.Upload(
             id='upload-data',
@@ -46,8 +52,34 @@ tab_data = dcc.Tab(
     State('upload-data', 'filename'),
     prevent_initial_call=True
 )
-def load_data(contents, filename):
+def load_data(content, filename):
     if filename is None:
         raise PreventUpdate
+    
+    df = parse_contents(content, filename)
+    data = funki.input.DataSet(df)
 
-    return funki.input.read(filename)
+    return data
+
+def parse_contents(content, filename):
+    ext = os.path.splitext(filename)[-1]
+
+    if ext not in ('.csv', '.txt', '.xlsx'):
+        raise NotImplementedError(
+            f"File format {ext} not supported,"
+            + " please use '.csv', '.txt' or '.xlsx'"
+        )
+
+    content_type, content_string = content.split(',')
+
+    decoded = base64.b64decode(content_string)
+
+    if ext in ('.csv', '.txt'):
+        f = io.StringIO(decoded.decode('utf-8'))
+        df = pd.read_csv(f)
+    
+    elif ext == '.xlsx':
+        f = io.BytesIO(decoded)
+        df = pd.read_excel(f)
+
+    return df
