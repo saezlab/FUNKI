@@ -15,6 +15,7 @@ app = dash.Dash(
 
 app.layout = html.Div(
     children=[
+        dcc.Store(data=None, id='raw-data', storage_type='session'),
         html.Img(
             src='assets/logos/funki_logo.svg',
             style={'width': '50%', 'padding': 10}
