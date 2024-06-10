@@ -2,13 +2,26 @@ from funki import _colors
 
 global_style = {
     'font-family': 'sans-serif',
-    'background-color': _colors['blue']
+    'background-color': _colors['blue'],
+    'height': '100%',
+    'width': '100%',
+    'text-align': 'justify',
 }
 
 page_style = {
-    'width': 800,
+    'width': 1000,
+    'height': '80%',
+    'minHeight': 1000,
     'background-color': _colors['white'],
-    'padding': 25
+    'padding': 25,
+    'display': 'block',
+    'vertical-align': 'middle',
+    'text-align': 'justify',
+
+}
+
+header_style = {
+    'color': _colors['blue'],
 }
 
 tab_style = {

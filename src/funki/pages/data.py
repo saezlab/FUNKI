@@ -11,10 +11,12 @@ from dash import Output
 from dash import State
 from dash import callback
 from dash.exceptions import PreventUpdate
+from dash.dash_table import DataTable
 
 from utils.style import tab_style
 from utils.style import tab_selected_style
 from utils.style import page_style
+from utils.style import header_style
 import funki
 
 tab_data = dcc.Tab(
@@ -22,10 +24,10 @@ tab_data = dcc.Tab(
     value='tab-data',
     children=html.Div(
         children=[
-            html.H1('Data loading'),
+            html.H1('Data loading', style=header_style),
             html.Br(),
             html.Div(
-                [
+                children=[
                     html.Div('Please upload your data file here:'),
                     dcc.Upload(
                         id='upload-data',
@@ -45,6 +47,23 @@ tab_data = dcc.Tab(
                         },
                         multiple=False,
                     ),
+                    html.Br(),
+                    html.Div(
+                        children=[dcc.Loading(
+                            DataTable(
+                                id='table_data',
+                                fixed_rows={'headers': True, 'data': 0},
+                                fixed_columns={'headers': True, 'data': 1},
+                                style_table={
+                                    'height': '500px',
+                                    'minWidth': '100%',
+                                    'overflowY': 'auto',
+                                    'overflowX': 'auto'
+                                },
+                                style_cell={'width': '150px'}
+                            )
+                        )],
+                    ),
                 ],
                 style={
                     'width': '49%',
@@ -54,7 +73,7 @@ tab_data = dcc.Tab(
                 }
             ),
             html.Div(
-                [
+                children=[
                     html.Div('Please upload your annotation file here:'),
                     dcc.Upload(
                         id='upload-anndata',
@@ -73,6 +92,23 @@ tab_data = dcc.Tab(
                             'margin': '10px'
                         },
                         multiple=False,
+                    ),
+                    html.Br(),
+                    html.Div(
+                        children=[dcc.Loading(
+                            DataTable(
+                                id='table_anndata',
+                                fixed_rows={'headers': True, 'data': 0},
+                                fixed_columns={'headers': True, 'data': 1},
+                                style_table={
+                                    'height': '500px',
+                                    'minWidth': '100%',
+                                    'overflowY': 'auto',
+                                    'overflowX': 'auto'
+                                },
+                                style_cell={'width': '150px'}
+                            )
+                        )],
                     ),
                 ],
                 style={
@@ -134,10 +170,24 @@ def parse_contents(content, filename):
 
     if ext in ('.csv', '.txt'):
         f = io.StringIO(decoded.decode('utf-8'))
-        df = pd.read_csv(f)
+        df = pd.read_csv(f, index_col=0)
     
     elif ext == '.xlsx':
         f = io.BytesIO(decoded)
-        df = pd.read_excel(f)
+        df = pd.read_excel(f, index_col=0)
 
     return df
+
+@callback(Output('table_data', 'columns'),
+              Output('table_data', 'data'),
+              Input('raw-data', 'data'))
+def update_table(data):
+    if data is None:
+        raise PreventUpdate
+    
+    df = data.to_df()
+
+    table_columns = [{'name': i, 'id': i} for i in df.columns]
+    table_data = df.to_dict('records')
+
+    return table_columns, table_data
