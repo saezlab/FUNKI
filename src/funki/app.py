@@ -16,9 +16,13 @@ app = dash.Dash(
 app.layout = html.Div(
     children=[
         dcc.Store(data=None, id='raw-data', storage_type='session'),
-        html.Img(
-            src='assets/logos/funki_logo.svg',
-            style={'width': '50%', 'padding': 10}
+        dcc.Store(data=None, id='ann-data', storage_type='session'),
+        html.Div(
+            html.Img(
+                src='assets/logos/funki_logo.svg',
+                style={'width': '35%', 'padding': 10}
+            ),
+            style={'width': '100%', 'background-color': _colors['white']}
         ),
         html.Br(),
         dcc.Tabs(
@@ -34,7 +38,7 @@ app.layout = html.Div(
             },
             colors={
                 'background': _colors['white'],
-                'border': _colors['blue'],
+                'border': _colors['teal'],
                 'primary': _colors['aqua'],
             }
         )

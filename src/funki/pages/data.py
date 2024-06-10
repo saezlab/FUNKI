@@ -14,34 +14,77 @@ from dash.exceptions import PreventUpdate
 
 from utils.style import tab_style
 from utils.style import tab_selected_style
+from utils.style import page_style
 import funki
 
 tab_data = dcc.Tab(
     label='Data',
     value='tab-data',
-    children=[
-        html.H1('Data loading'),
-        html.Br(),
-        html.Div('Please upload your data file here:'),
-        dcc.Upload(
-            id='upload-data',
-            children=html.Div([
-                'Drag and drop or ',
-                html.A('select a file')
-            ]),
-            style={
-                'width': '100%',
-                'height': '60px',
-                'lineHeight': '60px',
-                'borderWidth': '1px',
-                'borderStyle': 'dashed',
-                'borderRadius': '5px',
-                'textAlign': 'center',
-                'margin': '10px'
-            },
-            multiple=False,
-        ),
-    ],
+    children=html.Div(
+        children=[
+            html.H1('Data loading'),
+            html.Br(),
+            html.Div(
+                [
+                    html.Div('Please upload your data file here:'),
+                    dcc.Upload(
+                        id='upload-data',
+                        children=html.Div([
+                            'Drag and drop or ',
+                            html.A('select a file')
+                        ]),
+                        style={
+                            'width': '80%',
+                            'height': '60px',
+                            'lineHeight': '60px',
+                            'borderWidth': '1px',
+                            'borderStyle': 'dashed',
+                            'borderRadius': '5px',
+                            'textAlign': 'center',
+                            'margin': '10px'
+                        },
+                        multiple=False,
+                    ),
+                ],
+                style={
+                    'width': '49%',
+                    'display': 'inline-block',
+                    'vertical-align': 'top',
+                    'pad': 10
+                }
+            ),
+            html.Div(
+                [
+                    html.Div('Please upload your annotation file here:'),
+                    dcc.Upload(
+                        id='upload-anndata',
+                        children=html.Div([
+                            'Drag and drop or ',
+                            html.A('select a file')
+                        ]),
+                        style={
+                            'width': '80%',
+                            'height': '60px',
+                            'lineHeight': '60px',
+                            'borderWidth': '1px',
+                            'borderStyle': 'dashed',
+                            'borderRadius': '5px',
+                            'textAlign': 'center',
+                            'margin': '10px'
+                        },
+                        multiple=False,
+                    ),
+                ],
+                style={
+                    'width': '49%',
+                    'display': 'inline-block',
+                    'vertical-align': 'top',
+                    'pad': 10
+                }
+            ),
+        ],
+        style=page_style,
+    ),
     style=tab_style,
     selected_style=tab_selected_style,
 )
@@ -53,6 +96,21 @@ tab_data = dcc.Tab(
     prevent_initial_call=True
 )
 def load_data(content, filename):
+    if filename is None:
+        raise PreventUpdate
+    
+    df = parse_contents(content, filename)
+    data = funki.input.DataSet(df)
+
+    return data
+
+@callback(
+    Output('ann-data', 'data'),
+    Input('upload-anndata', 'contents'),
+    State('upload-anndata', 'filename'),
+    prevent_initial_call=True
+)
+def load_anndata(content, filename):
     if filename is None:
         raise PreventUpdate
     
