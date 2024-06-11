@@ -51,7 +51,7 @@ tab_data = dcc.Tab(
                     html.Div(
                         children=[dcc.Loading(
                             DataTable(
-                                id='table_data',
+                                id='table-data',
                                 fixed_rows={'headers': True, 'data': 0},
                                 fixed_columns={'headers': True, 'data': 1},
                                 style_table={
@@ -60,7 +60,7 @@ tab_data = dcc.Tab(
                                     'overflowY': 'auto',
                                     'overflowX': 'auto'
                                 },
-                                style_cell={'width': '150px'}
+                                style_cell={'width': '50px'}
                             )
                         )],
                     ),
@@ -97,7 +97,7 @@ tab_data = dcc.Tab(
                     html.Div(
                         children=[dcc.Loading(
                             DataTable(
-                                id='table_anndata',
+                                id='table-anndata',
                                 fixed_rows={'headers': True, 'data': 0},
                                 fixed_columns={'headers': True, 'data': 1},
                                 style_table={
@@ -106,7 +106,7 @@ tab_data = dcc.Tab(
                                     'overflowY': 'auto',
                                     'overflowX': 'auto'
                                 },
-                                style_cell={'width': '150px'}
+                                style_cell={'width': '50px'}
                             )
                         )],
                     ),
@@ -136,9 +136,8 @@ def load_data(content, filename):
         raise PreventUpdate
     
     df = parse_contents(content, filename)
-    data = funki.input.DataSet(df)
 
-    return data
+    return {'index': df.index, 'records': df.to_dict('records')}
 
 @callback(
     Output('ann-data', 'data'),
@@ -151,9 +150,8 @@ def load_anndata(content, filename):
         raise PreventUpdate
     
     df = parse_contents(content, filename)
-    data = funki.input.DataSet(df)
-
-    return data
+    
+    return {'index': df.index, 'records': df.to_dict('records')}
 
 def parse_contents(content, filename):
     ext = os.path.splitext(filename)[-1]
@@ -178,14 +176,34 @@ def parse_contents(content, filename):
 
     return df
 
-@callback(Output('table_data', 'columns'),
-              Output('table_data', 'data'),
-              Input('raw-data', 'data'))
+@callback(
+    Output('table-data', 'columns'),
+    Output('table-data', 'data'),
+    Input('raw-data', 'data')
+)
 def update_table(data):
     if data is None:
         raise PreventUpdate
     
-    df = data.to_df()
+    df = pd.DataFrame(data['records'])
+    df.insert(0, 'index', data['index'])
+
+    table_columns = [{'name': i, 'id': i} for i in df.columns]
+    table_data = df.to_dict('records')
+
+    return table_columns, table_data
+
+@callback(
+    Output('table-anndata', 'columns'),
+    Output('table-anndata', 'data'),
+    Input('ann-data', 'data')
+)
+def update_anntable(data):
+    if data is None:
+        raise PreventUpdate
+    
+    df = pd.DataFrame(data['records'])
+    df['index'] = data['index']
 
     table_columns = [{'name': i, 'id': i} for i in df.columns]
     table_data = df.to_dict('records')
