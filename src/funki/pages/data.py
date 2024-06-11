@@ -12,6 +12,9 @@ from dash import State
 from dash import callback
 from dash.exceptions import PreventUpdate
 from dash.dash_table import DataTable
+import plotly.express as px
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 
 from utils.style import tab_style
 from utils.style import tab_selected_style
@@ -49,20 +52,26 @@ tab_data = dcc.Tab(
                     ),
                     html.Br(),
                     html.Div(
-                        children=[dcc.Loading(
-                            DataTable(
-                                id='table-data',
-                                fixed_rows={'headers': True, 'data': 0},
-                                fixed_columns={'headers': True, 'data': 1},
-                                style_table={
-                                    'height': '500px',
-                                    'minWidth': '100%',
-                                    'overflowY': 'auto',
-                                    'overflowX': 'auto'
-                                },
-                                style_cell={'width': '50px'}
+                        children=[
+                            dcc.Loading(
+                                DataTable(
+                                    id='table-data',
+                                    fixed_rows={'headers': True, 'data': 0},
+                                    fixed_columns={'headers': True, 'data': 1},
+                                    style_table={
+                                        'maxHeight': 500,
+                                        'minWidth': '100%',
+                                        'overflowY': 'auto',
+                                        'overflowX': 'auto'
+                                    },
+                                    style_cell={'width': '50px'}
+                                )
+                            ),
+                            dcc.Loading(
+                                dcc.Graph(id='plot-data-summary')
                             )
-                        )],
+                        ],
+                        style={'width': '95%'}
                     ),
                 ],
                 style={
@@ -95,20 +104,26 @@ tab_data = dcc.Tab(
                     ),
                     html.Br(),
                     html.Div(
-                        children=[dcc.Loading(
-                            DataTable(
-                                id='table-anndata',
-                                fixed_rows={'headers': True, 'data': 0},
-                                fixed_columns={'headers': True, 'data': 1},
-                                style_table={
-                                    'height': '500px',
-                                    'minWidth': '100%',
-                                    'overflowY': 'auto',
-                                    'overflowX': 'auto'
-                                },
-                                style_cell={'width': '50px'}
+                        children=[
+                            dcc.Loading(
+                                DataTable(
+                                    id='table-anndata',
+                                    fixed_rows={'headers': True, 'data': 0},
+                                    fixed_columns={'headers': True, 'data': 1},
+                                    style_table={
+                                        'maxHeight': 500,
+                                        'minWidth': '100%',
+                                        'overflowY': 'auto',
+                                        'overflowX': 'auto'
+                                    },
+                                    style_cell={'width': '50px'}
+                                )
+                            ),
+                            dcc.Loading(
+                                dcc.Graph(id='plot-anndata-summary')
                             )
-                        )],
+                        ],
+                        style={'width': '95%'}
                     ),
                 ],
                 style={
@@ -179,6 +194,7 @@ def parse_contents(content, filename):
 @callback(
     Output('table-data', 'columns'),
     Output('table-data', 'data'),
+    Output('plot-data-summary', 'figure'),
     Input('raw-data', 'data')
 )
 def update_table(data):
@@ -186,16 +202,21 @@ def update_table(data):
         raise PreventUpdate
     
     df = pd.DataFrame(data['records'])
+    
+    fig = px.histogram(df.values.flat, title='Value distribution')
+    fig.update_layout(showlegend=False)
+
     df.insert(0, 'index', data['index'])
 
     table_columns = [{'name': i, 'id': i} for i in df.columns]
     table_data = df.to_dict('records')
 
-    return table_columns, table_data
+    return table_columns, table_data, fig
 
 @callback(
     Output('table-anndata', 'columns'),
     Output('table-anndata', 'data'),
+    Output('plot-anndata-summary', 'figure'),
     Input('ann-data', 'data')
 )
 def update_anntable(data):
@@ -203,9 +224,23 @@ def update_anntable(data):
         raise PreventUpdate
     
     df = pd.DataFrame(data['records'])
-    df['index'] = data['index']
+
+    fig = make_subplots(
+        rows=df.shape[1],
+        cols=1,
+        specs=[[{'type': 'pie'}], [{'type': 'pie'}]]
+    )
+    
+    for i, c in enumerate(df.columns):
+        aux = df[c].value_counts()
+        pie = go.Pie(labels=aux.index, values=aux.values)
+        fig.add_trace(pie, row=i + 1, col=1)
+
+    fig.update_layout(height=250 * df.shape[1])
+
+    df.insert(0, 'index', data['index'])
 
     table_columns = [{'name': i, 'id': i} for i in df.columns]
     table_data = df.to_dict('records')
 
-    return table_columns, table_data
+    return table_columns, table_data, fig
