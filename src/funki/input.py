@@ -1,4 +1,6 @@
 import os
+import pickle
+import json
 
 import anndata
 
@@ -112,7 +114,7 @@ class DataSet(anndata.AnnData):
         Creates a copy of the current :class:`DataSet` instance.
 
         :returns: The copy of the current object
-        :rtype: :class:`DataSet`
+        :rtype: :class:`funki.input.DataSet`
         '''
 
         return DataSet(self._mutated_copy())
@@ -128,6 +130,33 @@ class DataSet(anndata.AnnData):
 
         aux = DataSet(self.to_df().groupby(self.var_names, axis=1).sum())
         self.__dict__.update(aux.__dict__)
+
+    def serialize(self, as_json=False):
+        '''
+        Returns the serialized DataSet as a byte string.
+
+        :param as_json: Whether to return the JSON-ized byte string or not,
+            defaults to ``False``.
+        :type as_json: bool, optional
+
+        :returns: The serialized DataSet
+        :rtype: bytes | str
+        '''
+        
+        aux = pickle.dumps(self)
+
+        if as_json:
+            aux = json.dumps(aux.decode('latin-1'))
+
+        return aux
+    
+    def deserialize(self, serial):
+        if type(serial) is str:
+            serial = json.loads(serial).encode('latin-1')
+
+        self.__dict__.update(pickle.loads(serial).__dict__)
+
+        return self
 
 
 def read(path, *args, **kwargs):
