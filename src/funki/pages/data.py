@@ -138,6 +138,7 @@ tab_data = dcc.Tab(
 
 @callback(
     Output('raw-data', 'data'),
+    Output('proc-data', 'data'),
     Input('upload-data', 'contents'),
     State('upload-data', 'filename'),
     prevent_initial_call=True
@@ -147,8 +148,9 @@ def load_data(content, filename):
         raise PreventUpdate
 
     df = parse_contents(content, filename)
+    serial = {'index': df.index, 'records': df.to_dict('records')}
 
-    return {'index': df.index, 'records': df.to_dict('records')}
+    return serial, serial
 
 @callback(
     Output('ann-data', 'data'),
@@ -161,8 +163,9 @@ def load_anndata(content, filename):
         raise PreventUpdate
     
     df = parse_contents(content, filename)
+    serial = {'index': df.index, 'records': df.to_dict('records')}
     
-    return {'index': df.index, 'records': df.to_dict('records')}
+    return serial
 
 @callback(
     Output('table-data', 'columns'),

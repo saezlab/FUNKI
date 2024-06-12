@@ -18,6 +18,7 @@ app.layout = html.Div(
     children=[
         dcc.Store(id='raw-data', storage_type='local'),
         dcc.Store(id='ann-data', storage_type='local'),
+        dcc.Store(id='proc-data', storage_type='local'),
         html.Div(
             html.Img(
                 src='assets/logos/funki_logo.svg',
