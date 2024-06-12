@@ -14,11 +14,13 @@ app = Dash(
     title='FUNKI',
 )
 
+storage_type = 'memory'
+
 app.layout = html.Div(
     children=[
-        dcc.Store(id='raw-data', storage_type='session'),
-        dcc.Store(id='ann-data', storage_type='session'),
-        dcc.Store(id='proc-data', storage_type='session'),
+        dcc.Store(id='raw-data', storage_type=storage_type),
+        dcc.Store(id='ann-data', storage_type=storage_type),
+        dcc.Store(id='proc-data', storage_type=storage_type),
         html.Div(
             html.Img(
                 src='assets/logos/funki_logo.svg',
