@@ -12,6 +12,7 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
 from utils import parse_contents
+from utils import serial_to_dataframe
 from utils.style import tab_style
 from utils.style import tab_selected_style
 from utils.style import page_style
@@ -177,12 +178,12 @@ def update_table(data):
     if data is None:
         raise PreventUpdate
 
-    df = pd.DataFrame(data['records'])
+    df = serial_to_dataframe(data)
     
     fig = px.histogram(df.values.flat, title='Value distribution')
     fig.update_layout(showlegend=False)
 
-    df.insert(0, 'index', data['index'])
+    df.reset_index(inplace=True)
     #df = df.head()
 
     table_columns = [{'name': i, 'id': i} for i in df.columns]
@@ -200,7 +201,7 @@ def update_anntable(data):
     if data is None:
         raise PreventUpdate
     
-    df = pd.DataFrame(data['records'])
+    df = serial_to_dataframe(data)
 
     fig = make_subplots(
         rows=df.shape[1],
@@ -215,7 +216,7 @@ def update_anntable(data):
 
     fig.update_layout(height=250 * df.shape[1])
 
-    df.insert(0, 'index', data['index'])
+    df.reset_index(inplace=True)
     #df = df.head()
 
     table_columns = [{'name': i, 'id': i} for i in df.columns]
