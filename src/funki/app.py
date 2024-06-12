@@ -5,6 +5,7 @@ from dash import dcc
 from funki import _colors
 from pages.home import tab_home
 from pages.data import tab_data
+from pages.norm import tab_norm
 from utils.style import global_style
 
 
@@ -32,6 +33,7 @@ app.layout = html.Div(
             children=[
                 tab_home,
                 tab_data,
+                tab_norm,
             ],
             style={
                 'padding': 15,

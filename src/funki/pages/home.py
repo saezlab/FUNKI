@@ -6,6 +6,7 @@ from utils.style import tab_selected_style
 from utils.style import page_style
 from utils.style import header_style
 
+
 tab_home = dcc.Tab(
     label='Home',
     value='tab-home',
@@ -18,7 +19,6 @@ tab_home = dcc.Tab(
             different omic data analysis workflows including a graphical user
             interface (GUI), but also as a standalone Python package that users
             can integrate into their existing pipelines.''',
-            html.Br(),
         ],
         style=page_style,
     ),

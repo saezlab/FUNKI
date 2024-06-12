@@ -19,7 +19,7 @@ from utils.style import tab_style
 from utils.style import tab_selected_style
 from utils.style import page_style
 from utils.style import header_style
-import funki
+
 
 tab_data = dcc.Tab(
     label='Data',
