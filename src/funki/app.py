@@ -21,7 +21,7 @@ app.layout = html.Div(
         html.Div(
             html.Img(
                 src='assets/logos/funki_logo.svg',
-                style={'width': '35%', 'padding': 10}
+                style={'width': 500, 'padding': 10}
             ),
             style={'width': '100%', 'background-color': _colors['white']}
         ),
