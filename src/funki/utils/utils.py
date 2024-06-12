@@ -4,6 +4,8 @@ import io
 
 import pandas as pd
 
+from funki.input import DataSet
+
 
 def parse_contents(content, filename):
     ext = os.path.splitext(filename)[-1]
@@ -27,3 +29,15 @@ def parse_contents(content, filename):
         df = pd.read_excel(f, index_col=0)
 
     return df
+
+def serial_to_dataframe(data):
+    df = pd.DataFrame(data['records'])
+    df.index = data['index']
+
+    return df
+
+def serial_to_dataset(data, annot):
+    df = serial_to_dataframe(data)
+    ann = serial_to_dataframe(annot)
+
+    return DataSet(df, obs=ann)

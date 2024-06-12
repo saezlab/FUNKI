@@ -1,5 +1,6 @@
 from funki import _colors
 
+
 global_style = {
     'font-family': 'sans-serif',
     'background-color': _colors['blue'],
