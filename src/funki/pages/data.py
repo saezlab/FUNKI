@@ -1,7 +1,3 @@
-import os
-import base64
-import io
-
 import pandas as pd
 from dash import html
 from dash import dcc
@@ -12,9 +8,10 @@ from dash import callback
 from dash.exceptions import PreventUpdate
 from dash.dash_table import DataTable
 import plotly.express as px
-import plotly.graph_objects as go
+import plotly.graph_objects as go 
 from plotly.subplots import make_subplots
 
+from utils import parse_contents
 from utils.style import tab_style
 from utils.style import tab_selected_style
 from utils.style import page_style
@@ -166,29 +163,6 @@ def load_anndata(content, filename):
     df = parse_contents(content, filename)
     
     return {'index': df.index, 'records': df.to_dict('records')}
-
-def parse_contents(content, filename):
-    ext = os.path.splitext(filename)[-1]
-
-    if ext not in ('.csv', '.txt', '.xlsx'):
-        raise NotImplementedError(
-            f"File format {ext} not supported,"
-            + " please use '.csv', '.txt' or '.xlsx'"
-        )
-
-    content_type, content_string = content.split(',')
-
-    decoded = base64.b64decode(content_string)
-
-    if ext in ('.csv', '.txt'):
-        f = io.StringIO(decoded.decode('utf-8'))
-        df = pd.read_csv(f, index_col=0)
-    
-    elif ext == '.xlsx':
-        f = io.BytesIO(decoded)
-        df = pd.read_excel(f, index_col=0)
-
-    return df
 
 @callback(
     Output('table-data', 'columns'),
