@@ -37,6 +37,7 @@ app.layout = html.Div(
             ],
             style={
                 'padding': 15,
+                'width': 150
             },
             colors={
                 'background': _colors['white'],
