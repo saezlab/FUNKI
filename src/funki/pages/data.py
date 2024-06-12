@@ -3,7 +3,6 @@ import base64
 import io
 
 import pandas as pd
-import dash
 from dash import html
 from dash import dcc
 from dash import Input
@@ -149,7 +148,7 @@ tab_data = dcc.Tab(
 def load_data(content, filename):
     if filename is None:
         raise PreventUpdate
-    
+
     df = parse_contents(content, filename)
 
     return {'index': df.index, 'records': df.to_dict('records')}
@@ -200,13 +199,14 @@ def parse_contents(content, filename):
 def update_table(data):
     if data is None:
         raise PreventUpdate
-    
+
     df = pd.DataFrame(data['records'])
     
     fig = px.histogram(df.values.flat, title='Value distribution')
     fig.update_layout(showlegend=False)
 
     df.insert(0, 'index', data['index'])
+    #df = df.head()
 
     table_columns = [{'name': i, 'id': i} for i in df.columns]
     table_data = df.to_dict('records')
@@ -239,6 +239,7 @@ def update_anntable(data):
     fig.update_layout(height=250 * df.shape[1])
 
     df.insert(0, 'index', data['index'])
+    #df = df.head()
 
     table_columns = [{'name': i, 'id': i} for i in df.columns]
     table_data = df.to_dict('records')

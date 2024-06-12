@@ -1,4 +1,4 @@
-import dash
+from dash import Dash
 from dash import html
 from dash import dcc
 
@@ -8,15 +8,15 @@ from pages.data import tab_data
 from utils.style import global_style
 
 
-app = dash.Dash(
+app = Dash(
     name=__name__,
-    title='FUNKI'
+    title='FUNKI',
 )
 
 app.layout = html.Div(
     children=[
-        dcc.Store(data=None, id='raw-data', storage_type='session'),
-        dcc.Store(data=None, id='ann-data', storage_type='session'),
+        dcc.Store(id='raw-data', storage_type='local'),
+        dcc.Store(id='ann-data', storage_type='local'),
         html.Div(
             html.Img(
                 src='assets/logos/funki_logo.svg',
