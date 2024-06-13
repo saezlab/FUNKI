@@ -9,7 +9,7 @@ from dash import callback
 from dash.exceptions import PreventUpdate
 import plotly.express as px
 import plotly.graph_objects as go
-from plotly.tools import mpl_to_plotly
+from plotly.subplots import make_subplots
 
 from utils import serial_to_dataset
 from utils.style import tab_style
@@ -17,6 +17,9 @@ from utils.style import tab_selected_style
 from utils.style import page_style
 from utils.style import header_style
 import funki.preprocessing as fpp
+import funki.analysis as fan
+import funki.plots as fpl
+import funki.pipelines as fppl
 
 
 tab_norm = tab_home = dcc.Tab(
@@ -62,7 +65,7 @@ tab_norm = tab_home = dcc.Tab(
             html.Button(
                 id='apply-filter'
             ),
-            dcc.Graph(id='plot-filter')
+            dcc.Graph(id='plot-filter', style={'height': 1500})
 
         ],
         style=page_style,
@@ -73,6 +76,7 @@ tab_norm = tab_home = dcc.Tab(
 
 @callback(
     Output('plot-filter', 'figure'),
+    Output('plot-filter', 'style'),
     Input('proc-data', 'data'),
     Input('ann-data', 'data')
 )
@@ -81,4 +85,10 @@ def plot_filter(data, annot):
         raise PreventUpdate
     
     dset = serial_to_dataset(data, annot)
-    #print(dset) # TODO
+
+    fig = fppl.sc_quality_control(dset)
+    
+    height = 800
+    fig.update_layout(height=height)
+
+    return fig, {'height': height}
