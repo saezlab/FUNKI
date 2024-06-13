@@ -14,7 +14,7 @@ app = Dash(
     title='FUNKI',
 )
 
-storage_type = 'memory'
+storage_type = 'session'
 
 app.layout = html.Div(
     children=[
