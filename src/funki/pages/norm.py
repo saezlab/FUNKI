@@ -12,6 +12,7 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
 from utils import serial_to_dataset
+from utils import dataframe_to_serial
 from utils.style import tab_style
 from utils.style import tab_selected_style
 from utils.style import page_style
@@ -53,7 +54,7 @@ tab_norm = tab_home = dcc.Tab(
             html.Br(),
             '- Max. % mitochondrial genes per cell: ',
             dcc.Input(
-                id='pct-mito',
+                id='mito-pct',
                 type='number',
                 placeholder='e.g. 5',
                 value=None,
@@ -63,6 +64,7 @@ tab_norm = tab_home = dcc.Tab(
             ),
             html.Br(),
             html.Button(
+                'Apply filters',
                 id='apply-filter'
             ),
             dcc.Graph(id='plot-filter', style={'height': 1500})
@@ -78,13 +80,13 @@ tab_norm = tab_home = dcc.Tab(
     Output('plot-filter', 'figure'),
     Output('plot-filter', 'style'),
     Input('proc-data', 'data'),
-    Input('ann-data', 'data')
+    prevent_initial_call=True
 )
-def plot_filter(data, annot):
-    if None in (data, annot):
+def plot_filter(data):
+    if data is None:
         raise PreventUpdate
     
-    dset = serial_to_dataset(data, annot)
+    dset = serial_to_dataset(data)
 
     fig = fppl.sc_quality_control(dset)
     
@@ -92,3 +94,28 @@ def plot_filter(data, annot):
     fig.update_layout(height=height)
 
     return fig, {'height': height}
+
+@callback(
+    Output('proc-data', 'data', allow_duplicate=True),
+    Input('apply-filter', 'n_clicks'),
+    State('raw-data', 'data'),
+    State('max-genes', 'value'),
+    State('min-genes', 'value'),
+    State('mito-pct', 'value'),
+    prevent_initial_call=True
+)
+def apply_filter(n_clicks, data, max_genes, min_genes, mito_pct):
+    if data is None:
+        raise PreventUpdate
+
+    dset = serial_to_dataset(data)
+    dset = fpp.sc_trans_filter(
+        dset,
+        min_genes=min_genes,
+        max_genes=max_genes,
+        mito_pct=mito_pct
+    )
+
+    serial = dataframe_to_serial(dset.to_df())
+
+    return serial
