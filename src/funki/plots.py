@@ -1,4 +1,10 @@
+import numpy as np
 import scanpy as sc
+import plotly.express as px
+import plotly.graph_objects as go
+
+
+# TODO: switch plots backend to plotly
 
 def plot_pca(data, color=None, use_highly_variable=True, recalculate=False,
              **kwargs):
@@ -112,3 +118,27 @@ def plot_umap(data, color=None, min_dist=0.5, spread=1.0, alpha=1.0, gamma=1.0,
                    gamma=gamma)
 
     return sc.pl.umap(data, color=color, **kwargs)
+
+def plot_highest_expr(data, top=10):
+    '''
+    Generates a box plot of the top expressed genes (based on mean expression).
+
+    :param data: The data set from which to compute the UMAP
+    :type data: :class:`funki.input.DataSet`
+    :param top: Number of top genes to represent, defaults to ``10``
+    :type top: int, optional
+
+    :returns: The figure contataining the resulting box plot
+    :rtype: `plotly.graph_objs.Figure`_
+
+    .. _plotly.graph_objs.Figure: https://plotly.com/python-api-reference/gener\
+        ated/plotly.graph_objects.Figure.html
+    '''
+
+    mean = data.X.mean(axis=0)
+    inds = np.argpartition(mean, -top)[-top:]
+    inds = inds[np.argsort(mean[inds])]
+    
+    usegenes = data.var_names[inds].values[::-1]
+    
+    return px.box(data.to_df(), y=usegenes, title=f'Top {top} expressed genes')
