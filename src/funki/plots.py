@@ -2,7 +2,6 @@ import numpy as np
 import pandas as pd
 import scanpy as sc
 import plotly.express as px
-import plotly.graph_objects as go
 
 from .analysis import sc_trans_qc_metrics
 
@@ -149,7 +148,7 @@ def plot_highest_expr(data, top=10):
     
     return fig
 
-def plot_genes_by_counts(data):
+def plot_n_genes(data):
     '''
     Generates a violin plot displaying the number of genes by counts. This is,
     number of genes per cell that have non-zero counts.
@@ -256,7 +255,7 @@ def plot_counts_vs_pct_mito(data):
 
     return fig
 
-def plot_counts_vs_genes_by_counts(data):
+def plot_counts_vs_n_genes(data):
     '''
     Generates a scatter plot displaying the number of genes by counts versus
     total gene counts.
