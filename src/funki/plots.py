@@ -167,11 +167,14 @@ def plot_genes_by_counts(data):
     if 'n_genes_by_counts' not in data.obs.keys():
         data = sc_trans_qc_metrics(data)
 
-    return px.violin(
+    fig = px.violin(
         data.obs['n_genes_by_counts'],
         y='n_genes_by_counts',
         points='all'
     )
+    fig.update_layout(yaxis_title='Genes')
+
+    return fig
 
 def plot_total_counts(data):
     '''
@@ -190,11 +193,14 @@ def plot_total_counts(data):
     if 'total_counts' not in data.var.keys():
         data = sc_trans_qc_metrics(data)
 
-    return px.violin(
+    fig = px.violin(
         data.var['total_counts'],
         y='total_counts',
         points='all'
     )
+    fig.update_layout(yaxis_title='Counts')
+
+    return fig
 
 def plot_pct_counts_mito(data):
     '''
@@ -213,11 +219,14 @@ def plot_pct_counts_mito(data):
     if 'pct_counts_mito' not in data.obs.keys():
         data = sc_trans_qc_metrics(data)
 
-    return px.violin(
+    fig = px.violin(
         data.obs['pct_counts_mito'],
         y='pct_counts_mito',
         points='all'
-    ) 
+    )
+    fig.update_layout(yaxis_title='% mito. genes')
+
+    return fig
 
 def plot_counts_vs_pct_mito(data):
     '''
@@ -242,7 +251,10 @@ def plot_counts_vs_pct_mito(data):
 
     df = pd.DataFrame([data.obs['pct_counts_mito'], data.obs['total_counts']])
 
-    return px.scatter(df.T, x='total_counts', y='pct_counts_mito')
+    fig = px.scatter(df.T, x='total_counts', y='pct_counts_mito')
+    fig.update_layout(xaxis_title='Counts', yaxis_title='% mito. genes')
+
+    return fig
 
 def plot_counts_vs_genes_by_counts(data):
     '''
@@ -267,4 +279,7 @@ def plot_counts_vs_genes_by_counts(data):
 
     df = pd.DataFrame([data.obs['n_genes_by_counts'], data.obs['total_counts']])
 
-    return px.scatter(df.T, x='total_counts', y='n_genes_by_counts')
+    fig = px.scatter(df.T, x='total_counts', y='n_genes_by_counts')
+    fig.update_layout(xaxis_title='Counts', yaxis_title='Genes')
+
+    return fig
