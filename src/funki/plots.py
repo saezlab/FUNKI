@@ -143,8 +143,11 @@ def plot_highest_expr(data, top=10):
     inds = inds[np.argsort(mean[inds])]
     
     usegenes = data.var_names[inds].values[::-1]
+
+    fig = px.box(data.to_df(), y=usegenes, title=f'Top {top} expressed genes')
+    fig.update_layout(xaxis_title='Genes', yaxis_title='Expression')
     
-    return px.box(data.to_df(), y=usegenes, title=f'Top {top} expressed genes')
+    return fig
 
 def plot_genes_by_counts(data):
     '''
@@ -160,12 +163,12 @@ def plot_genes_by_counts(data):
         ated/plotly.graph_objects.Figure.html
     '''
 
-    if 'n_cells_by_counts' not in data.var.keys():
+    if 'n_genes_by_counts' not in data.obs.keys():
         data = sc_trans_qc_metrics(data)
 
     return px.violin(
-        data.var['n_cells_by_counts'],
-        y='n_cells_by_counts',
+        data.obs['n_genes_by_counts'],
+        y='n_genes_by_counts',
         points='all'
     )
 
