@@ -19,6 +19,7 @@
    preprocessing
    analysis
    plots
+   pipelines
    link_license
 
 Indices and tables
