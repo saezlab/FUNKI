@@ -166,7 +166,30 @@ def plot_genes_by_counts(data):
         data.var['n_cells_by_counts'],
         y='n_cells_by_counts',
         points='all'
+    )
+
+def plot_total_counts(data):
+    '''
+    Generates a violin plot displaying the total gene counts
+
+    :param data: The data set from which to generate the figure
+    :type data: :class:`funki.input.DataSet`
+
+    :returns: The figure contataining the resulting box plot
+    :rtype: `plotly.graph_objs.Figure`_
+
+    .. _plotly.graph_objs.Figure: https://plotly.com/python-api-reference/gener\
+        ated/plotly.graph_objects.Figure.html
+    '''
+
+    if 'total_counts' not in data.var.keys():
+        data = sc_trans_qc_metrics(data)
+
+    return px.violin(
+        data.var['total_counts'],
+        y='total_counts',
+        points='all'
     ) 
 
 
-#'n_genes_by_counts', 'total_counts', 'pct_counts_mt'
+#'total_counts', 'pct_counts_mt'
