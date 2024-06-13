@@ -169,7 +169,8 @@ def plot_n_genes(data):
     fig = px.violin(
         data.obs['n_genes_by_counts'],
         y='n_genes_by_counts',
-        points='all'
+        points='all',
+        title='Number of genes',
     )
     fig.update_layout(yaxis_title='Genes')
 
@@ -195,7 +196,8 @@ def plot_total_counts(data):
     fig = px.violin(
         data.var['total_counts'],
         y='total_counts',
-        points='all'
+        points='all',
+        title='Total counts'
     )
     fig.update_layout(yaxis_title='Counts')
 
@@ -221,9 +223,10 @@ def plot_pct_counts_mito(data):
     fig = px.violin(
         data.obs['pct_counts_mito'],
         y='pct_counts_mito',
-        points='all'
+        points='all',
+        title='Pct. of mitochondrial genes',
     )
-    fig.update_layout(yaxis_title='% mito. genes')
+    fig.update_layout(yaxis_title='Pct. mito. genes')
 
     return fig
 
@@ -250,8 +253,13 @@ def plot_counts_vs_pct_mito(data):
 
     df = pd.DataFrame([data.obs['pct_counts_mito'], data.obs['total_counts']])
 
-    fig = px.scatter(df.T, x='total_counts', y='pct_counts_mito')
-    fig.update_layout(xaxis_title='Counts', yaxis_title='% mito. genes')
+    fig = px.scatter(
+        df.T,
+        x='total_counts',
+        y='pct_counts_mito',
+        title='Total counts vs. pct. mitochondrial genes',
+    )
+    fig.update_layout(xaxis_title='Counts', yaxis_title='Pct. mito. genes')
 
     return fig
 
@@ -278,7 +286,12 @@ def plot_counts_vs_n_genes(data):
 
     df = pd.DataFrame([data.obs['n_genes_by_counts'], data.obs['total_counts']])
 
-    fig = px.scatter(df.T, x='total_counts', y='n_genes_by_counts')
+    fig = px.scatter(
+        df.T,
+        x='total_counts',
+        y='n_genes_by_counts',
+        title='Total counts vs. number of genes',
+    )
     fig.update_layout(xaxis_title='Counts', yaxis_title='Genes')
 
     return fig
