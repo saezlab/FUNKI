@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 import scanpy as sc
 import plotly.express as px
+import plotly.graph_objects as go
 
 from .analysis import sc_trans_qc_metrics
 
@@ -143,16 +144,12 @@ def plot_highest_expr(data, top=10):
     
     usegenes = data.var_names[inds].values[::-1]
 
-    fig = px.box(
-        data.to_df(),
-        y=usegenes,
-        title=f'Top {top} expressed genes',
-        labels={'x': 'Genes', 'y': 'Expression'},
-    )
+    fig = px.box(data.to_df(), y=usegenes, title=f'Top {top} expressed genes')
+    fig.update_layout(xaxis_title='Genes', yaxis_title='Expression')
     
     return fig
 
-def plot_n_genes(data):
+def plot_genes_by_counts(data):
     '''
     Generates a violin plot displaying the number of genes by counts. This is,
     number of genes per cell that have non-zero counts.
@@ -173,9 +170,9 @@ def plot_n_genes(data):
     fig = px.violin(
         data.obs['n_genes_by_counts'],
         y='n_genes_by_counts',
-        points='all',
-        labels={'y': 'Genes'},
+        points='all'
     )
+    fig.update_layout(yaxis_title='Genes')
 
     return fig
 
@@ -199,9 +196,9 @@ def plot_total_counts(data):
     fig = px.violin(
         data.var['total_counts'],
         y='total_counts',
-        points='all',
-        labels={'y': 'Counts'},
+        points='all'
     )
+    fig.update_layout(yaxis_title='Counts')
 
     return fig
 
@@ -225,9 +222,9 @@ def plot_pct_counts_mito(data):
     fig = px.violin(
         data.obs['pct_counts_mito'],
         y='pct_counts_mito',
-        points='all',
-        labels={'y': '% mito. genes'},
+        points='all'
     )
+    fig.update_layout(yaxis_title='% mito. genes')
 
     return fig
 
@@ -254,16 +251,12 @@ def plot_counts_vs_pct_mito(data):
 
     df = pd.DataFrame([data.obs['pct_counts_mito'], data.obs['total_counts']])
 
-    fig = px.scatter(
-        df.T,
-        x='total_counts',
-        y='pct_counts_mito',
-        labels={'x': 'Counts', 'y': '% mito. genes'},
-    )
+    fig = px.scatter(df.T, x='total_counts', y='pct_counts_mito')
+    fig.update_layout(xaxis_title='Counts', yaxis_title='% mito. genes')
 
     return fig
 
-def plot_counts_vs_n_genes(data):
+def plot_counts_vs_genes_by_counts(data):
     '''
     Generates a scatter plot displaying the number of genes by counts versus
     total gene counts.
@@ -286,11 +279,7 @@ def plot_counts_vs_n_genes(data):
 
     df = pd.DataFrame([data.obs['n_genes_by_counts'], data.obs['total_counts']])
 
-    fig = px.scatter(
-        df.T,
-        x='total_counts',
-        y='n_genes_by_counts',
-        labels={'x': 'Counts', 'y': 'Genes'},
-    )
+    fig = px.scatter(df.T, x='total_counts', y='n_genes_by_counts')
+    fig.update_layout(xaxis_title='Counts', yaxis_title='Genes')
 
     return fig
