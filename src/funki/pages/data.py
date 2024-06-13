@@ -13,6 +13,7 @@ from plotly.subplots import make_subplots
 
 from utils import parse_contents
 from utils import serial_to_dataframe
+from utils import dataframe_to_serial
 from utils.style import tab_style
 from utils.style import tab_selected_style
 from utils.style import page_style
@@ -139,7 +140,7 @@ tab_data = dcc.Tab(
 
 @callback(
     Output('raw-data', 'data'),
-    Output('proc-data', 'data'),
+    Output('proc-data', 'data', allow_duplicate=True),
     Input('upload-data', 'contents'),
     State('upload-data', 'filename'),
     prevent_initial_call=True
@@ -148,8 +149,7 @@ def load_data(content, filename):
     if filename is None:
         raise PreventUpdate
 
-    df = parse_contents(content, filename)
-    serial = {'index': df.index, 'records': df.to_dict('records')}
+    serial = dataframe_to_serial(parse_contents(content, filename))
 
     return serial, serial
 
@@ -163,8 +163,7 @@ def load_anndata(content, filename):
     if filename is None:
         raise PreventUpdate
     
-    df = parse_contents(content, filename)
-    serial = {'index': df.index, 'records': df.to_dict('records')}
+    serial = dataframe_to_serial(parse_contents(content, filename))
     
     return serial
 

@@ -30,14 +30,23 @@ def parse_contents(content, filename):
 
     return df
 
+def dataframe_to_serial(df):
+    return {'index': df.index, 'records': df.to_dict('records')}
+
 def serial_to_dataframe(data):
     df = pd.DataFrame(data['records'])
     df.index = data['index']
 
     return df
 
-def serial_to_dataset(data, annot):
+def serial_to_dataset(data, annot=None):
     df = serial_to_dataframe(data)
-    ann = serial_to_dataframe(annot)
 
-    return DataSet(df, obs=ann)
+    if annot:
+        ann = serial_to_dataframe(annot)
+        ann = ann[df.index]
+
+        return DataSet(df, obs=ann)
+
+    else:
+        return DataSet(df)
