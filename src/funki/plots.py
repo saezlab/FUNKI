@@ -151,7 +151,8 @@ def plot_highest_expr(data, top=10):
 
 def plot_genes_by_counts(data):
     '''
-    Generates a violin plot displaying the number of genes by counts.
+    Generates a violin plot displaying the number of genes by counts. This is,
+    number of genes per cell that have non-zero counts.
 
     :param data: The data set from which to generate the figure
     :type data: :class:`funki.input.DataSet`
