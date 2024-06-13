@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 import scanpy as sc
 import plotly.express as px
 import plotly.graph_objects as go
@@ -147,12 +148,12 @@ def plot_highest_expr(data, top=10):
 
 def plot_genes_by_counts(data):
     '''
-    Generates a violin plot displaying the number of genes by counts
+    Generates a violin plot displaying the number of genes by counts.
 
     :param data: The data set from which to generate the figure
     :type data: :class:`funki.input.DataSet`
 
-    :returns: The figure contataining the resulting box plot
+    :returns: The figure contataining the resulting violin plot
     :rtype: `plotly.graph_objs.Figure`_
 
     .. _plotly.graph_objs.Figure: https://plotly.com/python-api-reference/gener\
@@ -170,12 +171,12 @@ def plot_genes_by_counts(data):
 
 def plot_total_counts(data):
     '''
-    Generates a violin plot displaying the total gene counts
+    Generates a violin plot displaying the total gene counts.
 
     :param data: The data set from which to generate the figure
     :type data: :class:`funki.input.DataSet`
 
-    :returns: The figure contataining the resulting box plot
+    :returns: The figure contataining the resulting violin plot
     :rtype: `plotly.graph_objs.Figure`_
 
     .. _plotly.graph_objs.Figure: https://plotly.com/python-api-reference/gener\
@@ -189,7 +190,77 @@ def plot_total_counts(data):
         data.var['total_counts'],
         y='total_counts',
         points='all'
+    )
+
+def plot_pct_counts_mito(data):
+    '''
+    Generates a violin plot displaying the percentage of mitochondrial genes.
+
+    :param data: The data set from which to generate the figure
+    :type data: :class:`funki.input.DataSet`
+
+    :returns: The figure contataining the resulting violin plot
+    :rtype: `plotly.graph_objs.Figure`_
+
+    .. _plotly.graph_objs.Figure: https://plotly.com/python-api-reference/gener\
+        ated/plotly.graph_objects.Figure.html
+    '''
+
+    if 'pct_counts_mito' not in data.obs.keys():
+        data = sc_trans_qc_metrics(data)
+
+    return px.violin(
+        data.obs['pct_counts_mito'],
+        y='pct_counts_mito',
+        points='all'
     ) 
 
+def plot_counts_vs_pct_mito(data):
+    '''
+    Generates a scatter plot displaying the percentage of mitochondrial genes
+    versus total gene counts.
 
-#'total_counts', 'pct_counts_mt'
+    :param data: The data set from which to generate the figure
+    :type data: :class:`funki.input.DataSet`
+
+    :returns: The figure contataining the resulting scatter plot
+    :rtype: `plotly.graph_objs.Figure`_
+
+    .. _plotly.graph_objs.Figure: https://plotly.com/python-api-reference/gener\
+        ated/plotly.graph_objects.Figure.html
+    '''
+
+    if (
+        'pct_counts_mito' not in data.obs.keys()
+        or 'total_counts' not in data.obs.keys()
+    ):
+        data = sc_trans_qc_metrics(data)
+
+    df = pd.DataFrame([data.obs['pct_counts_mito'], data.obs['total_counts']])
+
+    return px.scatter(df.T, x='total_counts', y='pct_counts_mito')
+
+def plot_counts_vs_genes_by_counts(data):
+    '''
+    Generates a scatter plot displaying the number of genes by counts versus
+    total gene counts.
+
+    :param data: The data set from which to generate the figure
+    :type data: :class:`funki.input.DataSet`
+
+    :returns: The figure contataining the resulting scatter plot
+    :rtype: `plotly.graph_objs.Figure`_
+
+    .. _plotly.graph_objs.Figure: https://plotly.com/python-api-reference/gener\
+        ated/plotly.graph_objects.Figure.html
+    '''
+
+    if (
+        'n_genes_by_counts' not in data.obs.keys()
+        or 'total_counts' not in data.obs.keys()
+    ):
+        data = sc_trans_qc_metrics(data)
+
+    df = pd.DataFrame([data.obs['n_genes_by_counts'], data.obs['total_counts']])
+
+    return px.scatter(df.T, x='total_counts', y='n_genes_by_counts')
