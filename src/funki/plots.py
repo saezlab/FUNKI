@@ -3,6 +3,8 @@ import scanpy as sc
 import plotly.express as px
 import plotly.graph_objects as go
 
+from .analysis import sc_trans_qc_metrics
+
 
 # TODO: switch plots backend to plotly
 
@@ -123,7 +125,7 @@ def plot_highest_expr(data, top=10):
     '''
     Generates a box plot of the top expressed genes (based on mean expression).
 
-    :param data: The data set from which to compute the UMAP
+    :param data: The data set from which to generate the figure
     :type data: :class:`funki.input.DataSet`
     :param top: Number of top genes to represent, defaults to ``10``
     :type top: int, optional
@@ -142,3 +144,29 @@ def plot_highest_expr(data, top=10):
     usegenes = data.var_names[inds].values[::-1]
     
     return px.box(data.to_df(), y=usegenes, title=f'Top {top} expressed genes')
+
+def plot_genes_by_counts(data):
+    '''
+    Generates a violin plot displaying the number of genes by counts
+
+    :param data: The data set from which to generate the figure
+    :type data: :class:`funki.input.DataSet`
+
+    :returns: The figure contataining the resulting box plot
+    :rtype: `plotly.graph_objs.Figure`_
+
+    .. _plotly.graph_objs.Figure: https://plotly.com/python-api-reference/gener\
+        ated/plotly.graph_objects.Figure.html
+    '''
+
+    if 'n_cells_by_counts' not in data.var.keys():
+        data = sc_trans_qc_metrics(data)
+
+    return px.violin(
+        data.var['n_cells_by_counts'],
+        y='n_cells_by_counts',
+        points='all'
+    ) 
+
+
+#'n_genes_by_counts', 'total_counts', 'pct_counts_mt'
