@@ -195,6 +195,7 @@ def update_table(data):
     Output('table-anndata', 'columns'),
     Output('table-anndata', 'data'),
     Output('plot-anndata-summary', 'figure'),
+    Output('plot-anndata-summary' ,'style'),
     Input('ann-data', 'data')
 )
 def update_anntable(data):
@@ -214,7 +215,8 @@ def update_anntable(data):
         pie = go.Pie(labels=aux.index, values=aux.values)
         fig.add_trace(pie, row=i + 1, col=1)
 
-    fig.update_layout(height=250 * df.shape[1])
+    height = 250 * df.shape[1]
+    fig.update_layout(height=height)
 
     df.reset_index(inplace=True)
     #df = df.head()
@@ -222,4 +224,4 @@ def update_anntable(data):
     table_columns = [{'name': i, 'id': i} for i in df.columns]
     table_data = df.to_dict('records')
 
-    return table_columns, table_data, fig
+    return table_columns, table_data, fig, {'height': height}
