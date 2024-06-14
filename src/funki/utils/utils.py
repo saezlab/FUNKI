@@ -63,7 +63,10 @@ def dataset_to_serial(dset):
         for k in ('obs', 'var')
     })
     data.update({
-        k: {mk: mv.tolist() for mk, mv in getattr(dset, k).items()}
+        k: {
+            mk: mv.tolist() if type(mv) is np.ndarray else mv.toarray().tolist()
+            for mk, mv in getattr(dset, k).items()
+        }
         for k in ('obsm', 'varm', 'obsp', 'varp')
     })
 
