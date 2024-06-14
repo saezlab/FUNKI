@@ -39,6 +39,8 @@ def serial_to_dataframe(data):
 
     return df
 
+ # TODO: serial dataset should include var, obs, varm, obsm and uns
+ # this would eliminate the need for annot as a separately stored variable
 def serial_to_dataset(data, annot=None):
     df = serial_to_dataframe(data)
 

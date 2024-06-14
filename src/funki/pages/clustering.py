@@ -1,11 +1,21 @@
+import numpy as np
+import pandas as pd
 from dash import html
 from dash import dcc
-import numpy as np
+from dash import Input
+from dash import Output
+from dash import State
+from dash import callback
+from dash.exceptions import PreventUpdate
 
+from utils import serial_to_dataset
+from utils import dataframe_to_serial
 from utils.style import tab_style
 from utils.style import tab_selected_style
 from utils.style import page_style
 from utils.style import header_style
+from funki import _colors
+import funki.analysis as fan
 
 
 tab_cluster = dcc.Tab(
@@ -46,6 +56,10 @@ tab_cluster = dcc.Tab(
                         ),
                         style={'width': 350, 'padding-top': 20}
                     ),
+                    html.Button(
+                        'Calculate',
+                        id='apply-cluster'
+                    ),
                 ],
                 style={
                     'width': '49%',
@@ -66,6 +80,34 @@ tab_cluster = dcc.Tab(
                         ),
                         style={'display': 'inline-block'}
                     ),
+                    html.Br(),
+                    html.Br(),
+                    '- Choose embedding: ',
+                    dcc.RadioItems(
+                        id='embedding',
+                        options=[
+                            {'label': 'PCA', 'value': 'pca'},
+                            {'label': 'tSNE', 'value': 'tsne'},
+                            {'label': 'UMAP', 'value': 'umap'}
+                        ],
+                        value='pca'
+                    ),
+                    html.Br(),
+                    html.Div(
+                        id='param-panel',
+                        style={
+                            'border': 'solid',
+                            'border-color': _colors['teal'],
+                            'background-color': _colors['aqua'],
+                            'padding': 10,
+                            'width': '80%'
+                        }
+                    ),
+                    html.Br(),
+                    html.Button(
+                        'Visualize',
+                        id='plot-embedding'
+                    ),
                 ],
                 style={
                     'width': '49%',
@@ -73,13 +115,83 @@ tab_cluster = dcc.Tab(
                     'vertical-align': 'top',
                 }
             ),
-            html.Button(
-                'Calculate',
-                id='apply-cluster'
-            ),
         ],
         style=page_style,
     ),
     style=tab_style,
     selected_style=tab_selected_style,
 )
+
+@callback(
+    Output('param-panel', 'children'),
+    Output('param-panel', 'hidden'),
+    Input('embedding', 'value')
+)
+def update_param_panel(embedding):
+    children = []
+
+    if embedding != 'pca':
+        children.extend(['Select embedding parameters: ', html.Br(), html.Br()])
+
+    if embedding == 'tsne':
+        children.extend([
+            '- Perplexity',
+            html.Br(),
+            dcc.Slider(
+                id='perplexity',
+                min=5,
+                max=50,
+                step=1,
+                marks={int(i): f'{i}' for i in np.arange(5, 55, 5)},
+                tooltip={
+                    'always_visible': True,
+                    'placement': 'top'
+                },
+                value=30,
+            ),
+        ])
+
+    elif embedding == 'umap':
+        children.extend([
+            '- Minimum distance: ',
+            dcc.Input(
+                id='min-dist',
+                type='number',
+                placeholder='e.g. 0.5',
+                value=0.5,
+                min=0,
+                style={'width': 50}
+            ),
+            html.Br(),
+            '- Spread: ',
+            dcc.Input(
+                id='spread',
+                type='number',
+                placeholder='e.g. 1.0',
+                value=1.0,
+                min=0,
+                style={'width': 50}
+            ),
+        ])
+
+    return children, False if children else True
+
+@callback(
+    Output('ann-data', 'data', allow_duplicate=True),
+    Input('apply-cluster', 'n_clicks'),
+    State('proc-data','data'),
+    State('ann-data', 'data'),
+    State('cluster-algorithm', 'value'),
+    State('cluster-resolution', 'value'),
+    prevent_initial_call=True
+)
+def apply_clustering(n_clicks, data, annot, algorithm, resolution):
+    if data is None:
+        raise PreventUpdate
+    
+    if annot is None:
+        annot = {'index': data['index'], 'records': {}}
+    
+    dset = serial_to_dataset(data, annot=annot)
+    fan.sc_clustering(dset, alg=algorithm, resolution=resolution)
+    # TODO
