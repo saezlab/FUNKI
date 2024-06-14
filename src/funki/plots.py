@@ -151,7 +151,7 @@ def plot_umap(data, color=None, min_dist=0.5, spread=1.0, alpha=1.0, gamma=1.0,
                         'uns': ['umap', 'neighbors']})
     
     if not 'neighbors' in data.uns:
-        sc.pp.neighbors(data, **neigh_kwargs)
+        sc.pp.neighbors(data)
 
     if 'X_umap' not in data.obsm:
         sc.tl.umap(data, min_dist=min_dist, spread=spread, alpha=alpha,
