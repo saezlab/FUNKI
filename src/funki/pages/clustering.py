@@ -18,6 +18,8 @@ from funki import _colors
 import funki.analysis as fan
 
 
+# ================================== LAYOUT ================================== #
+
 tab_cluster = dcc.Tab(
     label='Clustering',
     value='tab-cluster',
@@ -74,7 +76,7 @@ tab_cluster = dcc.Tab(
                         style={'display': 'inline-block'}
                     ),
                     html.Div(
-                        dcc.Checklist(
+                        dcc.Checklist( # TODO
                             id='harmony',
                             options=[{'label': '', 'value': True}]
                         ),
@@ -106,7 +108,7 @@ tab_cluster = dcc.Tab(
                     html.Br(),
                     html.Button(
                         'Visualize',
-                        id='plot-embedding'
+                        id='apply-embedding'
                     ),
                 ],
                 style={
@@ -115,12 +117,15 @@ tab_cluster = dcc.Tab(
                     'vertical-align': 'top',
                 }
             ),
+            dcc.Graph(id='plot-embedding')
         ],
         style=page_style,
     ),
     style=tab_style,
     selected_style=tab_selected_style,
 )
+
+# ================================ CALLBACKS ================================= #
 
 @callback(
     Output('param-panel', 'children'),
@@ -192,3 +197,13 @@ def apply_clustering(n_clicks, data, algorithm, resolution):
     fan.sc_clustering(dset, alg=algorithm, resolution=resolution)
     
     return dataset_to_serial(dset)
+
+@callback(
+    Output('plot-embedding', 'figure'),
+    Input('apply-embedding', 'n_clicks'),
+    State('embedding', 'value'),
+    State('param-panel', 'children'),
+    prevent_initial_call=True
+)
+def plot_embedding(n_clicks, embedding, param_panel):
+    pass
