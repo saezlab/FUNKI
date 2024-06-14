@@ -131,9 +131,12 @@ tab_cluster = dcc.Tab(
 @callback(
     Output('param-panel', 'children'),
     Output('param-panel', 'hidden'),
-    Input('embedding', 'value')
+    Input('embedding', 'value'),
+    Input('data', 'data')
 )
-def update_param_panel(embedding):
+def update_param_panel(embedding, data):
+    max_perplexity = len(data['index']) - 1 if data else 50
+
     children = []
 
     if embedding != 'pca':
@@ -146,7 +149,7 @@ def update_param_panel(embedding):
             dcc.Slider(
                 id='perplexity',
                 min=5,
-                max=50,
+                max=max_perplexity,
                 step=1,
                 marks={int(i): f'{i}' for i in np.arange(5, 55, 5)},
                 tooltip={
