@@ -16,6 +16,7 @@ from utils.style import page_style
 from utils.style import header_style
 from funki import _colors
 import funki.analysis as fan
+import funki.plots as fpl
 
 
 # ================================== LAYOUT ================================== #
@@ -201,9 +202,30 @@ def apply_clustering(n_clicks, data, algorithm, resolution):
 @callback(
     Output('plot-embedding', 'figure'),
     Input('apply-embedding', 'n_clicks'),
+    State('data', 'data'),
     State('embedding', 'value'),
     State('param-panel', 'children'),
-    prevent_initial_call=True
+    prevent_initial_call=True,
 )
-def plot_embedding(n_clicks, embedding, param_panel):
-    pass
+def plot_embedding(n_clicks, data, embedding, param_panel):
+    if data is None:
+        raise PreventUpdate
+    
+    dset = serial_to_dataset(data)
+
+    if embedding == 'pca':
+        fig = fpl.plot_pca(dset)
+
+    elif embedding == 'tsne':
+        # TODO: There is probably a more elegant way to do this
+        perplexity = param_panel[-1]['props']['value']
+        
+        fig = fpl.plot_tsne(dset, perplexity=perplexity)
+
+    elif embedding == 'umap':
+        min_dist = param_panel[-4]['props']['value']
+        spread = param_panel[-1]['props']['value']
+
+        fig = fpl.plot_umap(dset, min_dist=min_dist, spread=spread)
+
+    return fig
