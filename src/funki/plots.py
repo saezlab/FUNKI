@@ -6,8 +6,6 @@ import plotly.express as px
 from .analysis import sc_trans_qc_metrics
 
 
-# TODO: switch plots backend to plotly
-
 def plot_pca(data, color=None, use_highly_variable=True, recalculate=False,
              **kwargs):
     '''
@@ -26,13 +24,14 @@ def plot_pca(data, color=None, use_highly_variable=True, recalculate=False,
     :param \*\*kwargs: Other keyword arguments that can be passed to
         `scanpy.pp.pca()`_
     :type \*\*kwargs: optional
-    :returns: The figure contataining the resulting PCA
-    :rtype: `matplotlib.figure.Figure`_
 
+    :returns: The figure contataining the scatter plot showing the PCA embedding
+    :rtype: `plotly.graph_objs.Figure`_
+
+    .. _plotly.graph_objs.Figure: https://plotly.com/python-api-reference/gener\
+        ated/plotly.graph_objects.Figure.html
     .. _scanpy.pp.pca(): https://scanpy.readthedocs.io/en/latest/generated/scan\
         py.pp.pca.html
-    .. _matplotlib.figure.Figure: https://matplotlib.org/stable/api/figure_api.\
-        html#matplotlib.figure.Figure
     '''
 
     if recalculate:
@@ -44,7 +43,24 @@ def plot_pca(data, color=None, use_highly_variable=True, recalculate=False,
     if 'X_pca' not in data.obsm:
         sc.pp.pca(data, use_highly_variable=use_highly_variable, **kwargs)
 
-    return sc.pl.pca(data, color=color)
+    colors = data.obs[color].values if color in data.obs_keys() else None
+    
+    fig = px.scatter(
+        data.obsm.to_df(),
+        x='X_pca1',
+        y='X_pca2',
+        color=colors,
+        labels={
+            'X_pca1': 'PC 1',
+            'X_pca2': 'PC 2',
+            'color': color
+        },
+        width=800,
+        height=500
+    )
+    fig.update_yaxes(scaleanchor='x', scaleratio=1)
+
+    return fig
 
 def plot_tsne(data, color=None, perplexity=30, recalculate=False):
     '''
@@ -60,11 +76,13 @@ def plot_tsne(data, color=None, perplexity=30, recalculate=False):
     :param recalculate: Whether to recalculate the dimensionality reduction,
         defaults to ``False``
     :type recalculate: bool, optional
-    :returns: The figure contataining the resulting t-SNE
-    :rtype: `matplotlib.figure.Figure`_
 
-    .. _matplotlib.figure.Figure: https://matplotlib.org/stable/api/figure_api.\
-        html#matplotlib.figure.Figure
+    :returns: The figure contataining the scatter plot showing the tSNE
+        embedding
+    :rtype: `plotly.graph_objs.Figure`_
+
+    .. _plotly.graph_objs.Figure: https://plotly.com/python-api-reference/gener\
+        ated/plotly.graph_objects.Figure.html
     '''
 
     if recalculate:
@@ -73,7 +91,25 @@ def plot_tsne(data, color=None, perplexity=30, recalculate=False):
     if 'X_tsne' not in data.obsm:
         sc.tl.tsne(data, perplexity=perplexity)
 
-    return sc.pl.tsne(data, color=color)
+    colors = data.obs[color].values if color in data.obs_keys() else None
+    
+    fig = px.scatter(
+        data.obsm.to_df(),
+        x='X_tsne1',
+        y='X_tsne2',
+        color=colors,
+        labels={
+            'X_tsne1': 'tSNE 1',
+            'X_tsne2': 'tSNE 2',
+            'color': color
+        },
+        width=800,
+        height=500
+    )
+    fig.update_yaxes(scaleanchor='x', scaleratio=1)
+
+    return fig
+
 
 def plot_umap(data, color=None, min_dist=0.5, spread=1.0, alpha=1.0, gamma=1.0,
               recalculate=False, **kwargs):
@@ -96,15 +132,17 @@ def plot_umap(data, color=None, min_dist=0.5, spread=1.0, alpha=1.0, gamma=1.0,
         defaults to ``False``
     :type recalculate: bool, optional
     :param \*\*kwargs: Other keyword arguments that can be passed to
-        `scanpy.pp.umap()`_
+        `scanpy.tl.umap()`_
     :type \*\*kwargs: optional
-    :returns: The figure contataining the resulting UMAP
-    :rtype: `matplotlib.figure.Figure`_
 
-    .. _matplotlib.figure.Figure: https://matplotlib.org/stable/api/figure_api.\
-        html#matplotlib.figure.Figure
-    .. _scanpy.pp.umap(): https://scanpy.readthedocs.io/en/latest/generated/scan\
-        py.pp.umap.html
+    :returns: The figure contataining the scatter plot showing the UMAP
+        embedding
+    :rtype: `plotly.graph_objs.Figure`_
+
+    .. _plotly.graph_objs.Figure: https://plotly.com/python-api-reference/gener\
+        ated/plotly.graph_objects.Figure.html
+    .. _scanpy.tl.umap(): https://scanpy.readthedocs.io/en/latest/generated/scan\
+        py.tl.umap.html
     '''
 
     if recalculate:
@@ -117,9 +155,26 @@ def plot_umap(data, color=None, min_dist=0.5, spread=1.0, alpha=1.0, gamma=1.0,
 
     if 'X_umap' not in data.obsm:
         sc.tl.umap(data, min_dist=min_dist, spread=spread, alpha=alpha,
-                   gamma=gamma)
+                   gamma=gamma, **kwargs)
 
-    return sc.pl.umap(data, color=color, **kwargs)
+    colors = data.obs[color].values if color in data.obs_keys() else None
+    
+    fig = px.scatter(
+        data.obsm.to_df(),
+        x='X_umap1',
+        y='X_umap2',
+        color=colors,
+        labels={
+            'X_umap1': 'UMAP 1',
+            'X_umap2': 'UMAP 2',
+            'color': color
+        },
+        width=800,
+        height=500
+    )
+    fig.update_yaxes(scaleanchor='x', scaleratio=1)
+
+    return fig
 
 def plot_highest_expr(data, top=10):
     '''
