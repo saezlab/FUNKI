@@ -209,7 +209,7 @@ def update_obs_preview(data):
     fig = make_subplots(
         rows=df.shape[1],
         cols=1,
-        specs=[[{'type': 'pie'}], [{'type': 'pie'}]]
+        specs=[[{'type': 'pie'}]] * df.shape[1]
     )
     
     for i, c in enumerate(df.columns):

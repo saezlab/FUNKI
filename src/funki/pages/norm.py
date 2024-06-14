@@ -7,7 +7,7 @@ from dash import callback
 from dash.exceptions import PreventUpdate
 
 from utils import serial_to_dataset
-from utils import dataframe_to_serial
+from utils import dataset_to_serial
 from utils.style import tab_style
 from utils.style import tab_selected_style
 from utils.style import page_style
@@ -119,7 +119,7 @@ tab_norm = tab_home = dcc.Tab(
 @callback(
     Output('plot-filter', 'figure'),
     Output('plot-filter', 'style'),
-    Input('proc-data', 'data'),
+    Input('data', 'data'),
     prevent_initial_call=True
 )
 def plot_filter(data):
@@ -136,9 +136,9 @@ def plot_filter(data):
     return fig, {'height': height}
 
 @callback(
-    Output('proc-data', 'data', allow_duplicate=True),
+    Output('data', 'data', allow_duplicate=True),
     Input('apply-filter', 'n_clicks'),
-    State('proc-data', 'data'),
+    State('data', 'data'),
     State('max-genes', 'value'),
     State('min-genes', 'value'),
     State('mito-pct', 'value'),
@@ -156,14 +156,14 @@ def apply_filter(n_clicks, data, max_genes, min_genes, mito_pct):
         mito_pct=mito_pct
     )
 
-    serial = dataframe_to_serial(dset.to_df())
+    serial = dataset_to_serial(dset)
 
     return serial
 
 @callback(
-    Output('proc-data', 'data', allow_duplicate=True),
+    Output('data', 'data', allow_duplicate=True),
     Input('apply-norm', 'n_clicks'),
-    State('proc-data', 'data'),
+    State('data', 'data'),
     State('size-factor', 'value'),
     State('log-transform', 'value'),
     prevent_initial_call=True
@@ -179,6 +179,6 @@ def apply_norm(n_clicks, data, size_factor, log_transform):
         log_transform=log_transform
     )
 
-    serial = dataframe_to_serial(dset.to_df())
+    serial = dataset_to_serial(dset)
 
     return serial
