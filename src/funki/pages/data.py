@@ -206,7 +206,7 @@ def update_obs_preview(data):
 
     df = serial_to_dataframe(data['obs'])
 
-    fig = make_subplots(
+    fig = make_subplots( # TODO: Improve plotting metadata esp. legend
         rows=df.shape[1],
         cols=1,
         specs=[[{'type': 'pie'}]] * df.shape[1]

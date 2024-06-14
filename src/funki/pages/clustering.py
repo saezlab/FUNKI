@@ -9,7 +9,7 @@ from dash import callback
 from dash.exceptions import PreventUpdate
 
 from utils import serial_to_dataset
-from utils import dataframe_to_serial
+from utils import dataset_to_serial
 from utils.style import tab_style
 from utils.style import tab_selected_style
 from utils.style import page_style
@@ -177,21 +177,18 @@ def update_param_panel(embedding):
     return children, False if children else True
 
 @callback(
-    Output('ann-data', 'data', allow_duplicate=True),
+    Output('data', 'data', allow_duplicate=True),
     Input('apply-cluster', 'n_clicks'),
-    State('proc-data','data'),
-    State('ann-data', 'data'),
+    State('data', 'data'),
     State('cluster-algorithm', 'value'),
     State('cluster-resolution', 'value'),
     prevent_initial_call=True
 )
-def apply_clustering(n_clicks, data, annot, algorithm, resolution):
+def apply_clustering(n_clicks, data, algorithm, resolution):
     if data is None:
         raise PreventUpdate
     
-    if annot is None:
-        annot = {'index': data['index'], 'records': {}}
-    
-    dset = serial_to_dataset(data, annot=annot)
+    dset = serial_to_dataset(data)
     fan.sc_clustering(dset, alg=algorithm, resolution=resolution)
-    # TODO
+    
+    return dataset_to_serial(dset)
