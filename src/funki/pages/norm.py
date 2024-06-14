@@ -1,5 +1,3 @@
-import pandas as pd
-import scanpy as sc
 from dash import html
 from dash import dcc
 from dash import Input
@@ -7,9 +5,6 @@ from dash import Output
 from dash import State
 from dash import callback
 from dash.exceptions import PreventUpdate
-import plotly.express as px
-import plotly.graph_objects as go
-from plotly.subplots import make_subplots
 
 from utils import serial_to_dataset
 from utils import dataframe_to_serial
@@ -18,8 +13,6 @@ from utils.style import tab_selected_style
 from utils.style import page_style
 from utils.style import header_style
 import funki.preprocessing as fpp
-import funki.analysis as fan
-import funki.plots as fpl
 import funki.pipelines as fppl
 
 
