@@ -43,10 +43,15 @@ def serial_to_dataframe(data):
 def serial_to_dataset(data):
     df = serial_to_dataframe(data)
 
-    kwargs = {k: serial_to_dataframe(data[k]) for k in ('obs', 'var')}
+    kwargs = {
+        k: serial_to_dataframe(data[k])
+        for k in ('obs', 'var')
+        if k in data.keys()
+    }
     kwargs.update({
         k: {mk: np.array(mv) for mk, mv in data[k].items()}
         for k in ('obsm', 'varm', 'obsp', 'varp')
+        if k in data.keys()
     })
 
     return DataSet(df, **kwargs)
