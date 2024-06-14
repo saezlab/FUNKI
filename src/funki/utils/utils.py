@@ -46,7 +46,7 @@ def serial_to_dataset(data):
     kwargs = {k: serial_to_dataframe(data[k]) for k in ('obs', 'var')}
     kwargs.update({
         k: {mk: np.array(mv) for mk, mv in data[k].items()}
-        for k in ('obsm', 'varm')
+        for k in ('obsm', 'varm', 'obsp', 'varp')
     })
 
     return DataSet(df, **kwargs)
@@ -59,7 +59,7 @@ def dataset_to_serial(dset):
     })
     data.update({
         k: {mk: mv.tolist() for mk, mv in getattr(dset, k).items()}
-        for k in ('obsm', 'varm')
+        for k in ('obsm', 'varm', 'obsp', 'varp')
     })
 
     return data
