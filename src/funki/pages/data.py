@@ -82,7 +82,7 @@ tab_data = dcc.Tab(
                 children=[
                     html.Div('Please upload your annotation file here:'),
                     dcc.Upload(
-                        id='upload-anndata',
+                        id='upload-obs',
                         children=html.Div([
                             'Drag and drop or ',
                             html.A('select a file')
@@ -104,7 +104,7 @@ tab_data = dcc.Tab(
                         children=[
                             dcc.Loading(
                                 DataTable(
-                                    id='table-anndata',
+                                    id='table-obs',
                                     fixed_rows={'headers': True, 'data': 0},
                                     fixed_columns={'headers': True, 'data': 1},
                                     style_table={
@@ -117,7 +117,7 @@ tab_data = dcc.Tab(
                                 )
                             ),
                             dcc.Loading(
-                                dcc.Graph(id='plot-anndata-summary')
+                                dcc.Graph(id='plot-obs-summary')
                             )
                         ],
                         style={'width': '95%'}
@@ -138,8 +138,7 @@ tab_data = dcc.Tab(
 )
 
 @callback(
-    Output('raw-data', 'data'),
-    Output('proc-data', 'data', allow_duplicate=True),
+    Output('data', 'data', allow_duplicate=True),
     Input('upload-data', 'contents'),
     State('upload-data', 'filename'),
     prevent_initial_call=True
@@ -150,29 +149,31 @@ def load_data(content, filename):
 
     serial = dataframe_to_serial(parse_contents(content, filename))
 
-    return serial, serial
+    return serial
 
 @callback(
-    Output('ann-data', 'data', allow_duplicate=True),
-    Input('upload-anndata', 'contents'),
-    State('upload-anndata', 'filename'),
+    Output('data', 'data', allow_duplicate=True),
+    Input('upload-obs', 'contents'),
+    State('upload-obs', 'filename'),
+    State('data', 'data'),
     prevent_initial_call=True
 )
-def load_anndata(content, filename):
-    if filename is None:
+def load_obs(content, filename, data):
+    if None in (filename, data):
         raise PreventUpdate
     
     serial = dataframe_to_serial(parse_contents(content, filename))
+    data.update({'obs': serial})
     
-    return serial
+    return data
 
 @callback(
     Output('table-data', 'columns'),
     Output('table-data', 'data'),
     Output('plot-data-summary', 'figure'),
-    Input('raw-data', 'data')
+    Input('data', 'data')
 )
-def update_table(data):
+def update_data_preview(data):
     if data is None:
         raise PreventUpdate
 
@@ -190,17 +191,20 @@ def update_table(data):
     return table_columns, table_data, fig
 
 @callback(
-    Output('table-anndata', 'columns'),
-    Output('table-anndata', 'data'),
-    Output('plot-anndata-summary', 'figure'),
-    Output('plot-anndata-summary' ,'style'),
-    Input('ann-data', 'data')
+    Output('table-obs', 'columns'),
+    Output('table-obs', 'data'),
+    Output('plot-obs-summary', 'figure'),
+    Output('plot-obs-summary' ,'style'),
+    Input('data', 'data')
 )
-def update_anntable(annot):
-    if annot is None:
+def update_obs_preview(data):
+    if data is None:
         raise PreventUpdate
-    
-    df = serial_to_dataframe(annot)
+
+    elif 'obs' not in data.keys():
+        raise PreventUpdate
+
+    df = serial_to_dataframe(data['obs'])
 
     fig = make_subplots(
         rows=df.shape[1],
