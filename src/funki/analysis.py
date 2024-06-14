@@ -103,7 +103,7 @@ def sc_clustering(data, alg='leiden', resolution=1.0, neigh_kwargs={},
         ed/scanpy.tl.leiden.html
     '''
 
-    if not ('distances' in data.obsp and 'connectivities' in data.obsp):
+    if not 'neighbors' in data.uns:
         sc.pp.neighbors(data, **neigh_kwargs)
 
     if alg == 'leiden':
