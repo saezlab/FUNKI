@@ -39,16 +39,20 @@ def serial_to_dataframe(data):
 
     return df
 
- # TODO: serial dataset should include var, obs, varm, obsm and uns
- # this would eliminate the need for annot as a separately stored variable
-def serial_to_dataset(data, annot=None):
+def serial_to_dataset(data):
     df = serial_to_dataframe(data)
 
-    if annot:
-        ann = serial_to_dataframe(annot)
-        ann = ann[df.index]
+    del data['index'], data['records']
 
-        return DataSet(df, obs=ann)
+    kwargs = {k: serial_to_dataframe(v) for k, v in data.items()}
 
-    else:
-        return DataSet(df)
+    return DataSet(df, **kwargs)
+
+def dataset_to_serial(dset):
+    data = dataframe_to_serial(dset.to_df())
+    data.update({
+        k: dataframe_to_serial(getattr(dset, k))
+        for k in ('obs', 'var')
+    })
+
+    return data
