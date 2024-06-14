@@ -107,6 +107,13 @@ tab_cluster = dcc.Tab(
                         }
                     ),
                     html.Br(),
+                    '- Select variable to color the embedding by: ',
+                    dcc.Dropdown(
+                        id='color-embedding',
+                        searchable=False,
+                        clearable=True,
+                    ),
+                    html.Br(),
                     html.Button(
                         'Visualize',
                         id='apply-embedding'
@@ -135,23 +142,27 @@ tab_cluster = dcc.Tab(
     Input('data', 'data')
 )
 def update_param_panel(embedding, data):
-    max_perplexity = len(data['index']) - 1 if data else 50
-
     children = []
 
     if embedding != 'pca':
         children.extend(['Select embedding parameters: ', html.Br(), html.Br()])
 
     if embedding == 'tsne':
+        max_per = len(data['index']) - 2 if data else 50
+        min_per = 1 if max_per < 10 else 5
+        step = 1 if max_per < 10 else 5
+
         children.extend([
             '- Perplexity',
             html.Br(),
             dcc.Slider(
                 id='perplexity',
-                min=5,
-                max=max_perplexity,
+                min=min_per,
+                max=max_per if max_per > 0 else 1,
                 step=1,
-                marks={int(i): f'{i}' for i in np.arange(5, 55, 5)},
+                marks={
+                    int(i): f'{i}'
+                    for i in np.arange(min_per, max_per + step, step)},
                 tooltip={
                     'always_visible': True,
                     'placement': 'top'
@@ -203,32 +214,46 @@ def apply_clustering(n_clicks, data, algorithm, resolution):
     return dataset_to_serial(dset)
 
 @callback(
+    Output('color-embedding', 'options'),
+    Input('data', 'data')
+)
+def update_dropdown(data):
+    try:
+        options = list(data['obs']['records'][0].keys())
+
+    except (KeyError, TypeError):
+        options = []
+
+    return options
+
+@callback(
     Output('plot-embedding', 'figure'),
     Input('apply-embedding', 'n_clicks'),
     State('data', 'data'),
     State('embedding', 'value'),
     State('param-panel', 'children'),
+    State('color-embedding', 'value'),
     prevent_initial_call=True,
 )
-def plot_embedding(n_clicks, data, embedding, param_panel):
+def plot_embedding(n_clicks, data, embedding, param_panel, color):
     if data is None:
         raise PreventUpdate
     
     dset = serial_to_dataset(data)
 
     if embedding == 'pca':
-        fig = fpl.plot_pca(dset)
+        fig = fpl.plot_pca(dset, color=color)
 
     elif embedding == 'tsne':
         # TODO: There is probably a more elegant way to do this
         perplexity = param_panel[-1]['props']['value']
         
-        fig = fpl.plot_tsne(dset, perplexity=perplexity)
+        fig = fpl.plot_tsne(dset, perplexity=perplexity, color=color)
 
     elif embedding == 'umap':
         min_dist = param_panel[-4]['props']['value']
         spread = param_panel[-1]['props']['value']
 
-        fig = fpl.plot_umap(dset, min_dist=min_dist, spread=spread)
+        fig = fpl.plot_umap(dset, min_dist=min_dist, spread=spread, color=color)
 
     return fig
