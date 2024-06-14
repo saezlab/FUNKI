@@ -30,45 +30,90 @@ tab_norm = tab_home = dcc.Tab(
         children=[
             html.H1('Filtering and normalization', style=header_style),
             html.Br(),
-            html.H3('Choose filters:'),
-            html.Br(),
-            '- Max. genes per cell: ',
-            dcc.Input(
-                id='max-genes',
-                type='number',
-                placeholder='e.g. 5000',
-                value=None,
-                min=0,
-                style={'width': 100}
+            html.Div(
+                children=[
+                    html.H3('Choose filters:'),
+                    '- Max. genes per cell: ',
+                    dcc.Input(
+                        id='max-genes',
+                        type='number',
+                        placeholder='e.g. 5000',
+                        value=None,
+                        min=0,
+                        style={'width': 100}
+                    ),
+                    html.Br(),
+                    '- Min. genes per cell: ',
+                    dcc.Input(
+                        id='min-genes',
+                        type='number',
+                        placeholder='e.g. 500',
+                        value=None,
+                        min=0,
+                        style={'width': 100}
+                    ),
+                    html.Br(),
+                    '- Max. % mito. genes per cell: ',
+                    dcc.Input(
+                        id='mito-pct',
+                        type='number',
+                        placeholder='e.g. 5',
+                        value=None,
+                        min=0,
+                        max=100,
+                        style={'width': 100}
+                    ),
+                    html.Br(),
+                    html.Button(
+                        'Apply filters',
+                        id='apply-filter'
+                    ),
+                ],
+                style={
+                    'width': '49%',
+                    'display': 'inline-block',
+                    'vertical-align': 'top',
+                    'pad': 10
+                }
             ),
-            html.Br(),
-            '- Min. genes per cell: ',
-            dcc.Input(
-                id='min-genes',
-                type='number',
-                placeholder='e.g. 500',
-                value=None,
-                min=0,
-                style={'width': 100}
+            html.Div(
+                children=[
+                    html.H3('Choose normalization:'),
+                    '- Size factor: ',
+                    dcc.Input(
+                        id='size-factor',
+                        type='number',
+                        placeholder='e.g. 1000000',
+                        value=None,
+                        min=0,
+                        style={'width': 100}
+                    ),
+                    html.Br(),
+                    html.Div(
+                        '- Log-transform: ',
+                        style={'display': 'inline-block'}
+                    ),
+                    html.Div(
+                        dcc.Checklist(
+                            id='log-transform',
+                            options=[{'label': '', 'value': True}]
+                        ),
+                        style={'display': 'inline-block'}
+                    ),
+                    html.Br(),
+                    html.Button(
+                        'Apply normalization',
+                        id='apply-norm'
+                    )
+                ],
+                style={
+                    'width': '49%',
+                    'display': 'inline-block',
+                    'vertical-align': 'top',
+                    'pad': 10
+                }
             ),
-            html.Br(),
-            '- Max. % mitochondrial genes per cell: ',
-            dcc.Input(
-                id='mito-pct',
-                type='number',
-                placeholder='e.g. 5',
-                value=None,
-                min=0,
-                max=100,
-                style={'width': 100}
-            ),
-            html.Br(),
-            html.Button(
-                'Apply filters',
-                id='apply-filter'
-            ),
-            dcc.Graph(id='plot-filter', style={'height': 1500})
-
+            dcc.Graph(id='plot-filter', style={'height': 1500}),
         ],
         style=page_style,
     ),
@@ -98,7 +143,7 @@ def plot_filter(data):
 @callback(
     Output('proc-data', 'data', allow_duplicate=True),
     Input('apply-filter', 'n_clicks'),
-    State('raw-data', 'data'),
+    State('proc-data', 'data'),
     State('max-genes', 'value'),
     State('min-genes', 'value'),
     State('mito-pct', 'value'),
@@ -114,6 +159,29 @@ def apply_filter(n_clicks, data, max_genes, min_genes, mito_pct):
         min_genes=min_genes,
         max_genes=max_genes,
         mito_pct=mito_pct
+    )
+
+    serial = dataframe_to_serial(dset.to_df())
+
+    return serial
+
+@callback(
+    Output('proc-data', 'data', allow_duplicate=True),
+    Input('apply-norm', 'n_clicks'),
+    State('proc-data', 'data'),
+    State('size-factor', 'value'),
+    State('log-transform', 'value'),
+    prevent_initial_call=True
+)
+def apply_norm(n_clicks, data, size_factor, log_transform):
+    if data is None:
+        raise PreventUpdate
+
+    dset = serial_to_dataset(data)
+    dset = fpp.sc_trans_normalize_total(
+        dset,
+        target_sum=size_factor,
+        log_transform=log_transform
     )
 
     serial = dataframe_to_serial(dset.to_df())

@@ -15,6 +15,7 @@ def sc_quality_control(data):
     '''
     Computes QC metrics on a single-cell data set and generates several plots
     to visualize them. Generates a multipanel figure with the follwoing plots:
+
     * Box plot with highest expression genes
     * Violin plot with number of genes per cell
     * Violin plot with total counts per gene
