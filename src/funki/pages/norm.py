@@ -47,7 +47,7 @@ tab_norm = tab_home = dcc.Tab(
                     ),
                     html.Br(),
                     '- Max. % mito. genes per cell: ',
-                    dcc.Input(
+                    dcc.Input( # TODO: Switch to slider?
                         id='mito-pct',
                         type='number',
                         placeholder='e.g. 5',
@@ -56,6 +56,7 @@ tab_norm = tab_home = dcc.Tab(
                         max=100,
                         style={'width': 100}
                     ),
+                    html.Br(),
                     html.Br(),
                     html.Button(
                         'Apply filters',
@@ -93,6 +94,7 @@ tab_norm = tab_home = dcc.Tab(
                         ),
                         style={'display': 'inline-block'}
                     ),
+                    html.Br(),
                     html.Br(),
                     html.Button(
                         'Apply normalization',
