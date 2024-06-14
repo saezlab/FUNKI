@@ -2,6 +2,7 @@ import os
 import base64
 import io
 
+import numpy as np
 import pandas as pd
 
 from funki.input import DataSet
@@ -42,9 +43,11 @@ def serial_to_dataframe(data):
 def serial_to_dataset(data):
     df = serial_to_dataframe(data)
 
-    del data['index'], data['records']
-
-    kwargs = {k: serial_to_dataframe(v) for k, v in data.items()}
+    kwargs = {k: serial_to_dataframe(data[k]) for k in ('obs', 'var')}
+    kwargs.update({
+        k: {mk: np.array(mv) for mk, mv in data[k].items()}
+        for k in ('obsm', 'varm')
+    })
 
     return DataSet(df, **kwargs)
 
@@ -53,6 +56,10 @@ def dataset_to_serial(dset):
     data.update({
         k: dataframe_to_serial(getattr(dset, k))
         for k in ('obs', 'var')
+    })
+    data.update({
+        k: {mk: mv.tolist() for mk, mv in getattr(dset, k).items()}
+        for k in ('obsm', 'varm')
     })
 
     return data
