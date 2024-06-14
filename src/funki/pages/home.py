@@ -7,6 +7,8 @@ from utils.style import page_style
 from utils.style import header_style
 
 
+# ================================== LAYOUT ================================== #
+
 tab_home = dcc.Tab(
     label='Home',
     value='tab-home',

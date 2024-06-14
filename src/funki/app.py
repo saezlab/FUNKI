@@ -15,7 +15,9 @@ app = Dash(
     title='FUNKI',
 )
 
-storage_type = 'memory'
+storage_type = 'session'
+
+# ================================== LAYOUT ================================== #
 
 app.layout = html.Div(
     children=[
@@ -53,6 +55,8 @@ app.layout = html.Div(
     ],
     style=global_style,
 )
+
+# ============================================================================ #
 
 if __name__ == '__main__':
     # Starting the app

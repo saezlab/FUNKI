@@ -16,6 +16,8 @@ import funki.preprocessing as fpp
 import funki.pipelines as fppl
 
 
+# ================================== LAYOUT ================================== #
+
 tab_norm = tab_home = dcc.Tab(
     label='Filter & normalization',
     value='tab-norm',
@@ -115,6 +117,8 @@ tab_norm = tab_home = dcc.Tab(
     style=tab_style,
     selected_style=tab_selected_style,
 )
+
+# ================================ CALLBACKS ================================= #
 
 @callback(
     Output('plot-filter', 'figure'),

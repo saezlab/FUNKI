@@ -19,6 +19,8 @@ from utils.style import page_style
 from utils.style import header_style
 
 
+# ================================== LAYOUT ================================== #
+
 tab_data = dcc.Tab(
     label='Data',
     value='tab-data',
@@ -136,6 +138,8 @@ tab_data = dcc.Tab(
     style=tab_style,
     selected_style=tab_selected_style,
 )
+
+# ================================ CALLBACKS ================================= #
 
 @callback(
     Output('data', 'data', allow_duplicate=True),
