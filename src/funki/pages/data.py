@@ -153,7 +153,7 @@ def load_data(content, filename):
     return serial, serial
 
 @callback(
-    Output('ann-data', 'data'),
+    Output('ann-data', 'data', allow_duplicate=True),
     Input('upload-anndata', 'contents'),
     State('upload-anndata', 'filename'),
     prevent_initial_call=True
@@ -196,11 +196,11 @@ def update_table(data):
     Output('plot-anndata-summary' ,'style'),
     Input('ann-data', 'data')
 )
-def update_anntable(data):
-    if data is None:
+def update_anntable(annot):
+    if annot is None:
         raise PreventUpdate
     
-    df = serial_to_dataframe(data)
+    df = serial_to_dataframe(annot)
 
     fig = make_subplots(
         rows=df.shape[1],
