@@ -64,8 +64,9 @@ def sc_trans_normalize_total(data, target_sum=1e6, log_transform=False):
     '''
 
     aux = data.copy()
-
-    sc.pp.normalize_total(aux, target_sum=target_sum, inplace=True)
+    
+    if target_sum:
+        sc.pp.normalize_total(aux, target_sum=target_sum, inplace=True)
 
     if log_transform:
         sc.pp.log1p(aux)
