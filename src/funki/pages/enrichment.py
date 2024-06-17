@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 from dash import html
 from dash import dcc
 from dash import Input
@@ -11,6 +12,7 @@ import decoupler as dc
 
 from utils import serial_to_dataset
 from utils import dataset_to_serial
+from utils import serial_to_dataframe
 from utils.style import tab_style
 from utils.style import tab_selected_style
 from utils.style import page_style
@@ -45,14 +47,6 @@ tab_enrichment = dcc.Tab(
                                 clearable=True,
                             ),
                             html.Br(),
-                            '- Select variable to exclude gene sets from: ',
-                            dcc.Dropdown(
-                                id='gset-exclude-from-col',
-                                searchable=True,
-                                clearable=True,
-                                disabled=True,
-                            ),
-                            html.Br(),
                             dcc.Loading(
                                 DataTable(
                                     id='table-gset',
@@ -64,8 +58,61 @@ tab_enrichment = dcc.Tab(
                                         'overflowY': 'auto',
                                         'overflowX': 'auto'
                                     },
-                                    style_cell={'width': '50px'}
+                                    style_cell={
+                                        'width': 100,
+                                        'whiteSpace': 'normal'
+                                    }
                                 )
+                            ),
+                            html.Br(),
+                            html.Div(
+                                id='gset-excl-from-col',
+                                hidden=True,
+                                children=[
+                                    '- Select variable to filter by:',
+                                    dcc.Dropdown(
+                                        id='gset-excl-from-col-select',
+                                        searchable=True,
+                                        clearable=True,
+                                    ),
+                                    html.Br(),
+                                    html.Div(
+                                        id='gset-excl-elems-num',
+                                        hidden=True,
+                                        children=[
+                                            '- Select range of values to keep:',
+                                            dcc.RangeSlider(
+                                                id='gset-excl-elems-num-select',
+                                                min=0,
+                                                max=1,
+                                                tooltip={
+                                                    'always_visible': True,
+                                                    'placement': 'top'
+                                                },
+                                            ),
+
+                                        ]
+                                    ),
+                                    html.Div(
+                                        id='gset-excl-elems-cat',
+                                        hidden=True,
+                                        children=[
+                                            '- Select variable(s) to exclude:',
+                                            dcc.Dropdown(
+                                                id='gset-excl-elems-cat-select',
+                                                searchable=True,
+                                                clearable=True,
+                                                multi=True,
+                                            ),
+                                        ]
+                                    ),
+                                    html.Br(),
+                                    html.Button(
+                                        'Apply filter',
+                                        id='apply-gset-filter',
+                                        disabled=True
+                                    ),
+                                ],
                             ),
                         ],
                         style={
@@ -96,17 +143,21 @@ tab_enrichment = dcc.Tab(
 # ================================ CALLBACKS ================================= #
 
 @callback(
-    Output('table-gset', 'columns'),
-    Output('table-gset', 'data'),
-    Output('gset-exclude-from-col', 'options'),
-    Output('gset-exclude-from-col', 'disabled'),
-    Input('gset-collection', 'value')
+    Output('table-gset', 'columns', allow_duplicate=True),
+    Output('table-gset', 'data', allow_duplicate=True),
+    Output('gset-excl-from-col-select', 'options'),
+    Output('gset-excl-from-col', 'hidden'),
+    Input('gset-collection', 'value'),
+    prevent_initial_call=True
 )
 def load_gset_table(gset):
     if gset is None:
         return None, None, [], True
 
     df = dc.get_resource(gset)
+
+    if len(df) == 0:
+        return None, [{0: 'Error downloading the data'}], [], True
 
     table_columns = [{'name': i, 'id': i} for i in df.columns]
     table_data = df.to_dict('records')
@@ -118,3 +169,43 @@ def load_gset_table(gset):
     ]
 
     return table_columns, table_data, options, False
+
+@callback(
+    Output('gset-excl-elems-num-select', 'min'),
+    Output('gset-excl-elems-num-select', 'max'),
+    Output('gset-excl-elems-num', 'hidden'),
+    Output('gset-excl-elems-cat-select', 'options'),
+    Output('gset-excl-elems-cat', 'hidden'),
+    Output('apply-gset-filter', 'disabled'),
+    Input('gset-excl-from-col-select', 'value'),
+    State('table-gset', 'data'),
+    prevent_initial_call=True
+)
+def update_filter(col, data):    
+    df = pd.DataFrame(data)
+    
+    # Fallback defaults
+    min, max = 0, 1
+    options = []
+    hid_num, hid_cat = True, True
+    dis_button = True
+
+    if not col:
+        pass
+
+    elif pd.api.types.is_numeric_dtype(df[col]) and df[col].dtype!= bool:
+        max, min = df[col].max(), df[col].min()
+        hid_num = False
+        hid_cat = True
+        dis_button = False
+
+    else:
+        options = [
+            {'label': str(i), 'value': str(i)}
+            for i in df[col].unique()
+        ]
+        hid_cat = False
+        hid_num = True
+        dis_button = False
+
+    return min, max, hid_num, options, hid_cat, dis_button

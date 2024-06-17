@@ -96,6 +96,8 @@ tab_cluster = dcc.Tab(
                     ),
                     html.Br(),
                     html.Div(
+                        # TODO: Substitute creating panel elements in callback
+                        # by using Div hidden argument
                         id='param-panel',
                         style={
                             'border': 'solid',

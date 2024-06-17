@@ -63,7 +63,10 @@ tab_data = dcc.Tab(
                                         'overflowY': 'auto',
                                         'overflowX': 'auto'
                                     },
-                                    style_cell={'width': '50px'}
+                                    style_cell={
+                                        'width': 50,
+                                        'whiteSpace': 'normal'
+                                    }
                                 )
                             ),
                             dcc.Loading(
@@ -115,7 +118,10 @@ tab_data = dcc.Tab(
                                         'overflowY': 'auto',
                                         'overflowX': 'auto'
                                     },
-                                    style_cell={'width': '50px'}
+                                    style_cell={
+                                        'width': 50,
+                                        'whiteSpace': 'normal'
+                                    }
                                 )
                             ),
                             dcc.Loading(
