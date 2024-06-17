@@ -6,6 +6,7 @@ from dash import Output
 from dash import State
 from dash import callback
 from dash.exceptions import PreventUpdate
+from dash.dash_table import DataTable
 import decoupler as dc
 
 from utils import serial_to_dataset
@@ -43,6 +44,20 @@ tab_enrichment = dcc.Tab(
                                 searchable=True,
                                 clearable=True,
                             ),
+                            dcc.Loading(
+                                DataTable(
+                                    id='table-gset',
+                                    fixed_rows={'headers': True, 'data': 0},
+                                    fixed_columns={'headers': True, 'data': 1},
+                                    style_table={
+                                        'maxHeight': 500,
+                                        'minWidth': '100%',
+                                        'overflowY': 'auto',
+                                        'overflowX': 'auto'
+                                    },
+                                    style_cell={'width': '50px'}
+                                )
+                            ),
                         ],
                         style={
                             'width': '49%',
@@ -71,4 +86,18 @@ tab_enrichment = dcc.Tab(
 
 # ================================ CALLBACKS ================================= #
 
+@callback(
+    Output('table-gset', 'columns'),
+    Output('table-gset', 'data'),
+    Input('gset-collection', 'value')
+)
+def update_data_preview(gset):
+    if gset is None:
+        return None, None
 
+    df = dc.get_resource(gset)
+
+    table_columns = [{'name': i, 'id': i} for i in df.columns]
+    table_data = df.to_dict('records')
+
+    return table_columns, table_data
