@@ -12,7 +12,6 @@ import decoupler as dc
 
 from utils import serial_to_dataset
 from utils import dataset_to_serial
-from utils import serial_to_dataframe
 from utils.style import tab_style
 from utils.style import tab_selected_style
 from utils.style import page_style
@@ -143,7 +142,7 @@ tab_enrichment = dcc.Tab(
 # ================================ CALLBACKS ================================= #
 
 @callback(
-    Output('table-gset', 'columns', allow_duplicate=True),
+    Output('table-gset', 'columns'),
     Output('table-gset', 'data', allow_duplicate=True),
     Output('gset-excl-from-col-select', 'options'),
     Output('gset-excl-from-col', 'hidden'),
@@ -178,7 +177,7 @@ def load_gset_table(gset):
     Output('gset-excl-elems-cat', 'hidden'),
     Output('apply-gset-filter', 'disabled'),
     Input('gset-excl-from-col-select', 'value'),
-    State('table-gset', 'data'),
+    Input('table-gset', 'data'),
     prevent_initial_call=True
 )
 def update_filter(col, data):    
@@ -209,3 +208,23 @@ def update_filter(col, data):
         dis_button = False
 
     return min, max, hid_num, options, hid_cat, dis_button
+
+@callback(
+    Output('table-gset', 'data', allow_duplicate=True),
+    Input('apply-gset-filter', 'n_clicks'),
+    State('table-gset', 'data'),
+    State('gset-excl-from-col-select', 'value'),
+    State('gset-excl-elems-num-select', 'value'),
+    State('gset-excl-elems-cat-select', 'value'),
+    prevent_initial_call=True
+)
+def apply_gset_filter(n_clicks, data, col, rng, cats):
+    df = pd.DataFrame(data)
+
+    if cats:
+        userows = ~df[col].isin(cats)
+    
+    elif rng:
+        userows = (df[col] >= rng[0]) & (df[col] <= rng[1])
+
+    return df.loc[userows, :].to_dict('records')
