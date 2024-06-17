@@ -36,7 +36,9 @@ def dataframe_to_serial(df):
 
 def serial_to_dataframe(data):
     df = pd.DataFrame(data['records'])
-    df.index = data['index']
+    
+    if 'index' in data.keys():
+        df.index = data['index']
 
     return df
 
