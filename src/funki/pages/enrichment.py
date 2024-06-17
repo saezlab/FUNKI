@@ -148,12 +148,14 @@ tab_enrichment = dcc.Tab(
                                 id='apply-enrichment',
                                 disabled=True
                             ),
+                            html.Br(),
+                            dcc.Loading(dcc.Graph(id='plot-enrich')),
                         ],
                         style={
                             'width': '46.5%',
                             'display': 'inline-block',
                             'vertical-align': 'top',
-                            'padding-left': 15.
+                            'padding-left': 15,
                         }                    
                     )
                 ]
@@ -206,8 +208,8 @@ def load_gset_table(gset):
     Input('table-gset', 'data'),
     prevent_initial_call=True
 )
-def update_filter(col, data):    
-    df = pd.DataFrame(data)
+def update_filter(col, gset):    
+    df = pd.DataFrame(gset)
     
     # Fallback defaults
     min, max = 0, 1
@@ -244,8 +246,8 @@ def update_filter(col, data):
     State('gset-excl-elems-cat-select', 'value'),
     prevent_initial_call=True
 )
-def apply_gset_filter(n_clicks, data, col, rng, cats):
-    df = pd.DataFrame(data)
+def apply_gset_filter(n_clicks, gset, col, rng, cats):
+    df = pd.DataFrame(gset)
 
     if cats:
         userows = df[col].isin(cats)
@@ -263,6 +265,25 @@ def apply_gset_filter(n_clicks, data, col, rng, cats):
     Input('enrich-methods', 'value'),
     Input('table-gset', 'data')
 )
-def update_enrich_button(meth, data):
+def update_enrich_button(meth, gset):
 
-    return not meth or not data
+    return not meth or not gset
+
+@callback(
+    Output('plot-enrich', 'figure'),
+    Output('data', 'data', allow_duplicate=True),
+    Input('apply-enrichment', 'n_clicks'),
+    State('data', 'data'),
+    State('table-gset', 'data'),
+    State('enrich-methods', 'value'),
+    prevent_initial_call=True
+)
+def plot_enrich(n_clicks, data, gset, meth):
+    if not data or not gset:
+        raise PreventUpdate
+    
+    net = pd.DataFrame(gset)
+    dset = serial_to_dataset(data)
+    # TODO: Must specify source/target
+
+    fan.enrich(dset, net, methods=[m.lstrip('run_') for m in meth])
