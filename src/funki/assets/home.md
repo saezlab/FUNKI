@@ -1,0 +1,15 @@
+Welcome to FUNKI, the omics FUNctional analysis worKflows Interface tool. This
+Python package is intended to integrate different omic data analysis workflows
+including a graphical user interface (GUI), but also as a standalone Python
+package that users can integrate into their existing pipelines.
+
+You are currently using the GUI, if you are interested in the Python
+package, please visit the [FUNKI GitHub page](https://github.com/saezlab/FUNKI)
+
+### Usage
+
+You can navigate the different sections through the tabs on the left panel:
+
+- Data: Here you will be able to upload your data and meta-data of your samples
+  as well as visualize the distribution of values and categories.
+- 

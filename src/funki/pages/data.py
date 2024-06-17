@@ -200,7 +200,7 @@ def update_data_preview(data):
 
     return table_columns, table_data, fig
 
-@callback(
+@callback( # TODO: Add check for numerical and plot differently
     Output('table-obs', 'columns'),
     Output('table-obs', 'data'),
     Output('plot-obs-summary', 'figure'),
