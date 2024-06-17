@@ -34,7 +34,7 @@ tab_enrichment = dcc.Tab(
                 children=[
                     html.Div(
                         children=[
-                            'Choose a gene set collection: ',
+                            'Choose a gene set collection:',
                             html.Br(),
                             dcc.Dropdown(
                                 id='gset-collection',
@@ -44,6 +44,7 @@ tab_enrichment = dcc.Tab(
                                 ],
                                 searchable=True,
                                 clearable=True,
+                                style={'width': '80%'},
                             ),
                             html.Br(),
                             dcc.Loading(
@@ -73,6 +74,7 @@ tab_enrichment = dcc.Tab(
                                         id='gset-excl-from-col-select',
                                         searchable=True,
                                         clearable=True,
+                                        style={'width': '80%'},
                                     ),
                                     html.Br(),
                                     html.Div(
@@ -102,6 +104,7 @@ tab_enrichment = dcc.Tab(
                                                 searchable=True,
                                                 clearable=True,
                                                 multi=True,
+                                                style={'width': '80%'},
                                             ),
                                         ]
                                     ),
@@ -115,19 +118,42 @@ tab_enrichment = dcc.Tab(
                             ),
                         ],
                         style={
-                            'width': '49%',
+                            'width': '46.5%',
                             'display': 'inline-block',
                             'vertical-align': 'top',
+                            'padding-right': 15,
                         }
                     ),
                     html.Div(
                         children=[
-
+                            'Select enrichment method(s):',
+                            html.Br(),
+                            dcc.Dropdown(
+                                id='enrich-methods',
+                                options=[
+                                    {
+                                        'label': r['Name'].rstrip('.'),
+                                        'value': r['Function']
+                                    }
+                                    for i, r in dc.show_methods().iterrows()
+                                ],
+                                searchable=True,
+                                clearable=True,
+                                multi=True,
+                                style={'width': '90%'},
+                            ),
+                            html.Br(),
+                            html.Button(
+                                'Compute enrichment',
+                                id='apply-enrichment',
+                                disabled=True
+                            ),
                         ],
                         style={
-                            'width': '49%',
+                            'width': '46.5%',
                             'display': 'inline-block',
                             'vertical-align': 'top',
+                            'padding-left': 15.
                         }                    
                     )
                 ]
@@ -231,3 +257,12 @@ def apply_gset_filter(n_clicks, data, col, rng, cats):
         userows = df.index
 
     return df.loc[userows, :].to_dict('records')
+
+@callback(
+    Output('apply-enrichment', 'disabled'),
+    Input('enrich-methods', 'value'),
+    Input('table-gset', 'data')
+)
+def update_enrich_button(meth, data):
+
+    return not meth or not data
