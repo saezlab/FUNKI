@@ -1,5 +1,4 @@
 import numpy as np
-import pandas as pd
 from dash import html
 from dash import dcc
 from dash import Input

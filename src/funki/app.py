@@ -7,6 +7,7 @@ from pages.home import tab_home
 from pages.data import tab_data
 from pages.norm import tab_norm
 from pages.clustering import tab_cluster
+from pages.enrichment import tab_enrichment
 from utils.style import global_style
 
 
@@ -41,6 +42,7 @@ app.layout = html.Div(
                 tab_data,
                 tab_norm,
                 tab_cluster,
+                tab_enrichment,
             ],
             style={
                 'padding': 15,
