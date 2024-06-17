@@ -44,6 +44,15 @@ tab_enrichment = dcc.Tab(
                                 searchable=True,
                                 clearable=True,
                             ),
+                            html.Br(),
+                            '- Select variable to exclude gene sets from: ',
+                            dcc.Dropdown(
+                                id='gset-exclude-from-col',
+                                searchable=True,
+                                clearable=True,
+                                disabled=True,
+                            ),
+                            html.Br(),
                             dcc.Loading(
                                 DataTable(
                                     id='table-gset',
@@ -89,15 +98,23 @@ tab_enrichment = dcc.Tab(
 @callback(
     Output('table-gset', 'columns'),
     Output('table-gset', 'data'),
+    Output('gset-exclude-from-col', 'options'),
+    Output('gset-exclude-from-col', 'disabled'),
     Input('gset-collection', 'value')
 )
-def update_data_preview(gset):
+def load_gset_table(gset):
     if gset is None:
-        return None, None
+        return None, None, [], True
 
     df = dc.get_resource(gset)
 
     table_columns = [{'name': i, 'id': i} for i in df.columns]
     table_data = df.to_dict('records')
 
-    return table_columns, table_data
+    options = [
+        {'label': c, 'value': c}
+        for c in df.columns
+        if c != 'genesymbol'
+    ]
+
+    return table_columns, table_data, options, False
