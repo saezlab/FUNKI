@@ -96,7 +96,7 @@ tab_enrichment = dcc.Tab(
                                         id='gset-excl-elems-cat',
                                         hidden=True,
                                         children=[
-                                            '- Select variable(s) to exclude:',
+                                            '- Select variable(s) to include:',
                                             dcc.Dropdown(
                                                 id='gset-excl-elems-cat-select',
                                                 searchable=True,
@@ -222,9 +222,12 @@ def apply_gset_filter(n_clicks, data, col, rng, cats):
     df = pd.DataFrame(data)
 
     if cats:
-        userows = ~df[col].isin(cats)
+        userows = df[col].isin(cats)
     
     elif rng:
         userows = (df[col] >= rng[0]) & (df[col] <= rng[1])
+
+    else:
+        userows = df.index
 
     return df.loc[userows, :].to_dict('records')

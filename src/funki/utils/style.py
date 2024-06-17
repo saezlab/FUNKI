@@ -11,8 +11,8 @@ global_style = {
 
 page_style = {
     'width': 1000,
-    'height': '80%',
-    'minHeight': 1000,
+    'height': 'auto',
+    'minHeight': 750,
     'background-color': _colors['white'],
     'padding': 25,
     'display': 'block',
