@@ -73,3 +73,15 @@ def dataset_to_serial(dset):
     })
 
     return data
+
+def md_to_str(path):
+    with open(path) as f:
+        md = '\n \t'
+        for line in f.read():
+            if '\n' in line:
+                md += '\n \t'
+
+            else:
+                md += line
+
+    return md
