@@ -45,7 +45,7 @@ def serial_to_dataframe(data):
         columns=data['var_names'] if 'var_names' in data.keys() else None,
     )
 
-    return df
+    return parse_types(df)
 
 def serial_to_dataset(data):
     df = serial_to_dataframe(data)
@@ -91,3 +91,15 @@ def md_to_str(path):
                 md += line
 
     return md
+
+def parse_types(df):
+    result = {}
+    
+    for c in df.columns:
+        try:
+            result[c] = pd.to_numeric(df[c])
+
+        except ValueError:
+            result[c] = df[c].astype(object)
+
+    return pd.DataFrame(result)
