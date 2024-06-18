@@ -143,13 +143,16 @@ tab_cluster = dcc.Tab(
     Input('data', 'data')
 )
 def update_param_panel(embedding, data):
+    if not data:
+        raise PreventUpdate
+    
     children = []
 
     if embedding != 'pca':
         children.extend(['Select embedding parameters: ', html.Br(), html.Br()])
 
     if embedding == 'tsne':
-        max_per = len(data['obs_names']) - 1 if data else 50
+        max_per = len(data['obs_names']) - 1 if len(data['X']) < 50 else 50
         min_per = 1 if max_per < 10 else 5
         step = 1 if max_per < 10 else 5
 
