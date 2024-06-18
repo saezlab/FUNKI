@@ -15,6 +15,7 @@ from utils.style import page_style
 from utils.style import header_style
 from funki import _colors
 import funki.analysis as fan
+import funki.preprocessing as fpp
 import funki.plots as fpl
 
 
@@ -76,11 +77,17 @@ tab_cluster = dcc.Tab(
                         style={'display': 'inline-block'}
                     ),
                     html.Div(
-                        dcc.Checklist( # TODO
+                        dcc.Checklist(
                             id='harmony',
                             options=[{'label': '', 'value': True}]
                         ),
                         style={'display': 'inline-block'}
+                    ),
+                    html.Br(),
+                    html.Div(
+                        dcc.Dropdown(id='harmonize-var'),
+                        id='harmonize-var-panel',
+                        hidden=True,
                     ),
                     html.Br(),
                     html.Br(),
@@ -213,6 +220,7 @@ def apply_clustering(n_clicks, data, algorithm, resolution):
         raise PreventUpdate
     
     dset = serial_to_dataset(data)
+
     fan.sc_clustering(dset, alg=algorithm, resolution=resolution)
     
     return dataset_to_serial(dset)
@@ -221,7 +229,7 @@ def apply_clustering(n_clicks, data, algorithm, resolution):
     Output('color-embedding', 'options'),
     Input('data', 'data')
 )
-def update_dropdown(data):
+def update_dropdown_embedding(data):
     try:
         options = list(data['obs']['var_names'])
 
@@ -237,26 +245,56 @@ def update_dropdown(data):
     State('embedding', 'value'),
     State('param-panel', 'children'),
     State('color-embedding', 'value'),
+    State('harmony', 'value'),
+    State('harmonize-var', 'value'),
     prevent_initial_call=True,
 )
-def plot_embedding(n_clicks, data, embedding, param_panel, color):
+def plot_embedding(n_clicks, data, embed, param_panel, color, harmony, hvar):
     if data is None:
         raise PreventUpdate
     
     dset = serial_to_dataset(data)
 
-    if embedding == 'pca':
+    if harmony and hvar:
+        fpp.harmonize(
+            dset,
+            hvar if type(hvar) is list else [hvar],
+            recalculate=True
+        )
+
+    if embed == 'pca':
         fig = fpl.plot_pca(dset, color=color)
 
-    elif embedding == 'tsne':
+    elif embed == 'tsne':
         # TODO: There is probably a more elegant way to do this
         perplexity = param_panel[-1]['props']['value']
+        
         fig = fpl.plot_tsne(dset, perplexity=perplexity, color=color)
 
-    elif embedding == 'umap':
+    elif embed == 'umap':
         min_dist = param_panel[-4]['props']['value']
         spread = param_panel[-1]['props']['value']
 
         fig = fpl.plot_umap(dset, min_dist=min_dist, spread=spread, color=color)
 
     return fig
+
+@callback(
+    Output('harmonize-var-panel', 'hidden'),
+    Input('harmony', 'value')
+)
+def update_harmony_var_panel(harmony):
+    return not harmony
+
+@callback(
+    Output('harmonize-var', 'options'),
+    Input('data', 'data')
+)
+def update_dropdown_embedding(data):
+    try:
+        options = list(data['obs']['var_names'])
+
+    except (KeyError, TypeError):
+        options = []
+
+    return options
