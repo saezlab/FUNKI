@@ -143,6 +143,14 @@ tab_enrichment = dcc.Tab(
                                 style={'width': '90%'},
                             ),
                             html.Br(),
+                            '- Select variable to enrich for:',
+                            dcc.Dropdown(
+                                id='gset-select',
+                                searchable=True,
+                                clearable=True,
+                                style={'width': '80%'},
+                            ),
+                            html.Br(),
                             html.Button(
                                 'Compute enrichment',
                                 id='apply-enrichment',
@@ -174,17 +182,18 @@ tab_enrichment = dcc.Tab(
     Output('table-gset', 'data', allow_duplicate=True),
     Output('gset-excl-from-col-select', 'options'),
     Output('gset-excl-from-col', 'hidden'),
+    Output('gset-select', 'options'),
     Input('gset-collection', 'value'),
     prevent_initial_call=True
 )
 def load_gset_table(gset):
     if gset is None:
-        return None, None, [], True
+        return None, None, [], True, []
 
     df = dc.get_resource(gset)
 
     if len(df) == 0:
-        return None, [{0: 'Error downloading the data'}], [], True
+        return None, [{0: 'Error downloading the data'}], [], True, []
 
     table_columns = [{'name': i, 'id': i} for i in df.columns]
     table_data = df.to_dict('records')
@@ -195,7 +204,7 @@ def load_gset_table(gset):
         if c != 'genesymbol'
     ]
 
-    return table_columns, table_data, options, False
+    return table_columns, table_data, options, False, options
 
 @callback(
     Output('gset-excl-elems-num-select', 'min'),
@@ -263,11 +272,12 @@ def apply_gset_filter(n_clicks, gset, col, rng, cats):
 @callback(
     Output('apply-enrichment', 'disabled'),
     Input('enrich-methods', 'value'),
-    Input('table-gset', 'data')
+    Input('table-gset', 'data'),
+    Input('gset-select', 'value')
 )
-def update_enrich_button(meth, gset):
+def update_enrich_button(meth, gset_data, gset):
 
-    return not meth or not gset
+    return not all([meth, gset_data, gset])
 
 @callback(
     Output('plot-enrich', 'figure'),
@@ -276,14 +286,21 @@ def update_enrich_button(meth, gset):
     State('data', 'data'),
     State('table-gset', 'data'),
     State('enrich-methods', 'value'),
+    State('gset-select', 'value'),
     prevent_initial_call=True
 )
-def plot_enrich(n_clicks, data, gset, meth):
-    if not data or not gset:
+def plot_enrich(n_clicks, data, gset_data, meth, gset):
+    if not all([data, gset_data, gset]):
         raise PreventUpdate
     
-    net = pd.DataFrame(gset)
+    net = pd.DataFrame(gset_data)
     dset = serial_to_dataset(data)
     # TODO: Must specify source/target
 
-    fan.enrich(dset, net, methods=[m.lstrip('run_') for m in meth])
+    fan.enrich(
+        dset,
+        net,
+        methods=[m.lstrip('run_') for m in meth],
+        target='genesymbol',
+        source=gset,
+    )
