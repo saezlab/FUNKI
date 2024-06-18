@@ -8,6 +8,7 @@ from dash import State
 from dash import callback
 from dash.exceptions import PreventUpdate
 from dash.dash_table import DataTable
+import plotly.express as px
 import decoupler as dc
 
 from utils import serial_to_dataset
@@ -295,7 +296,7 @@ def plot_enrich(n_clicks, data, gset_data, meth, gset):
     
     net = pd.DataFrame(gset_data)
     dset = serial_to_dataset(data)
-    dset.drop_duplicates(subset=['genesymbol', gset], inplace=True)
+    net.drop_duplicates(subset=['genesymbol', gset], inplace=True)
 
     fan.enrich(
         dset,
@@ -303,4 +304,18 @@ def plot_enrich(n_clicks, data, gset_data, meth, gset):
         methods=[m.lstrip('run_') for m in meth],
         target='genesymbol',
         source=gset,
+        weight=None,
     )
+
+    res = dset.obsm['consensus_estimate'].mean(axis=0)
+    res.sort_values(ascending=False, inplace=True)
+    res = res.head(10)[::-1] if len(res) > 10 else res[::-1]
+
+    fig = px.bar(
+        res,
+        orientation='h',
+    )
+
+    fig.update_layout(showlegend=False)
+
+    return fig, dataset_to_serial(dset)
