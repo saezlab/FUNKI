@@ -226,7 +226,7 @@ def update_filter(col, gset):
     hid_num, hid_cat = True, True
     dis_button = True
 
-    if not col:
+    if not col or col not in df.columns:
         pass
 
     elif pd.api.types.is_numeric_dtype(df[col]) and df[col].dtype!= bool:
