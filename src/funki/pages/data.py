@@ -188,12 +188,12 @@ def update_data_preview(data):
         raise PreventUpdate
 
     df = serial_to_dataframe(data)
-    
+
     fig = px.histogram(df.values.flat, title='Value distribution')
     fig.update_layout(showlegend=False)
 
     df.reset_index(inplace=True)
-    #df = df.head()
+    df = df.head()
 
     table_columns = [{'name': i, 'id': i} for i in df.columns]
     table_data = df.to_dict('records')
@@ -231,7 +231,7 @@ def update_obs_preview(data):
     fig.update_layout(height=height)
 
     df.reset_index(inplace=True)
-    #df = df.head()
+    df = df.head()
 
     table_columns = [{'name': i, 'id': i} for i in df.columns]
     table_data = df.to_dict('records')

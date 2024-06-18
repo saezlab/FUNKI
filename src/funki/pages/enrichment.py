@@ -288,7 +288,7 @@ def update_enrich_button(meth, gset_data, gset):
     State('enrich-methods', 'value'),
     State('gset-select', 'value'),
     prevent_initial_call=True
-)
+) # TODO: add human/mouse option
 def plot_enrich(n_clicks, data, gset_data, meth, gset):
     if not all([data, gset_data, gset]):
         raise PreventUpdate
