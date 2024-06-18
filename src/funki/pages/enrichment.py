@@ -295,7 +295,7 @@ def plot_enrich(n_clicks, data, gset_data, meth, gset):
     
     net = pd.DataFrame(gset_data)
     dset = serial_to_dataset(data)
-    # TODO: Must specify source/target
+    dset.drop_duplicates(subset=['genesymbol', gset], inplace=True)
 
     fan.enrich(
         dset,
