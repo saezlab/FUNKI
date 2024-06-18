@@ -229,7 +229,7 @@ def update_filter(col, gset):
     if not col or col not in df.columns:
         pass
 
-    elif pd.api.types.is_numeric_dtype(df[col]) and df[col].dtype!= bool:
+    elif pd.api.types.is_numeric_dtype(df[col]) and df[col].dtype != bool:
         max, min = df[col].max(), df[col].min()
         hid_num = False
         hid_cat = True

@@ -130,6 +130,9 @@ def plot_filter(data):
     if data is None:
         raise PreventUpdate
     
+    elif 'X' not in data.keys():
+        raise PreventUpdate
+    
     dset = serial_to_dataset(data)
 
     fig = fppl.sc_quality_control(dset)

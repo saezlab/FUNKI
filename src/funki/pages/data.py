@@ -1,3 +1,4 @@
+import pandas as pd
 from dash import html
 from dash import dcc
 from dash import Input
@@ -169,8 +170,11 @@ def load_data(content, filename):
     prevent_initial_call=True
 )
 def load_obs(content, filename, data):
-    if None in (filename, data):
+    if filename is None:
         raise PreventUpdate
+    
+    if data is None:
+        data = {}
     
     serial = dataframe_to_serial(parse_contents(content, filename))
     data.update({'obs': serial})
@@ -185,6 +189,9 @@ def load_obs(content, filename, data):
 )
 def update_data_preview(data):
     if data is None:
+        raise PreventUpdate
+    
+    elif 'X' not in data.keys():
         raise PreventUpdate
 
     df = serial_to_dataframe(data)
@@ -216,16 +223,28 @@ def update_obs_preview(data):
 
     df = serial_to_dataframe(data['obs'])
 
+    specs = [
+        [{'type': 'histogram'}]
+        if pd.api.types.is_numeric_dtype(df[col]) and df[col].dtype!= bool
+        else [{'type': 'pie'}]
+        for col in df.columns
+    ]
+
     fig = make_subplots( # TODO: Improve plotting metadata esp. legend
         rows=df.shape[1],
         cols=1,
-        specs=[[{'type': 'pie'}]] * df.shape[1]
+        specs=specs
     )
     
-    for i, c in enumerate(df.columns):
-        aux = df[c].value_counts()
-        pie = go.Pie(labels=aux.index, values=aux.values)
-        fig.add_trace(pie, row=i + 1, col=1)
+    for i, col in enumerate(df.columns):
+        if pd.api.types.is_numeric_dtype(df[col]) and df[col].dtype != bool:
+            hist = go.Histogram(x=df[col].values.flat)
+            fig.add_trace(hist, row=i + 1, col=1)
+        
+        else:
+            aux = df[col].value_counts()
+            pie = go.Pie(labels=aux.index, values=aux.values)
+            fig.add_trace(pie, row=i + 1, col=1)
 
     height = 250 * df.shape[1]
     fig.update_layout(height=height)
