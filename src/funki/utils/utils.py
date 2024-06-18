@@ -56,7 +56,12 @@ def serial_to_dataset(data):
         if k in data.keys()
     }
     kwargs.update({
-        k: {mk: np.array(mv) for mk, mv in data[k].items()}
+        k: {
+            mk: np.array(mv)
+            if type(mv) is list
+            else serial_to_dataframe(mv)
+            for mk, mv in data[k].items()
+        }
         for k in ('obsm', 'varm', 'obsp', 'varp')
         if k in data.keys()
     })
@@ -69,14 +74,27 @@ def dataset_to_serial(dset):
     data.update({
         k: dataframe_to_serial(getattr(dset, k))
         for k in ('obs', 'var')
+        if not getattr(dset, k).empty
     })
-    data.update({
-        k: {
-            mk: mv.tolist() if type(mv) is np.ndarray else mv.toarray().tolist()
-            for mk, mv in getattr(dset, k).items()
-        }
-        for k in ('obsm', 'varm', 'obsp', 'varp')
-    })
+
+    attrs = {}
+
+    for k in ('obsm', 'varm', 'obsp', 'varp'):
+        attrs[k] = dict()
+
+        for mk, mv in getattr(dset, k).items():
+            if type(mv) is np.ndarray:
+                res = mv.tolist()
+            
+            elif type(mv) is pd.DataFrame:
+                res = dataframe_to_serial(mv)
+            
+            else:
+                res = mv.toarray().tolist()
+            
+            attrs[k][mk] = res
+            
+    data.update(attrs)
 
     return data
 
