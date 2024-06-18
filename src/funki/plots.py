@@ -224,7 +224,6 @@ def plot_n_genes(data):
     fig = px.violin(
         data.obs['n_genes_by_counts'],
         y='n_genes_by_counts',
-        points='all',
         title='Number of genes',
     )
     fig.update_layout(yaxis_title='Genes')
@@ -251,7 +250,6 @@ def plot_total_counts(data):
     fig = px.violin(
         data.var['total_counts'],
         y='total_counts',
-        points='all',
         title='Total counts'
     )
     fig.update_layout(yaxis_title='Counts')
@@ -278,7 +276,6 @@ def plot_pct_counts_mito(data):
     fig = px.violin(
         data.obs['pct_counts_mito'],
         y='pct_counts_mito',
-        points='all',
         title='Pct. of mitochondrial genes',
     )
     fig.update_layout(yaxis_title='Pct. mito. genes')
