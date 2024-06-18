@@ -110,7 +110,7 @@ tab_norm = tab_home = dcc.Tab(
                     'pad': 10
                 }
             ),
-            dcc.Graph(id='plot-filter', style={'height': 1500}),
+            dcc.Loading(dcc.Graph(id='plot-filter', style={'height': 1500})),
         ],
         style=page_style,
     ),
