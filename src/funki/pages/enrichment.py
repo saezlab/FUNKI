@@ -259,7 +259,7 @@ def apply_gset_filter(n_clicks, gset, col, rng, cats):
     df = pd.DataFrame(gset)
 
     if cats:
-        userows = df[col].isin(cats)
+        userows = df[col].astype(str).isin(cats)
     
     elif rng:
         userows = (df[col] >= rng[0]) & (df[col] <= rng[1])
