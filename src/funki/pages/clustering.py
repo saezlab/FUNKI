@@ -149,7 +149,7 @@ def update_param_panel(embedding, data):
         children.extend(['Select embedding parameters: ', html.Br(), html.Br()])
 
     if embedding == 'tsne':
-        max_per = len(data['index']) - 1 if data else 50
+        max_per = len(data['obs_names']) - 1 if data else 50
         min_per = 1 if max_per < 10 else 5
         step = 1 if max_per < 10 else 5
 
@@ -220,7 +220,7 @@ def apply_clustering(n_clicks, data, algorithm, resolution):
 )
 def update_dropdown(data):
     try:
-        options = list(data['obs']['records'][0].keys())
+        options = list(data['obs']['var_names'])
 
     except (KeyError, TypeError):
         options = []
@@ -248,7 +248,6 @@ def plot_embedding(n_clicks, data, embedding, param_panel, color):
     elif embedding == 'tsne':
         # TODO: There is probably a more elegant way to do this
         perplexity = param_panel[-1]['props']['value']
-        print(perplexity)
         fig = fpl.plot_tsne(dset, perplexity=perplexity, color=color)
 
     elif embedding == 'umap':

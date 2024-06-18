@@ -32,13 +32,18 @@ def parse_contents(content, filename):
     return df
 
 def dataframe_to_serial(df):
-    return {'index': df.index, 'records': df.to_dict('records')}
+    return {
+        'obs_names': df.index,
+        'var_names': df.columns,
+        'X': df.values.tolist()
+    }
 
 def serial_to_dataframe(data):
-    df = pd.DataFrame(data['records'])
-    
-    if 'index' in data.keys():
-        df.index = data['index']
+    df = pd.DataFrame(
+        np.array(data['X']),
+        index=data['obs_names'] if 'obs_names' in data.keys() else None,
+        columns=data['var_names'] if 'var_names' in data.keys() else None,
+    )
 
     return df
 
@@ -60,6 +65,7 @@ def serial_to_dataset(data):
 
 def dataset_to_serial(dset):
     data = dataframe_to_serial(dset.to_df())
+
     data.update({
         k: dataframe_to_serial(getattr(dset, k))
         for k in ('obs', 'var')
