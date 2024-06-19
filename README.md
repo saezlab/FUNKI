@@ -12,9 +12,6 @@ If you have any ideas/suggestions or if you find any bug, please feel free to
 open an [GitHub issue](https://github.com/saezlab/FUNKI/issues). You can also
 contribute via [pull request](https://github.com/saezlab/FUNKI/pulls).
 
-Please note that the GUI is not yet implemented and FUNKI can only be accessible
-as a Python package.
-
 ## Installation
 To install FUNKI in your local computer you can use `pip` as follows:
 
@@ -27,7 +24,30 @@ Everything within FUNKI is works around an instance of a
 [`DataSet`](https://saezlab.github.io/FUNKI/html/input.html#funki.input.DataSet)
 object. This class in turn inherits (i.e. is built on top of) the
 [`anndata.AnnData`](https://anndata.readthedocs.io/en/latest/generated/anndata.AnnData.html)
-class
+class. You can explore all implemented functionalities available
+programmatically in the [Documentation](https://saezlab.github.io/FUNKI/).
+
+If you want to access FUNKI via the GUI, you need to execute the application 
+script with your Python interpreter, but first you need to download and install
+FUNKI using the commands below:
+
+```bash
+git clone git@github.com:saezlab/FUNKI.git
+cd FUNKI
+pip install ./
+```
+
+Now you can launch the FUNKI by simply running the application script:
+
+```bash
+python src/funki/app.py
+```
+
+This should automatically open the application in your default internet browser.
+If that is not the case, you can type or copy the following address (default)
+in the  browser bar: `http://127.0.0.1:8050/`
+
+**Note:** Refreshing the page will also restart the application.
 
 ## Documentation
 You can find the full documentation in the
