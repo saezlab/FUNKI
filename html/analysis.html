@@ -48,7 +48,7 @@
 <span id="funki-analysis"></span><h1>funki.analysis<a class="headerlink" href="#module-funki.analysis" title="Link to this heading">¶</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="funki.analysis.enrich">
-<span class="sig-prename descclassname"><span class="pre">funki.analysis.</span></span><span class="sig-name descname"><span class="pre">enrich</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">net</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">methods</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#funki.analysis.enrich" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">funki.analysis.</span></span><span class="sig-name descname"><span class="pre">enrich</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">net</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">methods</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#funki.analysis.enrich" title="Link to this definition">¶</a></dt>
 <dd><p>Performs enrichment analysis using <a class="reference external" href="https://decoupler-py.readthedocs.io/en/latest/index.html">Decoupler</a> based on a given network
 (e.g. gene set collection) and statistical method(s).</p>
 <dl class="field-list simple">
@@ -62,12 +62,17 @@ enrichment, defaults to <code class="docutils literal notranslate"><span class="
 <code class="docutils literal notranslate"><span class="pre">'ulm'</span></code> and <code class="docutils literal notranslate"><span class="pre">'wsum'</span></code>. The option <code class="docutils literal notranslate"><span class="pre">'all'</span></code> performs all methods. To
 see all the available methods, you can run <a class="reference external" href="https://decoupler-py.readthedocs.io/en/latest/generated/decoupler.show_methods.html#decoupler.show_methods">decoupler.show_methods()</a>
 function</p></li>
+<li><p><strong>weight</strong> (<em>NoneType</em><em> | </em><em>str</em>) – Defines the column in the network containing the weights to
+use in the enrichment, defaults to <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
 <li><p><strong>**kwargs</strong> (<em>optional</em>) – Other keyword arguments that passed to
 <a class="reference external" href="https://decoupler-py.readthedocs.io/en/latest/generated/decoupler.decouple.html#decoupler.decouple">decoupler.decouple()</a> function</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">None</span></code>, results are stored inplace of the passed <code class="docutils literal notranslate"><span class="pre">data</span></code> object</p>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">None</span></code>, results are stored inplace of the passed <code class="docutils literal notranslate"><span class="pre">data</span></code>
+object, which is a <a class="reference internal" href="input.html#funki.input.DataSet" title="funki.input.DataSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">funki.input.DataSet</span></code></a> instance. Estimates,
+p-values and consensus scores (in case of multiple methods) are stored
+as part of the <code class="docutils literal notranslate"><span class="pre">obsm</span></code> attribute of the object.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>NoneType</p>
