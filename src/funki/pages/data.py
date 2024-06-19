@@ -125,6 +125,18 @@ tab_data = dcc.Tab(
                                     }
                                 )
                             ),
+                            html.Div(
+                                children=[
+                                    html.Br(),
+                                    '- Select a variable to visualize:',
+                                    dcc.Dropdown(
+                                        id='obs-plot-selector',
+                                        clearable=False,
+                                    ),
+                                ],
+                                id='obs-plot-selector-panel',
+                                hidden=True
+                            ),
                             dcc.Loading(
                                 dcc.Graph(id='plot-obs-summary')
                             )
@@ -207,11 +219,12 @@ def update_data_preview(data):
 
     return table_columns, table_data, fig
 
-@callback( # TODO: Add check for numerical and plot differently
+@callback(
     Output('table-obs', 'columns'),
     Output('table-obs', 'data'),
-    Output('plot-obs-summary', 'figure'),
-    Output('plot-obs-summary' ,'style'),
+    Output('obs-plot-selector-panel', 'hidden'),
+    Output('obs-plot-selector', 'options'),
+    Output('obs-plot-selector', 'value'),
     Input('data', 'data')
 )
 def update_obs_preview(data):
@@ -222,37 +235,38 @@ def update_obs_preview(data):
         raise PreventUpdate
 
     df = serial_to_dataframe(data['obs'])
-
-    specs = [
-        [{'type': 'histogram'}]
-        if pd.api.types.is_numeric_dtype(df[col]) and df[col].dtype!= bool
-        else [{'type': 'pie'}]
-        for col in df.columns
-    ]
-
-    fig = make_subplots( # TODO: Improve plotting metadata esp. legend
-        rows=df.shape[1],
-        cols=1,
-        specs=specs
-    )
-    
-    for i, col in enumerate(df.columns):
-        if pd.api.types.is_numeric_dtype(df[col]) and df[col].dtype != bool:
-            hist = go.Histogram(x=df[col].values.flat)
-            fig.add_trace(hist, row=i + 1, col=1)
-        
-        else:
-            aux = df[col].value_counts()
-            pie = go.Pie(labels=aux.index, values=aux.values)
-            fig.add_trace(pie, row=i + 1, col=1)
-
-    height = 250 * df.shape[1]
-    fig.update_layout(height=height)
-
+    options = list(df.columns)
     df.reset_index(inplace=True)
     df = df.head()
 
     table_columns = [{'name': i, 'id': i} for i in df.columns]
     table_data = df.to_dict('records')
 
-    return table_columns, table_data, fig, {'height': height}
+    return table_columns, table_data, False, options, options[0]
+
+@callback(
+    Output('plot-obs-summary', 'figure'),
+    Input('obs-plot-selector', 'value'),
+    State('data', 'data'),
+)
+def plot_obs(obsv, data):
+    if data is None:
+        raise PreventUpdate
+
+    elif 'obs' not in data.keys():
+        raise PreventUpdate
+
+    df = serial_to_dataframe(data['obs'])
+
+    # Bypassing clusters being considered numerical
+    if obsv in ('louvain', 'leiden'):
+        df[obsv] = df[obsv].astype('category')
+
+    if pd.api.types.is_numeric_dtype(df[obsv]) and df[obsv].dtype!= bool:
+        fig = px.histogram(df, x=obsv)
+
+    else:
+        aux = df[obsv].value_counts().reset_index()
+        fig = px.pie(aux, names=obsv, values='count')
+
+    return fig
