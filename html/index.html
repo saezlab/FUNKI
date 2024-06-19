@@ -54,8 +54,6 @@ package that users can integrate into their existing pipelines.</p>
 If you have any ideas/suggestions or if you find any bug, please feel free to
 open an <a class="reference external" href="https://github.com/saezlab/FUNKI/issues">GitHub issue</a>. You can also
 contribute via <a class="reference external" href="https://github.com/saezlab/FUNKI/pulls">pull request</a>.</p>
-<p>Please note that the GUI is not yet implemented and FUNKI can only be accessible
-as a Python package.</p>
 </section>
 <section id="installation">
 <h2>Installation<a class="headerlink" href="#installation" title="Link to this heading">¶</a></h2>
@@ -70,7 +68,24 @@ as a Python package.</p>
 <a class="reference external" href="https://saezlab.github.io/FUNKI/html/input.html#funki.input.DataSet"><code class="docutils literal notranslate"><span class="pre">DataSet</span></code></a>
 object. This class in turn inherits (i.e. is built on top of) the
 <a class="reference external" href="https://anndata.readthedocs.io/en/latest/generated/anndata.AnnData.html"><code class="docutils literal notranslate"><span class="pre">anndata.AnnData</span></code></a>
-class</p>
+class. You can explore all implemented functionalities available
+programmatically in the <a class="reference external" href="https://saezlab.github.io/FUNKI/">Documentation</a>.</p>
+<p>If you want to access FUNKI via the GUI, you need to execute the application
+script with your Python interpreter, but first you need to download and install
+FUNKI using the commands below:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>git@github.com:saezlab/FUNKI.git
+<span class="nb">cd</span><span class="w"> </span>FUNKI
+pip<span class="w"> </span>install<span class="w"> </span>./
+</pre></div>
+</div>
+<p>Now you can launch the FUNKI by simply running the application script:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>src/funki/app.py
+</pre></div>
+</div>
+<p>This should automatically open the application in your default internet browser.
+If that is not the case, you can type or copy the following address (default)
+in the  browser bar: <code class="docutils literal notranslate"><span class="pre">http://127.0.0.1:8050/</span></code></p>
+<p><strong>Note:</strong> Refreshing the page will also restart the application.</p>
 </section>
 <section id="documentation">
 <h2>Documentation<a class="headerlink" href="#documentation" title="Link to this heading">¶</a></h2>
