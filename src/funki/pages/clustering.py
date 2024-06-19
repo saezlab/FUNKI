@@ -102,17 +102,67 @@ tab_cluster = dcc.Tab(
                         value='pca'
                     ),
                     html.Br(),
+                    # tSNE params
                     html.Div(
-                        # TODO: Substitute creating panel elements in callback
-                        # by using Div hidden argument
-                        id='param-panel',
+                        id='param-panel-tsne',
+                        children=[
+                            'Select embedding parameters: ',
+                            html.Br(),
+                            html.Br(),
+                            '- Perplexity',
+                            html.Br(),
+                            dcc.Slider(
+                                id='perplexity',
+                                tooltip={
+                                    'always_visible': True,
+                                    'placement': 'top'
+                                },
+                            ),
+                        ],
                         style={
                             'border': 'solid',
                             'border-color': _colors['teal'],
                             'background-color': _colors['aqua'],
                             'padding': 10,
                             'width': '80%'
-                        }
+                        },
+                        hidden=True
+                    ),
+                    # UMAP params
+                    html.Div(
+                        id='param-panel-umap',
+                        children=[
+                            'Select embedding parameters: ',
+                            html.Br(),
+                            html.Br(),
+                            '- Minimum distance: ',
+                            dcc.Input(
+                                id='min-dist',
+                                type='number',
+                                placeholder='e.g. 0.5',
+                                value=0.5,
+                                min=0,
+                                style={'width': 50}
+                            ),
+                            html.Br(),
+                            '- Spread: ',
+                            dcc.Input(
+                                id='spread',
+                                type='number',
+                                placeholder='e.g. 1.0',
+                                value=1.0,
+                                min=0,
+                                style={'width': 50}
+                            ),
+                        ],
+                        style={
+                            'border': 'solid',
+                            'border-color': _colors['teal'],
+                            'background-color': _colors['aqua'],
+                            'padding': 10,
+                            'width': '80%'
+                        },
+                        hidden=True
                     ),
                     html.Br(),
                     '- Select variable to color the embedding by: ',
@@ -144,8 +194,13 @@ tab_cluster = dcc.Tab(
 # ================================ CALLBACKS ================================= #
 
 @callback(
-    Output('param-panel', 'children'),
-    Output('param-panel', 'hidden'),
+    Output('param-panel-umap', 'hidden'),
+    Output('param-panel-tsne', 'hidden'),
+    Output('perplexity', 'min'),
+    Output('perplexity', 'max'),
+    Output('perplexity', 'step'),
+    Output('perplexity', 'marks'),
+    Output('perplexity', 'value'),
     Input('embedding', 'value'),
     Input('data', 'data')
 )
@@ -153,59 +208,40 @@ def update_param_panel(embedding, data):
     if not data:
         raise PreventUpdate
     
-    children = []
-
-    if embedding != 'pca':
-        children.extend(['Select embedding parameters: ', html.Br(), html.Br()])
+    # Fallback defaults
+    umap_hidden = True
+    tsne_hidden = True
+    per_min = 5
+    per_max = 50
+    per_step = 5
+    per_marks = None
+    per_value = 30
 
     if embedding == 'tsne':
-        max_per = len(data['obs_names']) - 1 if len(data['X']) < 50 else 50
-        min_per = 1 if max_per < 10 else 5
-        step = 1 if max_per < 10 else 5
-
-        children.extend([
-            '- Perplexity',
-            html.Br(),
-            dcc.Slider(
-                id='perplexity',
-                min=min_per,
-                max=max_per if max_per > 0 else 1,
-                step=1,
-                marks={
-                    int(i): f'{i}'
-                    for i in np.arange(min_per, max_per + step, step)},
-                tooltip={
-                    'always_visible': True,
-                    'placement': 'top'
-                },
-                value=30 if max_per >= 30 else max_per,
-            ),
-        ])
+        tsne_hidden = False
+        per_max = len(data['obs_names']) - 1 if len(data['X']) < 50 else 50
+        per_max = per_max if per_max > 0 else 1
+        per_min = 1 if per_max < 10 else 5
+        per_step = 1 if per_max < 10 else 5
+        per_marks = {
+            int(i): f'{i}'
+            for i in np.arange(per_min, per_max + per_step, per_step)
+        }
+        per_value = 30 if per_max >= 30 else per_max
+    
 
     elif embedding == 'umap':
-        children.extend([
-            '- Minimum distance: ',
-            dcc.Input(
-                id='min-dist',
-                type='number',
-                placeholder='e.g. 0.5',
-                value=0.5,
-                min=0,
-                style={'width': 50}
-            ),
-            html.Br(),
-            '- Spread: ',
-            dcc.Input(
-                id='spread',
-                type='number',
-                placeholder='e.g. 1.0',
-                value=1.0,
-                min=0,
-                style={'width': 50}
-            ),
-        ])
+        umap_hidden = False
 
-    return children, False if children else True
+    return (
+        umap_hidden,
+        tsne_hidden,
+        per_min,
+        per_max,
+        per_step,
+        per_marks,
+        per_value
+    )
 
 @callback(
     Output('data', 'data', allow_duplicate=True),
@@ -243,13 +279,25 @@ def update_dropdown_embedding(data):
     Input('apply-embedding', 'n_clicks'),
     State('data', 'data'),
     State('embedding', 'value'),
-    State('param-panel', 'children'),
+    State('perplexity', 'value'),
+    State('min-dist', 'value'),
+    State('spread', 'value'),
     State('color-embedding', 'value'),
     State('harmony', 'value'),
     State('harmonize-var', 'value'),
     prevent_initial_call=True,
 )
-def plot_embedding(n_clicks, data, embed, param_panel, color, harmony, hvar):
+def plot_embedding(
+    n_clicks,
+    data,
+    embed,
+    perplexity,
+    min_dist,
+    spread,
+    color,
+    harmony,
+    hvar
+):
     if data is None:
         raise PreventUpdate
     
@@ -266,15 +314,9 @@ def plot_embedding(n_clicks, data, embed, param_panel, color, harmony, hvar):
         fig = fpl.plot_pca(dset, color=color)
 
     elif embed == 'tsne':
-        # TODO: There is probably a more elegant way to do this
-        perplexity = param_panel[-1]['props']['value']
-        
         fig = fpl.plot_tsne(dset, perplexity=perplexity, color=color)
 
     elif embed == 'umap':
-        min_dist = param_panel[-4]['props']['value']
-        spread = param_panel[-1]['props']['value']
-
         fig = fpl.plot_umap(dset, min_dist=min_dist, spread=spread, color=color)
 
     return fig
