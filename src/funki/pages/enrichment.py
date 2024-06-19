@@ -277,7 +277,6 @@ def apply_gset_filter(n_clicks, gset, col, rng, cats):
     Input('gset-select', 'value')
 )
 def update_enrich_button(meth, gset_data, gset):
-
     return not all([meth, gset_data, gset])
 
 @callback(
@@ -304,7 +303,7 @@ def plot_enrich(n_clicks, data, gset_data, meth, gset):
         methods=[m.lstrip('run_') for m in meth],
         target='genesymbol',
         source=gset,
-        weight=None,
+        weight='weight' if 'weight' in net.columns else None,
     )
 
     res = dset.obsm['consensus_estimate'].mean(axis=0)
