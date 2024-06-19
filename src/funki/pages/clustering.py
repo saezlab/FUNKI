@@ -302,14 +302,21 @@ def plot_embedding(
         raise PreventUpdate
     
     dset = serial_to_dataset(data)
-
+    print(dset)
+    
+    # Run Harmony?
     if harmony and hvar:
         fpp.harmonize(
             dset,
             hvar if type(hvar) is list else [hvar],
             recalculate=True
         )
+    
+    # Bypassing clusters being considered numerical
+    if color in ('louvain', 'leiden'):
+        dset.obs[color] = dset.obs[color].astype('category')
 
+    # Embeddings
     if embed == 'pca':
         fig = fpl.plot_pca(dset, color=color)
 
