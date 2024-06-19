@@ -22,6 +22,13 @@ import funki.analysis as fan
 import funki.plots as fpl
 
 
+org_taxid = [
+    {'label': 'Human', 'value': '9606'},
+    {'label': 'Mouse', 'value': '10090'},
+    {'label': 'Rat', 'value': '10116'},
+    {'label': 'Pig', 'value': '9823'},
+]
+
 # ================================== LAYOUT ================================== #
 
 tab_enrichment = dcc.Tab(
@@ -46,6 +53,17 @@ tab_enrichment = dcc.Tab(
                                 searchable=True,
                                 clearable=True,
                                 style={'width': '80%'},
+                            ),
+                            html.Br(),
+                            ('- Select organism (non-human obtained via '
+                             'orthology translation):'),
+                            html.Br(),
+                            dcc.Dropdown(
+                                id='organism',
+                                options=org_taxid,
+                                value='9606',
+                                style={'width': '80%'},
+                                clearable=False,
                             ),
                             html.Br(),
                             dcc.Loading(
@@ -185,13 +203,14 @@ tab_enrichment = dcc.Tab(
     Output('gset-excl-from-col', 'hidden'),
     Output('gset-select', 'options'),
     Input('gset-collection', 'value'),
+    Input('organism', 'value'),
     prevent_initial_call=True
 )
-def load_gset_table(gset):
+def load_gset_table(gset, organism):
     if gset is None:
         return None, None, [], True, []
 
-    df = dc.get_resource(gset)
+    df = dc.get_resource(gset, organism=organism)
 
     if len(df) == 0:
         return None, [{0: 'Error downloading the data'}], [], True, []
@@ -256,8 +275,8 @@ def update_filter(col, gset):
     State('gset-excl-elems-cat-select', 'value'),
     prevent_initial_call=True
 )
-def apply_gset_filter(n_clicks, gset, col, rng, cats):
-    df = pd.DataFrame(gset)
+def apply_gset_filter(n_clicks, gset_data, col, rng, cats):
+    df = pd.DataFrame(gset_data)
 
     if cats:
         userows = df[col].astype(str).isin(cats)
@@ -288,7 +307,7 @@ def update_enrich_button(meth, gset_data, gset):
     State('enrich-methods', 'value'),
     State('gset-select', 'value'),
     prevent_initial_call=True
-) # TODO: add human/mouse option
+)
 def plot_enrich(n_clicks, data, gset_data, meth, gset):
     if not all([data, gset_data, gset]):
         raise PreventUpdate
