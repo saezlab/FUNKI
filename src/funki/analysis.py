@@ -4,7 +4,7 @@ import decoupler as dc
 
 from .input import DataSet
 
-def enrich(data, net, methods=None, **kwargs):
+def enrich(data, net, methods=None, weight=None, **kwargs):
     '''
     Performs enrichment analysis using `Decoupler`_ based on a given network
     (e.g. gene set collection) and statistical method(s).
@@ -20,11 +20,18 @@ def enrich(data, net, methods=None, **kwargs):
         see all the available methods, you can run `decoupler.show_methods()`_
         function
     :type methods: NoneType | str | list[str]
+    :param weight: Defines the column in the network containing the weights to
+        use in the enrichment, defaults to ``None``.
+    :type weight: NoneType | str
     :param \*\*kwargs: Other keyword arguments that passed to
         `decoupler.decouple()`_ function
     :type \*\*kwargs: optional
 
-    :returns: ``None``, results are stored inplace of the passed ``data`` object
+    :returns: ``None``, results are stored inplace of the passed ``data``
+        object, which is a :class:`funki.input.DataSet` instance. Estimates,
+        p-values and consensus scores (in case of multiple methods) are stored
+        as part of the ``obsm`` attribute of the object.
+
     :rtype: NoneType
 
     .. _Decoupler: https://decoupler-py.readthedocs.io/en/latest/index.html
@@ -39,7 +46,8 @@ def enrich(data, net, methods=None, **kwargs):
     # Making copy as AnnData to bypass Decoupler type checks
     aux = ad.AnnData(data.copy())
 
-    dc.decouple(aux, net, methods=methods, use_raw=False, **kwargs)
+    dc.decouple(aux, net, methods=methods, use_raw=False, weight=weight,
+                **kwargs)
     
     # Updating back the results to the original DataSet object
     data.obsm.update(aux.obsm)
