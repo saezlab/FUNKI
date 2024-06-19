@@ -49,14 +49,18 @@ tab_norm = tab_home = dcc.Tab(
                     ),
                     html.Br(),
                     '- Max. % mito. genes per cell: ',
-                    dcc.Input( # TODO: Switch to slider?
-                        id='mito-pct',
-                        type='number',
-                        placeholder='e.g. 5',
-                        value=None,
-                        min=0,
-                        max=100,
-                        style={'width': 100}
+                    html.Div(
+                        dcc.Slider(
+                            id='mito-pct',
+                            min=0,
+                            max=100,
+                            value=100,
+                            tooltip={
+                                'always_visible': True,
+                                'placement': 'top'
+                            },
+                        ),
+                        style={'width': '80%'},
                     ),
                     html.Br(),
                     html.Br(),
