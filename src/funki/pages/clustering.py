@@ -85,11 +85,17 @@ tab_cluster = dcc.Tab(
                     ),
                     html.Br(),
                     html.Div(
-                        dcc.Dropdown(id='harmonize-var'),
+                        children=[
+                            '- Select variable(s) to correct for:',
+                            html.Br(),
+                            dcc.Dropdown(
+                                id='harmonize-var',
+                                multi=True,
+                            ),
+                        ],
                         id='harmonize-var-panel',
                         hidden=True,
                     ),
-                    html.Br(),
                     html.Br(),
                     '- Choose embedding: ',
                     dcc.RadioItems(
