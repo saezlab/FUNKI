@@ -120,6 +120,8 @@ tab_cluster = dcc.Tab(
                             html.Br(),
                             dcc.Slider(
                                 id='perplexity',
+                                min=0,
+                                max=1,
                                 tooltip={
                                     'always_visible': True,
                                     'placement': 'top'
