@@ -8,7 +8,9 @@ package, please visit the [FUNKI GitHub page](https://github.com/saezlab/FUNKI)
 
 ### Usage
 
-You can navigate the different sections through the tabs on the left panel:
+You can navigate the different sections through the tabs on the left panel.
+Further information on the different inputs and parameters can be obtained by
+hovering your mouse over the red question marks accompanying each of them.
 
 - **Data:** Here you will be able to upload your data and metadata of your
   samples as well as visualize the distribution of values and categories. 
