@@ -14,6 +14,7 @@ from plotly.subplots import make_subplots
 from utils import parse_contents
 from utils import serial_to_dataframe
 from utils import dataframe_to_serial
+from utils import info
 from utils.style import tab_style
 from utils.style import tab_selected_style
 from utils.style import page_style
@@ -31,7 +32,17 @@ tab_data = dcc.Tab(
             html.Br(),
             html.Div(
                 children=[
-                    html.Div('Please upload your data file here:'),
+                    html.Div(
+                        children=[
+                            'Please upload your data file here:',
+                            info(
+                                'Please provide a table where rows are '
+                                'observations (e.g. samples, cells...) and '
+                                'columns are variables (e.g. genes, '
+                                'proteins...)'
+                            )
+                        ]
+                    ),
                     dcc.Upload(
                         id='upload-data',
                         children=html.Div([
@@ -86,7 +97,17 @@ tab_data = dcc.Tab(
             ),
             html.Div(
                 children=[
-                    html.Div('Please upload your annotation file here:'),
+                    html.Div(
+                        children=[
+                            'Please upload your annotation file here:',
+                            info(
+                                'Please provide a table where rows are '
+                                'observations (e.g. samples, cells...) and '
+                                'columns are annotation variables (e.g. sample '
+                                'names, condition, cell type...)'
+                            )
+                        ]
+                    ),
                     dcc.Upload(
                         id='upload-obs',
                         children=html.Div([
