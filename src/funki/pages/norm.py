@@ -31,7 +31,7 @@ tab_norm = tab_home = dcc.Tab(
                     html.H3(
                         children=[
                             'Choose filters:',
-                            info('filters')
+                            info('filters'),
                         ]
                     ),
                     '- Max. genes per cell: ',
@@ -84,7 +84,12 @@ tab_norm = tab_home = dcc.Tab(
             ),
             html.Div(
                 children=[
-                    html.H3('Choose normalization:'),
+                    html.H3(
+                        children=[
+                            'Choose normalization:',
+                            info('norm'),
+                        ]
+                    ),
                     '- Size factor: ',
                     dcc.Input(
                         id='size-factor',
