@@ -4,6 +4,7 @@ import io
 
 import numpy as np
 import pandas as pd
+from dash import html
 
 from funki.input import DataSet
 
@@ -121,3 +122,14 @@ def parse_types(df):
             result[c] = df[c].astype(object)
 
     return pd.DataFrame(result)
+
+def info(msg):
+    return html.Abbr(
+        '\u2753',
+        title=msg,
+        style={
+            'text-decoration': 'none',
+            'font-size': 12,
+            'vertical-align': 'super'
+        }
+    )
