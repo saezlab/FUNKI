@@ -9,6 +9,7 @@ from dash.exceptions import PreventUpdate
 
 from utils import serial_to_dataset
 from utils import dataset_to_serial
+from utils import info
 from utils.style import tab_style
 from utils.style import tab_selected_style
 from utils.style import page_style

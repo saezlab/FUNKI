@@ -35,12 +35,7 @@ tab_data = dcc.Tab(
                     html.Div(
                         children=[
                             'Please upload your data file here:',
-                            info(
-                                'Please provide a table where rows are '
-                                'observations (e.g. samples, cells...) and '
-                                'columns are variables (e.g. genes, '
-                                'proteins...)'
-                            )
+                            info('upload-data')
                         ]
                     ),
                     dcc.Upload(
@@ -100,12 +95,7 @@ tab_data = dcc.Tab(
                     html.Div(
                         children=[
                             'Please upload your annotation file here:',
-                            info(
-                                'Please provide a table where rows are '
-                                'observations (e.g. samples, cells...) and '
-                                'columns are annotation variables (e.g. sample '
-                                'names, condition, cell type...)'
-                            )
+                            info('upload-obs')
                         ]
                     ),
                     dcc.Upload(

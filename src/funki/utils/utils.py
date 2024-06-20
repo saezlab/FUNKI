@@ -7,6 +7,7 @@ import pandas as pd
 from dash import html
 
 from funki.input import DataSet
+from .info_msg import msg
 
 
 def parse_contents(content, filename):
@@ -123,10 +124,10 @@ def parse_types(df):
 
     return pd.DataFrame(result)
 
-def info(msg):
+def info(key):
     return html.Abbr(
         '\u2753',
-        title=msg,
+        title=msg[key] if key in msg.keys() else None,
         style={
             'text-decoration': 'none',
             'font-size': 12,
