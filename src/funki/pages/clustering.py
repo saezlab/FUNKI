@@ -31,48 +31,12 @@ tab_cluster = dcc.Tab(
             html.Br(),
             html.Div(
                 children=[
-                    '- Choose a clustering algorithm: ',
-                    dcc.RadioItems(
-                        id='cluster-algorithm',
-                        options=[
-                            {'label': 'Leiden', 'value': 'leiden'},
-                            {'label': 'Louvain', 'value': 'louvain'}
-                        ],
-                        value='leiden'
+                    html.H3(
+                            children=[
+                                'Embedding:',
+                                info('embedding')
+                            ]
                     ),
-                    html.Br(),
-                    '- Choose resolution: ',
-                    html.Div(
-                        dcc.Slider(
-                            id='cluster-resolution',
-                            min=0.0,
-                            max=2.0,
-                            step=0.01,
-                            marks={
-                                i if i % 1 else int(i): '%.1f' % i
-                                for i in np.arange(0, 2.5, 0.5)
-                            },
-                            tooltip={
-                                'always_visible': True,
-                                'placement': 'top'
-                            },
-                            value=1.0,
-                        ),
-                        style={'width': 350, 'padding-top': 20}
-                    ),
-                    html.Button(
-                        'Calculate',
-                        id='apply-cluster'
-                    ),
-                ],
-                style={
-                    'width': '49%',
-                    'display': 'inline-block',
-                    'vertical-align': 'top',
-                }
-            ),
-            html.Div(
-                children=[
                     html.Div(
                         '- Apply Harmony: ',
                         style={'display': 'inline-block'}
@@ -92,6 +56,7 @@ tab_cluster = dcc.Tab(
                             dcc.Dropdown(
                                 id='harmonize-var',
                                 multi=True,
+                                style={'width': '80%'}
                             ),
                         ],
                         id='harmonize-var-panel',
@@ -179,11 +144,60 @@ tab_cluster = dcc.Tab(
                         id='color-embedding',
                         searchable=False,
                         clearable=True,
+                        style={'width': '80%'}
                     ),
                     html.Br(),
                     html.Button(
                         'Visualize',
                         id='apply-embedding'
+                    ),
+                ],
+                style={
+                    'width': '49%',
+                    'display': 'inline-block',
+                    'vertical-align': 'top',
+                }
+            ),
+            html.Div(
+                children=[
+                    html.H3(
+                        children=[
+                            'Clustering:',
+                            info('clustering')
+                        ]
+                    ),
+                    '- Choose a clustering algorithm: ',
+                    dcc.RadioItems(
+                        id='cluster-algorithm',
+                        options=[
+                            {'label': 'Leiden', 'value': 'leiden'},
+                            {'label': 'Louvain', 'value': 'louvain'}
+                        ],
+                        value='leiden'
+                    ),
+                    html.Br(),
+                    '- Choose resolution: ',
+                    html.Div(
+                        dcc.Slider(
+                            id='cluster-resolution',
+                            min=0.0,
+                            max=2.0,
+                            step=0.01,
+                            marks={
+                                i if i % 1 else int(i): '%.1f' % i
+                                for i in np.arange(0, 2.5, 0.5)
+                            },
+                            tooltip={
+                                'always_visible': True,
+                                'placement': 'top'
+                            },
+                            value=1.0,
+                        ),
+                        style={'width': 350, 'padding-top': 20}
+                    ),
+                    html.Button(
+                        'Calculate',
+                        id='apply-cluster'
                     ),
                 ],
                 style={
