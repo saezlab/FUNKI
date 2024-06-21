@@ -49,5 +49,38 @@ msg = {
         'purposes: avoiding division by zero causing the resulting value to be '
         'negative infinite and also, since log(1)=0, non-detected genes remain '
         'valued as zero after the transformation.'
-    )
+    ),
+    'embedding': (
+        'Embedding, also known as dimensionality reduction algorithms, help us '
+        'visualize multi-dimensional data (e.g. cells expressing N number of '
+        'genes) into a low-dimensional space (e.g. a 2D scatter plot).\n'
+        '- Harmony:\n'
+        'Harmony is an algorithm that aims to reduce batch effects between '
+        'data sets based in one or more covariates wich you can select in the '
+        'from the meta data available in the drop-down menu below. Note that '
+        'the correction is applied over the embedding components and does not '
+        'transform the original data itself.\n\n'
+        'For the embedding itself you can choose between Principal Component '
+        'Analysis (PCA), t-Stochastic Neighbor Embedding (tSNE) and Unifold '
+        'Manifold Approximation and Projection (UMAP) followed by the variable '
+        'from the meta data you want to color your data points by. If you '
+        'already applied the clustering, that option will also  be available '
+        'in the list (named either "leiden" or "louvain", depending on your '
+        'choice).'
+    ),
+    'clustering': (
+        'Clustering aims to group similar data points. The resolution '
+        'parameter controls the number of resulting clusters. This is, higher '
+        'values increase the number of resulting clusters (i.e. more '
+        'granularity) while lower values reduce the number of resulting '
+        'clusters. Here you can choose between two graph-based community '
+        'detection algorithms to compute the clusters:\n'
+        '- Leiden:\n'
+        'Modified version of Louvain algorithm aiming to address issues with '
+        'disconnected communities. This algorithm optimizes a quality function '
+        'based on Constant Potts Model (CPM).\n'
+        '- Louvain:\n'
+        'Louvain algorithm optimizes a modularity function, a metric derived '
+        'from the adjacency matrix.'
+    ),
 }
