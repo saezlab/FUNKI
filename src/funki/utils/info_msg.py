@@ -1,7 +1,9 @@
 msg = {
     'upload-data': (
         'Please provide a table where rows are observations (e.g. samples, '
-        'cells...) and columns are variables (e.g. genes, proteins...).'
+        'cells...) and columns are variables (e.g. genes, proteins...). Note '
+        'that for the enrichment analysis, it is assumed that your variables '
+        'use Gene Symbols as identifiers.'
     ),
     'upload-obs': (
         'Please provide a table where rows are observations (e.g. samples, '
@@ -82,5 +84,31 @@ msg = {
         '- Louvain:\n'
         'Louvain algorithm optimizes a modularity function, a metric derived '
         'from the adjacency matrix.'
+    ),
+    'gset': (
+        'Here you can select across multiple resources containing molecular '
+        'information you can use for your enrichment. For further information '
+        'on them, you can find all the links in omnipathdb.org/info. In case '
+        'your data is from a non-human organism, you can convert the '
+        'identifiers via orthology in by selecting the target organism in the '
+        'drop-down menu below. Furthermore, you can also filter the gene sets '
+        'based on several criteria. For instance, if you want to perform an '
+        'enrichment over MSigDB Hallmark pathways, you just need to select '
+        '"MSigDB", then in the menu for variable to filter by, choose '
+        '"collection" and in the variables to include, select "hallmarks", '
+        'and then apply the filter. Note that the drop-down menus are '
+        'searchable, so you can start typing the name of the resource/variable '
+        'to find it faster.'
+    ),
+    'enrichment': (
+        'Here you can perform the actual enrichment. First, you can select '
+        'which method(s) to use to compute the enrichment (by default, it '
+        'calculates using the three top-performing methods ULM, MLM and WSUM) '
+        'but you can choose others if you are interested. Finally, select over '
+        'which variable from the gene set table you want to enrich for '
+        '(depending on the resource, this can be e.g. pathways, transcription '
+        'factors, enzymes, ...) an then click the button to compute the '
+        'enrichment. The plot generated below will show you the top scoring '
+        'enriched gene sets based on the consensus across the selected methods.'
     ),
 }
