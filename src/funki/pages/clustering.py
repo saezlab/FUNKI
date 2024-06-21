@@ -32,10 +32,10 @@ tab_cluster = dcc.Tab(
             html.Div(
                 children=[
                     html.H3(
-                            children=[
-                                'Embedding:',
-                                info('embedding')
-                            ]
+                        children=[
+                            'Embedding:',
+                            info('embedding')
+                        ]
                     ),
                     html.Div(
                         '- Apply Harmony: ',

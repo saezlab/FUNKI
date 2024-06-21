@@ -13,6 +13,7 @@ import decoupler as dc
 
 from utils import serial_to_dataset
 from utils import dataset_to_serial
+from utils import info
 from utils.style import tab_style
 from utils.style import tab_selected_style
 from utils.style import page_style
@@ -42,6 +43,12 @@ tab_enrichment = dcc.Tab(
                 children=[
                     html.Div(
                         children=[
+                            html.H3(
+                                children=[
+                                    'Gene set collection:',
+                                    info('gset')
+                                ]
+                            ),
                             'Choose a gene set collection:',
                             html.Br(),
                             dcc.Dropdown(
@@ -145,6 +152,12 @@ tab_enrichment = dcc.Tab(
                     ),
                     html.Div(
                         children=[
+                            html.H3(
+                                children=[
+                                    'Enrichment:',
+                                    info('enrichment')
+                                ]
+                            ),
                             'Select enrichment method(s):',
                             html.Br(),
                             dcc.Dropdown(
@@ -152,10 +165,11 @@ tab_enrichment = dcc.Tab(
                                 options=[
                                     {
                                         'label': r['Name'].rstrip('.'),
-                                        'value': r['Function']
+                                        'value': r['Function'].lstrip('run_')
                                     }
                                     for i, r in dc.show_methods().iterrows()
                                 ],
+                                value='consensus',
                                 searchable=True,
                                 clearable=True,
                                 multi=True,
@@ -319,7 +333,7 @@ def plot_enrich(n_clicks, data, gset_data, meth, gset):
     fan.enrich(
         dset,
         net,
-        methods=[m.lstrip('run_') for m in meth],
+        methods=[m for m in meth],
         target='genesymbol',
         source=gset,
         weight='weight' if 'weight' in net.columns else None,
