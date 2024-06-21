@@ -46,3 +46,7 @@ hovering your mouse over the red question marks accompanying each of them.
   further specify your serach by applying filters based on the different 
   information contained in the given resource. Once you have the gene set 
   collection of interest, enrichment analysis can then be applied.
+
+Drop-down menus are searchable, therefore you can start typing to easily find
+the option you are looking for. Figures are interactive, you can zoom in/out or
+save them as PNG.
