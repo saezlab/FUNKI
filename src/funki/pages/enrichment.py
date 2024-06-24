@@ -9,6 +9,7 @@ from dash import callback
 from dash.exceptions import PreventUpdate
 from dash.dash_table import DataTable
 import plotly.express as px
+import plotly.graph_objects as go 
 import decoupler as dc
 
 from utils import serial_to_dataset
@@ -191,6 +192,10 @@ tab_enrichment = dcc.Tab(
                             ),
                             html.Br(),
                             dcc.Loading(dcc.Graph(id='plot-enrich')),
+                            html.Button(
+                                'Open plot in new tab',
+                                id='nw-plot-enrich',
+                            ),
                         ],
                         style={
                             'width': '46.5%',
@@ -330,6 +335,8 @@ def plot_enrich(n_clicks, data, gset_data, meth, gset):
     dset = serial_to_dataset(data)
     net.drop_duplicates(subset=['genesymbol', gset], inplace=True)
 
+    meth = meth if type(meth) is list else [meth]
+
     fan.enrich(
         dset,
         net,
@@ -351,3 +358,11 @@ def plot_enrich(n_clicks, data, gset_data, meth, gset):
     fig.update_layout(showlegend=False)
 
     return fig, dataset_to_serial(dset)
+
+@callback(
+    Input('nw-plot-enrich', 'n_clicks'),
+    State('plot-enrich', 'figure')
+)
+def plot_enrich_new_tab(n_clicks, fig):
+    if fig:
+        return go.Figure(fig).show()
