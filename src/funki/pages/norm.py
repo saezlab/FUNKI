@@ -5,6 +5,7 @@ from dash import Output
 from dash import State
 from dash import callback
 from dash.exceptions import PreventUpdate
+import plotly.graph_objects as go 
 
 from utils import serial_to_dataset
 from utils import dataset_to_serial
@@ -126,6 +127,10 @@ tab_norm = tab_home = dcc.Tab(
                 }
             ),
             dcc.Loading(dcc.Graph(id='plot-filter', style={'height': 1500})),
+            html.Button(
+                'Open plot in new tab',
+                id='nw-plot-filter',
+            ),
         ],
         style=page_style,
     ),
@@ -204,3 +209,11 @@ def apply_norm(n_clicks, data, size_factor, log_transform):
     serial = dataset_to_serial(dset)
 
     return serial
+
+@callback(
+    Input('nw-plot-filter', 'n_clicks'),
+    State('plot-filter', 'figure')
+)
+def plot_filter_new_tab(n_clicks, fig):
+    if fig:
+        return go.Figure(fig).show()

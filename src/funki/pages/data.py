@@ -9,7 +9,6 @@ from dash.exceptions import PreventUpdate
 from dash.dash_table import DataTable
 import plotly.express as px
 import plotly.graph_objects as go 
-from plotly.subplots import make_subplots
 
 from utils import parse_contents
 from utils import serial_to_dataframe
