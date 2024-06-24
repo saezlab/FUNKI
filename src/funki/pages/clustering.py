@@ -6,6 +6,7 @@ from dash import Output
 from dash import State
 from dash import callback
 from dash.exceptions import PreventUpdate
+import plotly.graph_objects as go 
 
 from utils import serial_to_dataset
 from utils import dataset_to_serial
@@ -206,7 +207,11 @@ tab_cluster = dcc.Tab(
                     'vertical-align': 'top',
                 }
             ),
-            dcc.Loading(dcc.Graph(id='plot-embedding'))
+            dcc.Loading(dcc.Graph(id='plot-embedding')),
+            html.Button(
+                'Open plot in new tab',
+                id='nw-plot-embedding',
+            ),
         ],
         style=page_style,
     ),
@@ -370,3 +375,11 @@ def update_dropdown_embedding(data):
         options = []
 
     return options
+
+@callback(
+    Input('nw-plot-embedding', 'n_clicks'),
+    State('plot-embedding', 'figure')
+)
+def plot_embedding_new_tab(n_clicks, fig):
+    if fig:
+        return go.Figure(fig).show()
