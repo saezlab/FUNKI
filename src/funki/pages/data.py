@@ -78,7 +78,11 @@ tab_data = dcc.Tab(
                             ),
                             dcc.Loading(
                                 dcc.Graph(id='plot-data-summary')
-                            )
+                            ),
+                            html.Button(
+                                'Open plot in new tab',
+                                id='nw-plot-data-summary',
+                            ),
                         ],
                         style={'width': '95%'}
                     ),
@@ -150,7 +154,11 @@ tab_data = dcc.Tab(
                             ),
                             dcc.Loading(
                                 dcc.Graph(id='plot-obs-summary')
-                            )
+                            ),
+                            html.Button(
+                                'Open plot in new tab',
+                                id='nw-plot-obs-summary',
+                            ),
                         ],
                         style={'width': '95%'}
                     ),
@@ -219,8 +227,13 @@ def update_data_preview(data):
 
     df = serial_to_dataframe(data)
 
-    fig = px.histogram(df.values.flat, title='Value distribution')
-    fig.update_layout(showlegend=False)
+    #fig = px.histogram(df.values.flat, title='Value distribution')
+    #fig.update_layout(showlegend=False)
+    fig = px.imshow(
+        df.T.values,
+        labels={'x': 'Obs.', 'y': 'Var.'},
+        aspect='auto'
+    )
 
     df.reset_index(inplace=True)
     df = df.head()
@@ -281,3 +294,19 @@ def plot_obs(obsv, data):
         fig = px.pie(aux, names=obsv, values='count')
 
     return fig
+
+@callback(
+    Input('nw-plot-data-summary', 'n_clicks'),
+    State('plot-data-summary', 'figure')
+)
+def plot_data_summary_new_tab(n_clicks, fig):
+    if fig:
+        return go.Figure(fig).show()
+    
+@callback(
+    Input('nw-plot-obs-summary', 'n_clicks'),
+    State('plot-obs-summary', 'figure')
+)
+def plot_obs_summary_new_tab(n_clicks, fig):
+    if fig:
+        return go.Figure(fig).show()
