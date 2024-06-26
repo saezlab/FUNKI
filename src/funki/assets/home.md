@@ -12,15 +12,15 @@ You can navigate the different sections through the tabs on the left panel.
 Further information on the different inputs and parameters can be obtained by
 hovering your mouse over the red question marks accompanying each of them.
 
-- **Data:** Here you will be able to upload your data and metadata of your
+- **Data:** Here you will be able to upload your data and metadata of your 
   samples as well as visualize the distribution of values and categories. 
-  Currently supported formats include `.csv`, `.txt` and `.xlsx` but more are
-  compatible formats are planned in the future. The data provided is assumed to
-  contain the observations (e.g. cells, samples, etc.) on the rows and the 
-  variables (e.g. genes, proteins, annotations, etc.) on the columns. Currently
-  we assume genes are defined by Gene Symbols (currently only needed for the
-  enrichment step), but we are planning to add ID conversion tools in the near
-  future.
+  Currently supported formats include `.csv`, `.txt`, `.xls` or `.xlsx` but 
+  more compatible formats are planned in the future. The data provided is 
+  assumed to contain the observations (e.g. cells, samples, etc.) on the rows 
+  and the variables (e.g. genes, proteins, annotations, etc.) on the columns. 
+  Currently we assume genes are defined by Gene Symbols (currently only needed 
+  for the enrichment step), but we are planning to add ID conversion tools in 
+  the near future.
 - **Filter & normalization:** This part of FUNKI is currently designed mainly
   for single-cell transcriptomic data sets, but support for other types of omics
   data are being worked on. In this section you will be able to select among
