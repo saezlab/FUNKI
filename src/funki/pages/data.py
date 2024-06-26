@@ -20,6 +20,13 @@ from utils.style import page_style
 from utils.style import header_style
 
 
+_separators = [
+    {'label': 'Comma (,)', 'value': ','},
+    {'label': 'Tab (\\t)', 'value': '\t'},
+    {'label': 'Semicolon (;)', 'value': ';'},
+    {'label': 'Space ( )', 'value': ' '}
+]
+
 # ================================== LAYOUT ================================== #
 
 tab_data = dcc.Tab(
@@ -31,12 +38,22 @@ tab_data = dcc.Tab(
             html.Br(),
             html.Div(
                 children=[
-                    html.Div(
+                    html.H3(
                         children=[
-                            'Please upload your data file here:',
-                            info('upload-data')
+                            'Measurement data:',
+                            info('upload-data'),
                         ]
                     ),
+                    dcc.Dropdown(
+                        id='separator-data',
+                        options=_separators,
+                        value=',',
+                        clearable=False,
+                        multi=False,
+                        style={'width': 150}
+                    ),
+                    html.Br(),
+                    'Please upload your data file here:',
                     dcc.Upload(
                         id='upload-data',
                         children=html.Div([
@@ -95,12 +112,22 @@ tab_data = dcc.Tab(
             ),
             html.Div(
                 children=[
-                    html.Div(
+                    html.H3(
                         children=[
-                            'Please upload your annotation file here:',
-                            info('upload-obs')
+                            'Annotation data:',
+                            info('upload-obs'),
                         ]
                     ),
+                    dcc.Dropdown(
+                        id='separator-obs',
+                        options=_separators,
+                        value=',',
+                        clearable=False,
+                        multi=False,
+                        style={'width': 150}
+                    ),
+                    html.Br(),
+                    'Please upload your annotation file here:',
                     dcc.Upload(
                         id='upload-obs',
                         children=html.Div([
@@ -182,13 +209,14 @@ tab_data = dcc.Tab(
     Output('data', 'data', allow_duplicate=True),
     Input('upload-data', 'contents'),
     State('upload-data', 'filename'),
+    State('separator-data', 'value'),
     prevent_initial_call=True
 )
-def load_data(content, filename):
+def load_data(content, filename, sep):
     if filename is None:
         raise PreventUpdate
 
-    serial = dataframe_to_serial(parse_contents(content, filename))
+    serial = dataframe_to_serial(parse_contents(content, filename, sep=sep))
 
     return serial
 
@@ -197,16 +225,17 @@ def load_data(content, filename):
     Input('upload-obs', 'contents'),
     State('upload-obs', 'filename'),
     State('data', 'data'),
+    State('separator-obs', 'value'),
     prevent_initial_call=True
 )
-def load_obs(content, filename, data):
+def load_obs(content, filename, data, sep):
     if filename is None:
         raise PreventUpdate
     
     if data is None:
         data = {}
     
-    serial = dataframe_to_serial(parse_contents(content, filename))
+    serial = dataframe_to_serial(parse_contents(content, filename, sep=sep))
     data.update({'obs': serial})
     
     return data
