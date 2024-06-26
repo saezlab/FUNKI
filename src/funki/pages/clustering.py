@@ -200,6 +200,13 @@ tab_cluster = dcc.Tab(
                         'Calculate',
                         id='apply-cluster'
                     ),
+                    html.Br(),
+                    html.Br(),
+                    dcc.Loading(html.Div(
+                        id='cluster-complete',
+                        children='Clustering computed successfully!',
+                        hidden=True,
+                    ))
                 ],
                 style={
                     'width': '49%',
@@ -273,6 +280,7 @@ def update_param_panel(embedding, data):
 
 @callback(
     Output('data', 'data', allow_duplicate=True),
+    Output('cluster-complete', 'hidden'),
     Input('apply-cluster', 'n_clicks'),
     State('data', 'data'),
     State('cluster-algorithm', 'value'),
@@ -287,7 +295,7 @@ def apply_clustering(n_clicks, data, algorithm, resolution):
 
     fan.sc_clustering(dset, alg=algorithm, resolution=resolution)
     
-    return dataset_to_serial(dset)
+    return dataset_to_serial(dset), False
 
 @callback(
     Output('color-embedding', 'options'),
