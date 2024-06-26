@@ -14,6 +14,7 @@ from utils.style import tab_style
 from utils.style import tab_selected_style
 from utils.style import page_style
 from utils.style import header_style
+from funki import _colors
 import funki.preprocessing as fpp
 import funki.pipelines as fppl
 
@@ -126,7 +127,10 @@ tab_norm = tab_home = dcc.Tab(
                     'pad': 10
                 }
             ),
-            dcc.Loading(dcc.Graph(id='plot-filter', style={'height': 1500})),
+            dcc.Loading(
+                dcc.Graph(id='plot-filter', style={'height': 1500}),
+                color=_colors['teal']
+            ),
             html.Button(
                 'Open plot in new tab',
                 id='nw-plot-filter',

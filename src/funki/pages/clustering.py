@@ -202,11 +202,14 @@ tab_cluster = dcc.Tab(
                     ),
                     html.Br(),
                     html.Br(),
-                    dcc.Loading(html.Div(
-                        id='cluster-complete',
-                        children='Clustering computed successfully!',
-                        hidden=True,
-                    ))
+                    dcc.Loading(
+                        html.Div(
+                            id='cluster-complete',
+                            children='Clustering computed successfully!',
+                            hidden=True,
+                        ),
+                        color=_colors['teal']
+                    ),
                 ],
                 style={
                     'width': '49%',
@@ -214,7 +217,10 @@ tab_cluster = dcc.Tab(
                     'vertical-align': 'top',
                 }
             ),
-            dcc.Loading(dcc.Graph(id='plot-embedding')),
+            dcc.Loading(
+                dcc.Graph(id='plot-embedding'),
+                color=_colors['teal']
+            ),
             html.Button(
                 'Open plot in new tab',
                 id='nw-plot-embedding',

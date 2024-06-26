@@ -18,6 +18,7 @@ from utils.style import tab_style
 from utils.style import tab_selected_style
 from utils.style import page_style
 from utils.style import header_style
+from funki import _colors
 
 
 _separators = [
@@ -90,10 +91,12 @@ tab_data = dcc.Tab(
                                         'width': 50,
                                         'whiteSpace': 'normal'
                                     }
-                                )
+                                ),
+                                color=_colors['teal']
                             ),
                             dcc.Loading(
-                                dcc.Graph(id='plot-data-summary')
+                                dcc.Graph(id='plot-data-summary'),
+                                color=_colors['teal']
                             ),
                             html.Button(
                                 'Open plot in new tab',
@@ -164,7 +167,8 @@ tab_data = dcc.Tab(
                                         'width': 50,
                                         'whiteSpace': 'normal'
                                     }
-                                )
+                                ),
+                                color=_colors['teal']
                             ),
                             html.Div(
                                 children=[
@@ -179,7 +183,8 @@ tab_data = dcc.Tab(
                                 hidden=True
                             ),
                             dcc.Loading(
-                                dcc.Graph(id='plot-obs-summary')
+                                dcc.Graph(id='plot-obs-summary'),
+                                color=_colors['teal']
                             ),
                             html.Button(
                                 'Open plot in new tab',

@@ -89,7 +89,8 @@ tab_enrichment = dcc.Tab(
                                         'width': 100,
                                         'whiteSpace': 'normal'
                                     }
-                                )
+                                ),
+                                color=_colors['teal']
                             ),
                             html.Br(),
                             html.Div(
@@ -191,7 +192,10 @@ tab_enrichment = dcc.Tab(
                                 disabled=True
                             ),
                             html.Br(),
-                            dcc.Loading(dcc.Graph(id='plot-enrich')),
+                            dcc.Loading(
+                                dcc.Graph(id='plot-enrich'),
+                                color=_colors['teal']
+                            ),
                             html.Button(
                                 'Open plot in new tab',
                                 id='nw-plot-enrich',
