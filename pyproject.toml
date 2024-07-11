@@ -27,7 +27,7 @@ dependencies = [
     'louvain',
     'harmonypy',
     'decoupler',
-    'omnipath,
+    'omnipath',
     'dash',
 ]
 
