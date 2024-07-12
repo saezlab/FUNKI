@@ -26,9 +26,15 @@ app.layout = html.Div(
         html.Div(
             html.Img(
                 src='assets/logos/funki_logo.svg',
-                style={'width': 500, 'padding': 10}
+                style={
+                    'width': 500,
+                    'padding': 10
+                }
             ),
-            style={'width': '100%', 'background-color': _colors['white']}
+            style={
+                'width': '100%',
+                'background-color': _colors['white']
+            }
         ),
         html.Br(),
         dcc.Tabs(
@@ -51,7 +57,14 @@ app.layout = html.Div(
                 'border': _colors['teal'],
                 'primary': _colors['aqua'],
             }
-        )
+        ),
+        html.Div(
+            'Developed by Nicolàs Palacio-Escat - Saezlab 2024',
+            style={
+                'padding-left': 180,
+                'color': _colors['white'],
+            }
+        ),
     ],
     style=global_style,
 )

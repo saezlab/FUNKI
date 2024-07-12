@@ -19,13 +19,6 @@ tab_home = dcc.Tab(
                 md_to_str('src/funki/assets/home.md'),
                 style={'width': 'auto'}
             ),
-            html.Div(
-                'Developed by Nicolàs Palacio-Escat - Saezlab 2024',
-                style={
-                    'position': 'fixed',
-                    'bottom': '5%',
-                }
-            ),
         ],
         style=page_style,
     ),
