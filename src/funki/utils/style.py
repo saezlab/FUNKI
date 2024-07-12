@@ -5,6 +5,7 @@ global_style = {
     'font-family': 'sans-serif',
     'background-color': _colors['blue'],
     'height': '100%',
+    'minHeight': '100vh',
     'width': '100%',
     'text-align': 'justify',
 }
