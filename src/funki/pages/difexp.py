@@ -26,6 +26,42 @@ tab_difexp = dcc.Tab(
         children=[
             html.H1('Differential expression analysis', style=header_style),
             html.Br(),
+            html.Div(
+                children=[
+                    'Choose samples to contrast from (e.g. treatment):',
+                    dcc.Dropdown(
+                        id='samples-a',
+                        clearable=True,
+                        multi=True,
+                        searchable=True,
+                        style={'width': '80%'}
+                    ),
+                ],
+                style={
+                    'width': '49%',
+                    'display': 'inline-block',
+                    'vertical-align': 'top',
+                    'pad': 10
+                }
+            ),
+            html.Div(
+                children=[
+                    'Choose samples to contrast against (e.g. control):',
+                    dcc.Dropdown(
+                        id='samples-b',
+                        clearable=True,
+                        multi=True,
+                        searchable=True,
+                        style={'width': '80%'}
+                    ),
+                ],
+                style={
+                    'width': '49%',
+                    'display': 'inline-block',
+                    'vertical-align': 'top',
+                    'pad': 10
+                }
+            ),
         ],
         style=page_style,
     ),
@@ -34,3 +70,17 @@ tab_difexp = dcc.Tab(
 )
 
 # ================================ CALLBACKS ================================= #
+
+@callback(
+    Output('samples-a', 'options'),
+    Output('samples-b', 'options'),
+    Input('data', 'data')
+)
+def update_dropdown_samples(data):
+    try:
+        options = list(data['obs_names'])
+
+    except (KeyError, TypeError):
+        options = []
+
+    return options, options
