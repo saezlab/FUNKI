@@ -54,7 +54,7 @@ def serial_to_dataset(data):
 
     kwargs = {
         k: serial_to_dataframe(data[k])
-        for k in ('obs', 'var', 'raw')
+        for k in ('obs', 'var')
         if k in data.keys()
     }
     kwargs.update({
@@ -67,6 +67,9 @@ def serial_to_dataset(data):
         for k in ('obsm', 'varm', 'obsp', 'varp')
         if k in data.keys()
     })
+    
+    if 'raw' in data.keys():
+        kwargs.update({'raw': serial_to_dataset(data['raw'])})
 
     return DataSet(df, **kwargs)
 
@@ -75,13 +78,13 @@ def dataset_to_serial(dset):
 
     data.update({
         k: dataframe_to_serial(getattr(dset, k))
-        for k in ('obs', 'var', 'raw')
+        for k in ('obs', 'var')
         if not getattr(dset, k).empty
     })
 
     attrs = {}
 
-    for k in ('obsm', 'varm', 'obsp', 'varp'):
+    for k in ('obsm', 'varm', 'obsp', 'varp', 'raw'):
         attrs[k] = dict()
 
         for mk, mv in getattr(dset, k).items():
@@ -90,6 +93,9 @@ def dataset_to_serial(dset):
             
             elif type(mv) is pd.DataFrame:
                 res = dataframe_to_serial(mv)
+
+            elif type(mv) is DataSet:
+                res = dataset_to_serial(mv)
             
             else:
                 res = mv.toarray().tolist()
