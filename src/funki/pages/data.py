@@ -220,8 +220,11 @@ tab_data = dcc.Tab(
 def load_data(content, filename, sep):
     if filename is None:
         raise PreventUpdate
+    
+    df = parse_contents(content, filename, sep=sep)
 
-    serial = dataframe_to_serial(parse_contents(content, filename, sep=sep))
+    serial = dataframe_to_serial(df)
+    serial.update({'raw': dataframe_to_serial(df.copy())})
 
     return serial
 

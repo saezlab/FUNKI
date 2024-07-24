@@ -54,7 +54,7 @@ def serial_to_dataset(data):
 
     kwargs = {
         k: serial_to_dataframe(data[k])
-        for k in ('obs', 'var')
+        for k in ('obs', 'var', 'raw')
         if k in data.keys()
     }
     kwargs.update({
@@ -75,7 +75,7 @@ def dataset_to_serial(dset):
 
     data.update({
         k: dataframe_to_serial(getattr(dset, k))
-        for k in ('obs', 'var')
+        for k in ('obs', 'var', 'raw')
         if not getattr(dset, k).empty
     })
 
