@@ -81,10 +81,13 @@ def dataset_to_serial(dset):
         for k in ('obs', 'var')
         if not getattr(dset, k).empty
     })
-
+    
+    if 'raw' in dset.__dict__.keys():
+        data['raw'] = dataset_to_serial(dset.raw)
+    
     attrs = {}
 
-    for k in ('obsm', 'varm', 'obsp', 'varp', 'raw'):
+    for k in ('obsm', 'varm', 'obsp', 'varp'):
         attrs[k] = dict()
 
         for mk, mv in getattr(dset, k).items():
@@ -93,9 +96,6 @@ def dataset_to_serial(dset):
             
             elif type(mv) is pd.DataFrame:
                 res = dataframe_to_serial(mv)
-
-            elif type(mv) is DataSet:
-                res = dataset_to_serial(mv)
             
             else:
                 res = mv.toarray().tolist()
