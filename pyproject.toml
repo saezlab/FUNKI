@@ -29,6 +29,7 @@ dependencies = [
     'decoupler',
     'omnipath',
     'dash',
+    'pydeseq2',
 ]
 
 [project.urls]
