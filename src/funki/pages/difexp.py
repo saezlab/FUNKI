@@ -11,12 +11,15 @@ import pandas as pd
 from utils import serial_to_dataset
 from utils import dataset_to_serial
 from utils import serial_to_dataframe
+from utils import dataframe_to_serial
 from utils import info
 from utils.style import tab_style
 from utils.style import tab_selected_style
 from utils.style import page_style
 from utils.style import header_style
 from funki import _colors
+import funki.analysis as fan
+import funki.preprocessing as fpp
 
 
 # ================================== LAYOUT ================================== #
@@ -36,6 +39,7 @@ tab_difexp = dcc.Tab(
                 searchable=True,
                 style={'width': '80%'}
             ),
+            html.Br(),
             html.Div(
                 children=[
                     'Choose group(s) of samples to contrast from '
@@ -73,6 +77,9 @@ tab_difexp = dcc.Tab(
                     'vertical-align': 'top',
                     'pad': 10
                 }
+            ),
+            html.Button(
+                id='apply-dex',
             ),
         ],
         style=page_style,
@@ -130,3 +137,33 @@ def update_group_selector(data, obs_var, va, vb):
 
     return options_a, options_b
 
+@callback(
+    Output('data', 'data', allow_duplicate=True),
+    Input('apply-dex', 'n_clicks'),
+    State('data', 'data'),
+    State('obs-selector', 'value'),
+    State('group-selector-a', 'value'),
+    State('group-selector-b', 'value'),
+    prevent_initial_call=True
+)
+def apply_dex(n_clicks, data, obs_var, groups_a, groups_b):
+    if data is None:
+        raise PreventUpdate
+
+    dset_raw = serial_to_dataset(data['raw'])
+    var = serial_to_dataframe(data['var'])
+
+    # Re-applying filters to raw data
+    dset_raw = fpp.sc_trans_filter(
+        dset_raw,
+        min_genes=data['uns']['min_genes'],
+        max_genes=data['uns']['max_genes'],
+        mito_pct=data['uns']['mito_pct']
+    )
+
+    fan.diff_exp(dset_raw, obs_var, groups_a, groups_b)
+
+    var.merge(dset_raw.var, how='outer', left_index=True, right_index=True)
+    data['var'] = dataframe_to_serial(var)
+
+    return data
