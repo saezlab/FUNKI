@@ -149,12 +149,8 @@ def diff_exp(data, design_factor, contrast_var, ref_var, n_cpus=8):
     :param n_cpus: Number of CPUs used for the calculation, defaults to ``8``
     :type n_cpus: int, optional
     
-    :returns: The table containing the results of the differential expression
-        analysis
-    :rtype: `pandas.DataFrame`_
-
-    .. _pandas.DataFrame: https://pandas.pydata.org/docs/reference/api/pandas.D\
-        ataFrame.html
+    :returns: ``None``, results are stored inplace of the passed ``data`` object
+    :rtype: NoneType
     '''
 
     if design_factor not in data.obs_keys():
@@ -181,6 +177,11 @@ def diff_exp(data, design_factor, contrast_var, ref_var, n_cpus=8):
         contrast=[design_factor, contrast_var, ref_var],
         inference=inference
     )
-
-    return result.results_df
+    # Adding results to DataSet.var table
+    data.var.merge(
+        result.results_df,
+        how='outer',
+        left_index=True,
+        right_index=True
+    )
 
