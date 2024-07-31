@@ -1,6 +1,8 @@
 import scanpy as sc
 import anndata as ad
 import decoupler as dc
+from pydeseq2.dds import DeseqDataSet, DefaultInference
+from pydeseq2.ds import DeseqStats
 
 from .input import DataSet
 
@@ -74,6 +76,7 @@ def sc_trans_qc_metrics(data, var_name='mito'):
 
     return DataSet(aux)
 
+# XXX: Can also be performed in bulk? not sc-specific?
 def sc_clustering(data, alg='leiden', resolution=1.0, neigh_kwargs={},
                   alg_kwargs={}):
     '''
@@ -122,3 +125,62 @@ def sc_clustering(data, alg='leiden', resolution=1.0, neigh_kwargs={},
 
     else:
         print('Algorithm not recognized, please use "leiden" or "louvain".')
+
+def diff_exp(data, design_factor, contrast_var, ref_var, n_cpus=8):
+    '''
+    Computes differential expression analysis on the provided data based on a
+    given design factor and both the contrast and reference variables (e.g.
+    treatment and control).
+
+    :param data: The data from which to compute the differential expression
+    :type data: :class:`funki.input.DataSet`
+    :param design_factor: Name of the column containing the variables which the
+        contrasting samples are assigned. The column must be present in the
+        ``data.obs`` table
+    :type design_factor: str
+    :param contrast_var: The variable value that defines the samples that are to
+        be contrasted against the reference (e.g. ``'treatment'``). The value
+        must be present in the specified ``design_factor`` column
+    :type contrast_var: str
+    :param ref_var: The variable value that defines the refence samples (e.g.
+        ``'control'``). The value must be present in the specified
+        ``design_factor`` column
+    :type ref_var: str
+    :param n_cpus: Number of CPUs used for the calculation, defaults to ``8``
+    :type n_cpus: int, optional
+    
+    :returns: The table containing the results of the differential expression
+        analysis
+    :rtype: `pandas.DataFrame`_
+
+    .. _pandas.DataFrame: https://pandas.pydata.org/docs/reference/api/pandas.D\
+        ataFrame.html
+    '''
+
+    if design_factor not in data.obs_keys():
+        msg = f'Design factor {design_factor} not found in provided DataSet'
+        raise KeyError(msg)
+    
+    elif not all(x in data.obs[design_factor] for x in [contrast_var, ref_var]):
+        msg = 'Contrast and/or reference value(s) not found in design factor'
+        raise ValueError(msg)
+    
+    # Using PyDESeq2 to calculate differential expression
+    inference = DefaultInference(n_cpus=n_cpus)
+    dds = DeseqDataSet(
+        adata=data,
+        design_factors=design_factor,
+        ref_level=[design_factor, ref_var],
+        refit_cooks=True,
+        inference=inference,
+    )
+    dds.deseq2()
+
+    result = DeseqStats(
+        dds,
+        contrast=[design_factor, contrast_var, ref_var],
+        inference=inference
+    )
+
+    return result.results_df
+
