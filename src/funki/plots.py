@@ -347,3 +347,55 @@ def plot_counts_vs_n_genes(data):
     fig.update_layout(xaxis_title='Counts', yaxis_title='Genes')
 
     return fig
+
+def plot_dex(data, logfc_thr=1.0, fdr_thr=0.05):
+    '''
+    Plots the results of the differential expression analisis as a volcano plot.
+
+    :param data: The data set from which to generate the figure
+    :type data: :class:`funki.input.DataSet`
+    :param logfc_thr: Threshold for signifacnce based on the log2(FC) value,
+        defaults to ``1.0``
+    :type logfc_thr: float, optional
+    :param fdr_thr: Threshold for signifacnce based on the FDR value, defaults
+        to ``0.05``
+    :type fdr_thr: float, optional
+
+    :returns: The figure contataining the resulting scatter plot
+    :rtype: `plotly.graph_objs.Figure`_
+
+    .. _plotly.graph_objs.Figure: https://plotly.com/python-api-reference/gener\
+        ated/plotly.graph_objects.Figure.html
+    '''
+
+    if any(x not in data.var_keys() for x in ['log2FoldChange', 'padj']):
+        raise KeyError(
+            'Results of differential expression not found in the DataSet '
+            'provided, please run funki.analysis.diff_exp() first'
+        )
+    
+    df = pd.DataFrame(
+        [data.var['log2FoldChange'], -np.log10(data.var['padj'])]
+    ).T
+    df.columns = ['log2(FC)', '-log10(FDR)']
+    df['sig'] = [
+        ('UP' if r['log2FoldChange'] >= logfc_thr else 'DW')
+        if r['padj'] <= fdr_thr and abs(r['log2FoldChange']) >= logfc_thr
+        else 'NS'
+        for i, r in data.var.iterrows()
+    ]
+
+    fig = px.scatter(
+        df,
+        x='log2(FC)',
+        y='-log10(FDR)',
+        color='sig',
+        color_discrete_map={
+            'NS': 'gray',
+            'UP': 'red',
+            'DW': 'blue'
+        },
+        title='Differential expression',
+    )
+
+    return fig
