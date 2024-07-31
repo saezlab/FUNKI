@@ -138,14 +138,14 @@ def diff_exp(data, design_factor, contrast_var, ref_var, n_cpus=8):
         contrasting samples are assigned. The column must be present in the
         ``data.obs`` table
     :type design_factor: str
-    :param contrast_var: The variable value that defines the samples that are to
-        be contrasted against the reference (e.g. ``'treatment'``). The value
+    :param contrast_var: The variable value(s) that defines the samples that are
+        to be contrasted against the reference (e.g. ``'treatment'``). The value
         must be present in the specified ``design_factor`` column
-    :type contrast_var: str
-    :param ref_var: The variable value that defines the refence samples (e.g.
+    :type contrast_var: any | list[any]
+    :param ref_var: The variable value(s) that defines the refence samples (e.g.
         ``'control'``). The value must be present in the specified
         ``design_factor`` column
-    :type ref_var: str
+    :type ref_var: any | list[any]
     :param n_cpus: Number of CPUs used for the calculation, defaults to ``8``
     :type n_cpus: int, optional
     
@@ -157,7 +157,11 @@ def diff_exp(data, design_factor, contrast_var, ref_var, n_cpus=8):
         msg = f'Design factor {design_factor} not found in provided DataSet'
         raise KeyError(msg)
     
-    elif not all(x in data.obs[design_factor] for x in [contrast_var, ref_var]):
+    # Converting to list if not already
+    ref = ref_var if type(ref_var) is list else [ref_var]
+    contrast = contrast_var if type(contrast_var) is list else [contrast_var]
+
+    if not all(x in data.obs[design_factor] for x in ref + contrast):
         msg = 'Contrast and/or reference value(s) not found in design factor'
         raise ValueError(msg)
     
@@ -166,17 +170,17 @@ def diff_exp(data, design_factor, contrast_var, ref_var, n_cpus=8):
     dds = DeseqDataSet(
         adata=data,
         design_factors=design_factor,
-        ref_level=[design_factor, ref_var],
+        ref_level=[design_factor] + ref,
         refit_cooks=True,
         inference=inference,
     )
     dds.deseq2()
-
     result = DeseqStats(
         dds,
-        contrast=[design_factor, contrast_var, ref_var],
+        contrast=[design_factor] + contrast + ref,
         inference=inference
     )
+
     # Adding results to DataSet.var table
     data.var.merge(
         result.results_df,
