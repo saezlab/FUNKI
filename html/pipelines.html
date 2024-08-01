@@ -9,7 +9,7 @@
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="_static/classic.css?v=204fb6f4" />
     
-    <script src="_static/documentation_options.js?v=1fd71caa"></script>
+    <script src="_static/documentation_options.js?v=01f34227"></script>
     <script src="_static/doctools.js?v=9a2dae69"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     
@@ -19,7 +19,7 @@
     <link rel="next" title="License" href="link_license.html" />
     <link rel="prev" title="funki.plots" href="plots.html" /> 
   </head><body>
-    <div class="related" role="navigation" aria-label="related navigation">
+    <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -46,6 +46,42 @@
             
   <section id="module-funki.pipelines">
 <span id="funki-pipelines"></span><h1>funki.pipelines<a class="headerlink" href="#module-funki.pipelines" title="Link to this heading">¶</a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="funki.pipelines.differential_expression">
+<span class="sig-prename descclassname"><span class="pre">funki.pipelines.</span></span><span class="sig-name descname"><span class="pre">differential_expression</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">design_factor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">contrast_var</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref_var</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logfc_thr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fdr_thr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_cpus</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#funki.pipelines.differential_expression" title="Link to this definition">¶</a></dt>
+<dd><p>Computes differential expression analysis on the provided data based on a
+given design factor and both the contrast and reference variables (e.g.
+treatment and control). Then generates the resulting volcano plot based on
+the desired thresholds.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<a class="reference internal" href="input.html#funki.input.DataSet" title="funki.input.DataSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">funki.input.DataSet</span></code></a>) – The data from which to compute the differential expression</p></li>
+<li><p><strong>design_factor</strong> (<em>str</em>) – Name of the column containing the variables which the
+contrasting samples are assigned. The column must be present in the
+<code class="docutils literal notranslate"><span class="pre">data.obs</span></code> table</p></li>
+<li><p><strong>contrast_var</strong> (<em>any</em><em> | </em><em>list</em><em>[</em><em>any</em><em>]</em>) – The variable value(s) that defines the samples that are
+to be contrasted against the reference (e.g. <code class="docutils literal notranslate"><span class="pre">'treatment'</span></code>). The value
+must be present in the specified <code class="docutils literal notranslate"><span class="pre">design_factor</span></code> column</p></li>
+<li><p><strong>ref_var</strong> (<em>any</em><em> | </em><em>list</em><em>[</em><em>any</em><em>]</em>) – The variable value(s) that defines the refence samples (e.g.
+<code class="docutils literal notranslate"><span class="pre">'control'</span></code>). The value must be present in the specified
+<code class="docutils literal notranslate"><span class="pre">design_factor</span></code> column</p></li>
+<li><p><strong>logfc_thr</strong> (<em>float</em><em>, </em><em>optional</em>) – Threshold for signifacnce based on the log2(FC) value,
+defaults to <code class="docutils literal notranslate"><span class="pre">1.0</span></code></p></li>
+<li><p><strong>fdr_thr</strong> (<em>float</em><em>, </em><em>optional</em>) – Threshold for signifacnce based on the FDR value, defaults
+to <code class="docutils literal notranslate"><span class="pre">0.05</span></code></p></li>
+<li><p><strong>n_cpus</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of CPUs used for the calculation, defaults to <code class="docutils literal notranslate"><span class="pre">8</span></code></p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The figure contataining the resulting scatter plot</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://plotly.com/python-api-reference/generated/plotly.graph_objects.Figure.html">plotly.graph_objs.Figure</a></p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py function">
 <dt class="sig sig-object py" id="funki.pipelines.sc_quality_control">
 <span class="sig-prename descclassname"><span class="pre">funki.pipelines.</span></span><span class="sig-name descname"><span class="pre">sc_quality_control</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#funki.pipelines.sc_quality_control" title="Link to this definition">¶</a></dt>
@@ -80,12 +116,13 @@ for different metrics and comparisons</p>
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
   <div>
     <h3><a href="index.html">Table of Contents</a></h3>
     <ul>
 <li><a class="reference internal" href="#">funki.pipelines</a><ul>
+<li><a class="reference internal" href="#funki.pipelines.differential_expression"><code class="docutils literal notranslate"><span class="pre">differential_expression()</span></code></a></li>
 <li><a class="reference internal" href="#funki.pipelines.sc_quality_control"><code class="docutils literal notranslate"><span class="pre">sc_quality_control()</span></code></a></li>
 </ul>
 </li>
@@ -123,7 +160,7 @@ for different metrics and comparisons</p>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related" role="navigation" aria-label="related navigation">
+    <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -144,7 +181,7 @@ for different metrics and comparisons</p>
     </div>
     <div class="footer" role="contentinfo">
     &#169; Copyright 2024, Nicolàs Palacio-Escat.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.3.7.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.4.7.
     </div>
   </body>
 </html>

@@ -9,7 +9,7 @@
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="_static/classic.css?v=204fb6f4" />
     
-    <script src="_static/documentation_options.js?v=1fd71caa"></script>
+    <script src="_static/documentation_options.js?v=01f34227"></script>
     <script src="_static/doctools.js?v=9a2dae69"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     
@@ -19,7 +19,7 @@
     <link rel="next" title="funki.plots" href="plots.html" />
     <link rel="prev" title="funki.preprocessing" href="preprocessing.html" /> 
   </head><body>
-    <div class="related" role="navigation" aria-label="related navigation">
+    <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -46,6 +46,37 @@
             
   <section id="module-funki.analysis">
 <span id="funki-analysis"></span><h1>funki.analysis<a class="headerlink" href="#module-funki.analysis" title="Link to this heading">¶</a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="funki.analysis.diff_exp">
+<span class="sig-prename descclassname"><span class="pre">funki.analysis.</span></span><span class="sig-name descname"><span class="pre">diff_exp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">design_factor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">contrast_var</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref_var</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_cpus</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#funki.analysis.diff_exp" title="Link to this definition">¶</a></dt>
+<dd><p>Computes differential expression analysis on the provided data based on a
+given design factor and both the contrast and reference variables (e.g.
+treatment and control).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<a class="reference internal" href="input.html#funki.input.DataSet" title="funki.input.DataSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">funki.input.DataSet</span></code></a>) – The data from which to compute the differential expression</p></li>
+<li><p><strong>design_factor</strong> (<em>str</em>) – Name of the column containing the variables which the
+contrasting samples are assigned. The column must be present in the
+<code class="docutils literal notranslate"><span class="pre">data.obs</span></code> table</p></li>
+<li><p><strong>contrast_var</strong> (<em>any</em><em> | </em><em>list</em><em>[</em><em>any</em><em>]</em>) – The variable value(s) that defines the samples that are
+to be contrasted against the reference (e.g. <code class="docutils literal notranslate"><span class="pre">'treatment'</span></code>). The value
+must be present in the specified <code class="docutils literal notranslate"><span class="pre">design_factor</span></code> column</p></li>
+<li><p><strong>ref_var</strong> (<em>any</em><em> | </em><em>list</em><em>[</em><em>any</em><em>]</em>) – The variable value(s) that defines the refence samples (e.g.
+<code class="docutils literal notranslate"><span class="pre">'control'</span></code>). The value must be present in the specified
+<code class="docutils literal notranslate"><span class="pre">design_factor</span></code> column</p></li>
+<li><p><strong>n_cpus</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of CPUs used for the calculation, defaults to <code class="docutils literal notranslate"><span class="pre">8</span></code></p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">None</span></code>, results are stored inplace of the passed <code class="docutils literal notranslate"><span class="pre">data</span></code> object</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>NoneType</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py function">
 <dt class="sig sig-object py" id="funki.analysis.enrich">
 <span class="sig-prename descclassname"><span class="pre">funki.analysis.</span></span><span class="sig-name descname"><span class="pre">enrich</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">net</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">methods</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#funki.analysis.enrich" title="Link to this definition">¶</a></dt>
@@ -143,12 +174,13 @@ thresholds</p>
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
   <div>
     <h3><a href="index.html">Table of Contents</a></h3>
     <ul>
 <li><a class="reference internal" href="#">funki.analysis</a><ul>
+<li><a class="reference internal" href="#funki.analysis.diff_exp"><code class="docutils literal notranslate"><span class="pre">diff_exp()</span></code></a></li>
 <li><a class="reference internal" href="#funki.analysis.enrich"><code class="docutils literal notranslate"><span class="pre">enrich()</span></code></a></li>
 <li><a class="reference internal" href="#funki.analysis.sc_clustering"><code class="docutils literal notranslate"><span class="pre">sc_clustering()</span></code></a></li>
 <li><a class="reference internal" href="#funki.analysis.sc_trans_qc_metrics"><code class="docutils literal notranslate"><span class="pre">sc_trans_qc_metrics()</span></code></a></li>
@@ -188,7 +220,7 @@ thresholds</p>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related" role="navigation" aria-label="related navigation">
+    <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -209,7 +241,7 @@ thresholds</p>
     </div>
     <div class="footer" role="contentinfo">
     &#169; Copyright 2024, Nicolàs Palacio-Escat.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.3.7.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.4.7.
     </div>
   </body>
 </html>

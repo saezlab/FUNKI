@@ -9,7 +9,7 @@
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="_static/classic.css?v=204fb6f4" />
     
-    <script src="_static/documentation_options.js?v=1fd71caa"></script>
+    <script src="_static/documentation_options.js?v=01f34227"></script>
     <script src="_static/doctools.js?v=9a2dae69"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     
@@ -19,7 +19,7 @@
     <link rel="next" title="funki.pipelines" href="pipelines.html" />
     <link rel="prev" title="funki.analysis" href="analysis.html" /> 
   </head><body>
-    <div class="related" role="navigation" aria-label="related navigation">
+    <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -72,6 +72,29 @@ versus total gene counts.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>data</strong> (<a class="reference internal" href="input.html#funki.input.DataSet" title="funki.input.DataSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">funki.input.DataSet</span></code></a>) – The data set from which to generate the figure</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The figure contataining the resulting scatter plot</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://plotly.com/python-api-reference/generated/plotly.graph_objects.Figure.html">plotly.graph_objs.Figure</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="funki.plots.plot_dex">
+<span class="sig-prename descclassname"><span class="pre">funki.plots.</span></span><span class="sig-name descname"><span class="pre">plot_dex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logfc_thr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fdr_thr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.05</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#funki.plots.plot_dex" title="Link to this definition">¶</a></dt>
+<dd><p>Plots the results of the differential expression analisis as a volcano plot.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<a class="reference internal" href="input.html#funki.input.DataSet" title="funki.input.DataSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">funki.input.DataSet</span></code></a>) – The data set from which to generate the figure</p></li>
+<li><p><strong>logfc_thr</strong> (<em>float</em><em>, </em><em>optional</em>) – Threshold for signifacnce based on the log2(FC) value,
+defaults to <code class="docutils literal notranslate"><span class="pre">1.0</span></code></p></li>
+<li><p><strong>fdr_thr</strong> (<em>float</em><em>, </em><em>optional</em>) – Threshold for signifacnce based on the FDR value, defaults
+to <code class="docutils literal notranslate"><span class="pre">0.05</span></code></p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>The figure contataining the resulting scatter plot</p>
@@ -241,7 +264,7 @@ embedding</p>
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
         <div class="sphinxsidebarwrapper">
   <div>
     <h3><a href="index.html">Table of Contents</a></h3>
@@ -249,6 +272,7 @@ embedding</p>
 <li><a class="reference internal" href="#">funki.plots</a><ul>
 <li><a class="reference internal" href="#funki.plots.plot_counts_vs_n_genes"><code class="docutils literal notranslate"><span class="pre">plot_counts_vs_n_genes()</span></code></a></li>
 <li><a class="reference internal" href="#funki.plots.plot_counts_vs_pct_mito"><code class="docutils literal notranslate"><span class="pre">plot_counts_vs_pct_mito()</span></code></a></li>
+<li><a class="reference internal" href="#funki.plots.plot_dex"><code class="docutils literal notranslate"><span class="pre">plot_dex()</span></code></a></li>
 <li><a class="reference internal" href="#funki.plots.plot_highest_expr"><code class="docutils literal notranslate"><span class="pre">plot_highest_expr()</span></code></a></li>
 <li><a class="reference internal" href="#funki.plots.plot_n_genes"><code class="docutils literal notranslate"><span class="pre">plot_n_genes()</span></code></a></li>
 <li><a class="reference internal" href="#funki.plots.plot_pca"><code class="docutils literal notranslate"><span class="pre">plot_pca()</span></code></a></li>
@@ -292,7 +316,7 @@ embedding</p>
       </div>
       <div class="clearer"></div>
     </div>
-    <div class="related" role="navigation" aria-label="related navigation">
+    <div class="related" role="navigation" aria-label="Related">
       <h3>Navigation</h3>
       <ul>
         <li class="right" style="margin-right: 10px">
@@ -313,7 +337,7 @@ embedding</p>
     </div>
     <div class="footer" role="contentinfo">
     &#169; Copyright 2024, Nicolàs Palacio-Escat.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.3.7.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.4.7.
     </div>
   </body>
 </html>
