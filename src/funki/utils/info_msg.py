@@ -52,6 +52,16 @@ msg = {
         'negative infinite and also, since log(1)=0, non-detected genes remain '
         'valued as zero after the transformation.'
     ),
+    'dex': (
+        'Here we perform the differential expression analysis between two '
+        'groups of samples thanks to the package "PyDESeq2". First, you need '
+        'to select over which variable of the metadata the groups of samples '
+        'are defined (e.g. "condition"). Once selected, you can select which '
+        'value(s) define the contrasting groups. For instance, if the metadata '
+        'table contains a "condition" column with values "treatment" and '
+        '"control", you can select these on the left and right dropdown menus '
+        'respectively to compute the differential expression between these.'
+    ),
     'embedding': (
         'Embedding, also known as dimensionality reduction algorithms, help us '
         'visualize multi-dimensional data (e.g. cells expressing N number of '

@@ -17,7 +17,7 @@ app = Dash(
     title='FUNKI',
 )
 
-storage_type = 'session'#'memory'
+storage_type = 'memory'
 
 # ================================== LAYOUT ================================== #
 

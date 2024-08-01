@@ -9,7 +9,6 @@ import plotly.graph_objects as go
 import pandas as pd
 
 from utils import serial_to_dataset
-from utils import dataset_to_serial
 from utils import serial_to_dataframe
 from utils import dataframe_to_serial
 from utils import info
@@ -18,8 +17,8 @@ from utils.style import tab_selected_style
 from utils.style import page_style
 from utils.style import header_style
 from funki import _colors
-import funki.analysis as fan
 import funki.preprocessing as fpp
+import funki.pipelines as fppl
 
 
 # ================================== LAYOUT ================================== #
@@ -31,6 +30,12 @@ tab_difexp = dcc.Tab(
         children=[
             html.H1('Differential expression analysis', style=header_style),
             html.Br(),
+            html.H3(
+                children=[
+                    'Select contrasting variables:',
+                    info('dex'),
+                ]
+            ),
             'Choose group variable for the contrast:',
             dcc.Dropdown(
                 id='obs-selector',
@@ -78,8 +83,19 @@ tab_difexp = dcc.Tab(
                     'pad': 10
                 }
             ),
+            html.Br(),
+            html.Br(),
             html.Button(
+                'Calculate differential expression',
                 id='apply-dex',
+            ),
+            dcc.Loading(
+                dcc.Graph(id='plot-dex'),
+                color=_colors['teal']
+            ),
+            html.Button(
+                'Open plot in new tab',
+                id='nw-plot-dex',
             ),
         ],
         style=page_style,
@@ -139,6 +155,7 @@ def update_group_selector(data, obs_var, va, vb):
 
 @callback(
     Output('data', 'data', allow_duplicate=True),
+    Output('plot-dex', 'figure'),
     Input('apply-dex', 'n_clicks'),
     State('data', 'data'),
     State('obs-selector', 'value'),
@@ -149,21 +166,55 @@ def update_group_selector(data, obs_var, va, vb):
 def apply_dex(n_clicks, data, obs_var, groups_a, groups_b):
     if data is None:
         raise PreventUpdate
+    
+    if not all([obs_var, groups_a, groups_b]):
+        raise PreventUpdate
 
     dset_raw = serial_to_dataset(data['raw'])
-    var = serial_to_dataframe(data['var'])
+    dset_raw.obs = serial_to_dataframe(data['obs'])
+    
+    # Retrieve var as dataframe if available
+    if 'var' in data.keys():
+        var = serial_to_dataframe(data['var'])
+    
+    else:
+        var = pd.DataFrame(index=data['var_names'])
 
-    # Re-applying filters to raw data
-    dset_raw = fpp.sc_trans_filter(
+    # Re-applying filters to raw data if any
+    if 'uns' in data:
+        uns = data['uns']
+        dset_raw = fpp.sc_trans_filter(
+            dset_raw,
+            min_genes=uns['min_genes'] if 'min_genes' in uns.keys() else None,
+            max_genes=uns['max_genes'] if 'max_genes' in uns.keys() else None,
+            mito_pct=uns['mito_pct'] if 'mito_pct' in uns.keys() else None
+        )
+
+    fig = fppl.differential_expression(
         dset_raw,
-        min_genes=data['uns']['min_genes'],
-        max_genes=data['uns']['max_genes'],
-        mito_pct=data['uns']['mito_pct']
+        obs_var,
+        groups_a,
+        groups_b,
+        # TODO: Add user-selected thresholds
+        logfc_thr=1.0,
+        fdr_thr=0.05,
     )
 
-    fan.diff_exp(dset_raw, obs_var, groups_a, groups_b)
-
-    var.merge(dset_raw.var, how='outer', left_index=True, right_index=True)
+    var = var.merge(
+        dset_raw.var,
+        how='outer',
+        left_index=True,
+        right_index=True
+    )
+    
     data['var'] = dataframe_to_serial(var)
 
-    return data
+    return data, fig
+
+@callback(
+    Input('nw-plot-dex', 'n_clicks'),
+    State('plot-dex', 'figure')
+)
+def plot_embedding_new_tab(n_clicks, fig):
+    if fig:
+        return go.Figure(fig).show()
