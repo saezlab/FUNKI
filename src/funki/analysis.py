@@ -161,7 +161,7 @@ def diff_exp(data, design_factor, contrast_var, ref_var, n_cpus=8):
     ref = ref_var if type(ref_var) is list else [ref_var]
     contrast = contrast_var if type(contrast_var) is list else [contrast_var]
 
-    if not all(x in data.obs[design_factor] for x in ref + contrast):
+    if not all(x in data.obs[design_factor].values for x in ref + contrast):
         msg = 'Contrast and/or reference value(s) not found in design factor'
         raise ValueError(msg)
     
