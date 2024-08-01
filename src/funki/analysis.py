@@ -180,12 +180,12 @@ def diff_exp(data, design_factor, contrast_var, ref_var, n_cpus=8):
         contrast=[design_factor] + contrast + ref,
         inference=inference
     )
+    result.summary()
 
     # Adding results to DataSet.var table
-    data.var.merge(
+    data.var = data.var.merge(
         result.results_df,
         how='outer',
         left_index=True,
         right_index=True
     )
-
