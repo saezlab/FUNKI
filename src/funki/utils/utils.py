@@ -71,7 +71,7 @@ def serial_to_dataset(data):
     if 'raw' in data.keys():
         kwargs.update({'raw': serial_to_dataset(data['raw'])})
 
-    return DataSet(df, **kwargs)
+    return DataSet(df.astype(np.float32), **kwargs)
 
 def dataset_to_serial(dset):
     data = dataframe_to_serial(dset.to_df())

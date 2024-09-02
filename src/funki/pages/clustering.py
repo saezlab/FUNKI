@@ -342,10 +342,9 @@ def plot_embedding(
 ):
     if data is None:
         raise PreventUpdate
-    
+
     dset = serial_to_dataset(data)
-    print(dset)
-    
+
     # Run Harmony?
     if harmony and hvar:
         fpp.harmonize(

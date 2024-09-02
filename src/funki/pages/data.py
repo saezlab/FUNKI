@@ -1,3 +1,4 @@
+import numpy as np
 import pandas as pd
 from dash import html
 from dash import dcc
@@ -221,7 +222,7 @@ def load_data(content, filename, sep):
     if filename is None:
         raise PreventUpdate
     
-    df = parse_contents(content, filename, sep=sep)
+    df = parse_contents(content, filename, sep=sep).astype(np.float32)
 
     serial = dataframe_to_serial(df)
     serial.update({'raw': dataframe_to_serial(df.copy())})
