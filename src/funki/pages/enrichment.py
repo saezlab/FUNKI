@@ -38,7 +38,7 @@ tab_enrichment = dcc.Tab(
     value='tab-enrichment',
     children=html.Div(
         children=[
-            html.H1('Clustering', style=header_style),
+            html.H1('Enrichment', style=header_style),
             html.Br(),
             html.Div(
                 children=[
