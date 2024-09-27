@@ -50,7 +50,7 @@ def enrich(data, net, methods=None, weight=None, **kwargs):
 
     dc.decouple(aux, net, methods=methods, use_raw=False, weight=weight,
                 **kwargs)
-    
+
     # Updating back the results to the original DataSet object
     data.obsm.update(aux.obsm)
  
@@ -102,7 +102,7 @@ def sc_clustering(data, alg='leiden', resolution=1.0, neigh_kwargs={},
         clustering algorithm `scanpy.tl.louvain()`_ or `scanpy.tl.leiden()`_
         functions, defaults to ``{}``
     :type \*\*alg_kwargs: dict, optional
-    
+
     :returns: ``None``, results are stored inplace of the passed ``data`` object
     :rtype: NoneType
 
@@ -148,7 +148,7 @@ def diff_exp(data, design_factor, contrast_var, ref_var, n_cpus=8):
     :type ref_var: any | list[any]
     :param n_cpus: Number of CPUs used for the calculation, defaults to ``8``
     :type n_cpus: int, optional
-    
+
     :returns: ``None``, results are stored inplace of the passed ``data`` object
     :rtype: NoneType
     '''
@@ -156,7 +156,7 @@ def diff_exp(data, design_factor, contrast_var, ref_var, n_cpus=8):
     if design_factor not in data.obs_keys():
         msg = f'Design factor {design_factor} not found in provided DataSet'
         raise KeyError(msg)
-    
+
     # Converting to list if not already
     ref = ref_var if type(ref_var) is list else [ref_var]
     contrast = contrast_var if type(contrast_var) is list else [contrast_var]
@@ -164,7 +164,7 @@ def diff_exp(data, design_factor, contrast_var, ref_var, n_cpus=8):
     if not all(x in data.obs[design_factor].values for x in ref + contrast):
         msg = 'Contrast and/or reference value(s) not found in design factor'
         raise ValueError(msg)
-    
+
     # Using PyDESeq2 to calculate differential expression
     inference = DefaultInference(n_cpus=n_cpus)
     dds = DeseqDataSet(
@@ -189,3 +189,28 @@ def diff_exp(data, design_factor, contrast_var, ref_var, n_cpus=8):
         left_index=True,
         right_index=True
     )
+
+def label_transfer(data, ref_data, transfer_label): #TODO: test
+    '''
+    Performs label transfer between the provided reference and target data sets.
+
+    :param data:
+    :type data: :class:`funki.input.DataSet`
+    :param ref_data:
+    :type ref_data: :class:`funki.input.DataSet` | `anndata.AnnData`
+    :param transfer_label:
+    :type transfer_label: str
+    '''
+
+    if transfer_label not in ref_data.obs:
+        raise KeyError(f'{transfer_label} could not be found in reference data')
+
+    if 'neighbors' not in ref_data.uns:
+        sc.pp.neighbors(ref_data)
+
+    # Subsetting to common genes in both reference and target data sets
+    common = set(data.var_names).intersection(ref_data.var_names)
+    data = data[:, common]
+    ref_data = ref_data[:, common]
+
+    sc.tl.ingest(data, ref_data, obs=transfer_label)
