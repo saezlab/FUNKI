@@ -112,6 +112,21 @@ as part of the <code class="docutils literal notranslate"><span class="pre">obsm
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="funki.analysis.label_transfer">
+<span class="sig-prename descclassname"><span class="pre">funki.analysis.</span></span><span class="sig-name descname"><span class="pre">label_transfer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transfer_label</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#funki.analysis.label_transfer" title="Link to this definition">¶</a></dt>
+<dd><p>Performs label transfer between the provided reference and target data sets.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<a class="reference internal" href="input.html#funki.input.DataSet" title="funki.input.DataSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">funki.input.DataSet</span></code></a>)</p></li>
+<li><p><strong>ref_data</strong> (<a class="reference internal" href="input.html#funki.input.DataSet" title="funki.input.DataSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">funki.input.DataSet</span></code></a> | <cite>anndata.AnnData</cite>)</p></li>
+<li><p><strong>transfer_label</strong> (<em>str</em>)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="funki.analysis.sc_clustering">
 <span class="sig-prename descclassname"><span class="pre">funki.analysis.</span></span><span class="sig-name descname"><span class="pre">sc_clustering</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'leiden'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resolution</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">neigh_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#funki.analysis.sc_clustering" title="Link to this definition">¶</a></dt>
 <dd><p>Computes the clustering of the cells according to the selected algorithm and
@@ -182,6 +197,7 @@ thresholds</p>
 <li><a class="reference internal" href="#">funki.analysis</a><ul>
 <li><a class="reference internal" href="#funki.analysis.diff_exp"><code class="docutils literal notranslate"><span class="pre">diff_exp()</span></code></a></li>
 <li><a class="reference internal" href="#funki.analysis.enrich"><code class="docutils literal notranslate"><span class="pre">enrich()</span></code></a></li>
+<li><a class="reference internal" href="#funki.analysis.label_transfer"><code class="docutils literal notranslate"><span class="pre">label_transfer()</span></code></a></li>
 <li><a class="reference internal" href="#funki.analysis.sc_clustering"><code class="docutils literal notranslate"><span class="pre">sc_clustering()</span></code></a></li>
 <li><a class="reference internal" href="#funki.analysis.sc_trans_qc_metrics"><code class="docutils literal notranslate"><span class="pre">sc_trans_qc_metrics()</span></code></a></li>
 </ul>
