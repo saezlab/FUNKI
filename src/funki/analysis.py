@@ -190,16 +190,27 @@ def diff_exp(data, design_factor, contrast_var, ref_var, n_cpus=8):
         right_index=True
     )
 
-def label_transfer(data, ref_data, transfer_label): #TODO: test
+def label_transfer(data, ref_data, transfer_label, **kwargs):
     '''
     Performs label transfer between the provided reference and target data sets.
 
     :param data:
+        The target data set for the labels to be transferred to.
     :type data: :class:`funki.input.DataSet`
     :param ref_data:
+        The reference data set to transfer the labels from. The labels to
+        transfer must be present in the ``obs`` table.
     :type ref_data: :class:`funki.input.DataSet` | `anndata.AnnData`
     :param transfer_label:
+        The column from the ``obs`` table which contains the labels that are to
+        be transferred.
     :type transfer_label: str
+    :param \*\*kwargs: Other keyword arguments that are passed to the
+        label transfer function `scanpy.tl.ingest()`_.
+    :type \*\*kwargs: optional
+
+    .. _scanpy.tl.ingest(): https://scanpy.readthedocs.io/en/stable/generated/s\
+        canpy.tl.ingest.html
     '''
 
     if transfer_label not in ref_data.obs:
@@ -209,8 +220,8 @@ def label_transfer(data, ref_data, transfer_label): #TODO: test
         sc.pp.neighbors(ref_data)
 
     # Subsetting to common genes in both reference and target data sets
-    common = set(data.var_names).intersection(ref_data.var_names)
+    common = sorted(set(data.var_names).intersection(ref_data.var_names))
     data = data[:, common]
     ref_data = ref_data[:, common]
 
-    sc.tl.ingest(data, ref_data, obs=transfer_label)
+    sc.tl.ingest(data, ref_data, obs=transfer_label, **kwargs)
