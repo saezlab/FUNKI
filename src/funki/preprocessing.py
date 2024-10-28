@@ -27,6 +27,13 @@ def sc_trans_filter(data, min_genes=None, max_genes=None, mito_pct=None):
     :rtype: :class:`funki.input.DataSet`
     '''
 
+    # Storing parameters
+    data.uns['funki']['sc_trans_filter'] = {
+        'min_genes': min_genes,
+        'max_genes': max_genes,
+        'mito_pct': mito_pct,
+    }
+
     aux = data.copy()
 
     if min_genes:
@@ -63,6 +70,12 @@ def sc_trans_normalize_total(data, target_sum=1e6, log_transform=False):
     :rtype: :class:`funki.input.DataSet`
     '''
 
+    # Storing parameters
+    data.uns['funki']['sc_trans_normalize_total'] = {
+        'target_sum': target_sum,
+        'log_transform': log_transform,
+    }
+
     aux = data.copy()
     
     if target_sum:
@@ -97,6 +110,14 @@ def harmonize(data, vars_use, use_highly_variable=True, recalculate=False,
 
     .. _Harmony: https://portals.broadinstitute.org/harmony/
     '''
+
+    # Storing parameters
+    data.uns['funki']['harmonize'] = {
+        'vars_use': vars_use,
+        'use_highly_variable': use_highly_variable,
+        'recalculate': recalculate,
+        **kwargs
+    }
 
     if recalculate:
         data._del_meta({'obsm': 'X_pca'})
