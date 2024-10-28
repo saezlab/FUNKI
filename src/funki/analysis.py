@@ -45,6 +45,13 @@ def enrich(data, net, methods=None, weight=None, **kwargs):
         erated/decoupler.decouple.html#decoupler.decouple
     '''
 
+    # Storing parameters
+    data.uns['funki']['enrich'] = {
+        'methods': methods,
+        'weight': weight,
+        **kwargs,
+    }
+
     # Making copy as AnnData to bypass Decoupler type checks
     aux = ad.AnnData(data.copy())
 
@@ -69,6 +76,11 @@ def sc_trans_qc_metrics(data, var_name='mito'):
         thresholds
     :rtype: :class:`funki.input.DataSet`
     '''
+
+    # Storing parameters
+    data.uns['funki']['sc_trans_qc_metrics'] = {
+        'var_name': var_name,
+    }
 
     aux = data.copy()
     sc.pp.calculate_qc_metrics(aux, qc_vars=[var_name], percent_top=None,
@@ -114,6 +126,14 @@ def sc_clustering(data, alg='leiden', resolution=1.0, neigh_kwargs={},
         ed/scanpy.tl.leiden.html
     '''
 
+    # Storing parameters
+    data.uns['funki']['sc_clustering'] = {
+        'alg': alg,
+        'resolution': resolution,
+        'neigh_kwargs': neigh_kwargs,
+        'alg_kwargs': alg_kwargs,
+    }
+
     if not 'neighbors' in data.uns:
         sc.pp.neighbors(data, **neigh_kwargs)
 
@@ -152,6 +172,14 @@ def diff_exp(data, design_factor, contrast_var, ref_var, n_cpus=8):
     :returns: ``None``, results are stored inplace of the passed ``data`` object
     :rtype: NoneType
     '''
+
+    # Storing parameters
+    data.uns['funki']['diff_exp'] = {
+        'design_factor': design_factor,
+        'contrast_var': contrast_var,
+        'ref_var': ref_var,
+        'n_cpus': n_cpus,
+    }
 
     if design_factor not in data.obs_keys():
         msg = f'Design factor {design_factor} not found in provided DataSet'
@@ -212,6 +240,12 @@ def label_transfer(data, ref_data, transfer_label, **kwargs):
     .. _scanpy.tl.ingest(): https://scanpy.readthedocs.io/en/stable/generated/s\
         canpy.tl.ingest.html
     '''
+
+    # Storing parameters
+    data.uns['funki']['label_transfer'] = {
+        'transfer_label': transfer_label,
+        **kwargs
+    }
 
     if transfer_label not in ref_data.obs:
         raise KeyError(f'{transfer_label} could not be found in reference data')
