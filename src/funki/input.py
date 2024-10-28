@@ -36,6 +36,7 @@ class DataSet(anndata.AnnData):
 
     def __init__(self, X=None, **kwargs):
         super().__init__(X, **kwargs)
+        self.uns['funki'] = dict()
 
     def __getitem__(self, index):
         '''
@@ -157,6 +158,29 @@ class DataSet(anndata.AnnData):
         self.__dict__.update(pickle.loads(serial).__dict__)
 
         return self
+    
+    def save_params(self, path='funki_params.json'):
+        '''
+        Saves the analysis parameters into a JSON file.
+
+        :param path: Destination path for the parameters file. Optional,
+            defaults to ``'funki_params.json'``.
+        :type path: str
+        '''
+
+        with open(path, 'w') as f:
+            json.dump(self.uns['funki'], f)
+
+    def load_params(self, path):
+        '''
+        Loads the analysis parameters from a JSON file.
+
+        :param path: Path where the parameters file is stored.
+        :type path: str
+        '''
+
+        with open(path, 'r') as f:
+            self.uns['funki'] = json.load(f)
 
 
 def read(path, *args, **kwargs):
