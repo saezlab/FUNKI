@@ -1,6 +1,11 @@
 from dash import Dash
 from dash import html
 from dash import dcc
+from dash import Input
+from dash import Output
+from dash import State
+from dash import callback
+from dash.exceptions import PreventUpdate
 
 from funki import _colors
 from pages.home import tab_home
@@ -60,6 +65,19 @@ app.layout = html.Div(
                 'primary': _colors['aqua'],
             }
         ),
+        html.Br(),
+        html.Button(
+            'Save config',
+            id='save-config-button',
+            style={'width': 90},
+        ),
+        dcc.Dowload('save-config'),
+        html.Br(),
+        html.Button(
+            'Load config',
+            id='load-config-button',
+            style={'width': 90},
+        ),
         html.Div(
             'Developed by Nicolàs Palacio-Escat - Saezlab 2024',
             style={
@@ -70,6 +88,22 @@ app.layout = html.Div(
     ],
     style=global_style,
 )
+
+# ================================ CALLBACKS ================================= #
+
+@callback(
+    Output('save-config', 'data'),
+    Input('save-config-button', 'n_clicks'),
+    State('data', 'data'),
+    prevent_initial_call=True,
+)
+def save_config(n_clicks):
+    if data is None:
+        raise PreventUpdate
+    
+    params = data['uns']['funki']
+
+    return dict(content="Hello world!", filename="hello.txt")
 
 # ============================================================================ #
 
