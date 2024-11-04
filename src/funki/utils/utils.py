@@ -106,6 +106,41 @@ def dataset_to_serial(dset):
 
     return data
 
+def uns_to_serial(uns):
+    res = dict()
+
+    for k, v in uns.items():
+        if isinstance(v, dict):
+            res[k] = uns_to_serial(v)
+
+        elif isinstance(v, pd.DataFrame):
+            res[k] = dataframe_to_serial(v)
+
+        elif isinstance(v, np.ndarray): # TODO: Deal better with arrays (shape)
+            res[k] = v.tolist()
+
+        else:
+            res[k] = v
+
+    return res
+
+def serial_to_uns(dct):
+    res = dict()
+
+    for k, v in dct.items():
+        if isinstance(v, dict):
+            if 'X' in v.keys():
+                res[k] = serial_to_dataframe(v)
+            
+            else:
+                res[k] = serial_to_uns(v)
+        
+        elif isinstance(v, list):
+            res[k] = np.ndarray(v)
+
+        else:
+            res[k] = v
+
 def md_to_str(path):
     with open(path) as f:
         md = '\n \t'
