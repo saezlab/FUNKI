@@ -7,15 +7,22 @@ import anndata
 # TODO: Implement concat function returning DataSet
 # TODO: Re-implement __repr__
 
+# Handling new I/O for anndata 0.11.0
+try:
+    io = anndata.io
+
+except AttributeError:
+    io = anndata
+
 _read_ext = {
-    '.csv': anndata.io.read_csv,
-    '.h5ad': anndata.io.read_h5ad,
-    '.xlsx': anndata.io.read_excel,
-    '.h5': anndata.io.read_hdf,
-    '.loom': anndata.io.read_loom,
-    '.mtx': anndata.io.read_mtx,
-    '.gz': anndata.io.read_umi_tools,
-    '.txt': anndata.io.read_text, # Wildcard
+    '.csv': io.read_csv,
+    '.h5ad': io.read_h5ad,
+    '.xlsx': io.read_excel,
+    '.h5': io.read_hdf,
+    '.loom': io.read_loom,
+    '.mtx': io.read_mtx,
+    '.gz': io.read_umi_tools,
+    '.txt': io.read_text, # Wildcard
 }
 
 
