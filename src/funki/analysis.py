@@ -88,18 +88,17 @@ def sc_trans_qc_metrics(data, var_name='mito'):
 
     return DataSet(aux)
 
-# XXX: Can also be performed in bulk? not sc-specific?
-def sc_clustering(data, alg='leiden', resolution=1.0, neigh_kwargs={},
+def clustering(data, alg='leiden', resolution=1.0, neigh_kwargs={},
                   alg_kwargs={}):
     '''
-    Computes the clustering of the cells according to the selected algorithm and
-    resolution parameter. You can plot the resulting clustering with your
-    dimensionality reduction approach of choice (:func:`funki.plots.plot_pca`,
-    :func:`funki.plots.plot_tsne` or :func:`funki.plots.plot_umap`) by passing
-    the clustering algorithm name to the keyword argument ``color`` (e.g.:
-    ``plot_tsne(mydata, color='leiden')``)
+    Computes the clustering of the cells/samples according to the selected
+    algorithm and resolution parameter. You can plot the resulting clustering
+    with your dimensionality reduction approach of choice
+    (:func:`funki.plots.plot_pca`, :func:`funki.plots.plot_tsne` or
+    :func:`funki.plots.plot_umap`) by passing the clustering algorithm name to
+    the keyword argument ``color`` (e.g.: ``plot_tsne(mydata, color='leiden')``)
 
-    :param data: A single-cell transcriptomic data set instance
+    :param data: The data set instance from which to compute the clustering.
     :type data: :class:`funki.input.DataSet`
     :param alg: The algorithm to use for computing the clusters, can be either
         ``'leiden'`` or ``'louvain'``, defaults to ``'leiden'``
@@ -109,11 +108,11 @@ def sc_clustering(data, alg='leiden', resolution=1.0, neigh_kwargs={},
     :type resolution: float, optional
     :param \*\*neigh_kwargs: Other keyword arguments that are passed to
         `scanpy.pp.neighbors()`_ function, defaults to ``{}``
-    :type \*\*neigh_kwargs: dict, optional
+    :type \*\*neigh_kwargs: dict[str, any], optional
     :param \*\*alg_kwargs: Other keyword arguments that are passed to the
         clustering algorithm `scanpy.tl.louvain()`_ or `scanpy.tl.leiden()`_
         functions, defaults to ``{}``
-    :type \*\*alg_kwargs: dict, optional
+    :type \*\*alg_kwargs: dict[str, any], optional
 
     :returns: ``None``, results are stored inplace of the passed ``data`` object
     :rtype: NoneType
@@ -127,7 +126,7 @@ def sc_clustering(data, alg='leiden', resolution=1.0, neigh_kwargs={},
     '''
 
     # Storing parameters
-    data.uns['funki']['sc_clustering'] = {
+    data.uns['funki']['clustering'] = {
         'alg': alg,
         'resolution': resolution,
         'neigh_kwargs': neigh_kwargs,

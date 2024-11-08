@@ -299,7 +299,7 @@ def apply_clustering(n_clicks, data, algorithm, resolution):
     
     dset = serial_to_dataset(data)
 
-    fan.sc_clustering(dset, alg=algorithm, resolution=resolution)
+    fan.clustering(dset, alg=algorithm, resolution=resolution)
     
     return dataset_to_serial(dset), False
 
