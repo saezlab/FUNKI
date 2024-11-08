@@ -8,14 +8,14 @@ import anndata
 # TODO: Re-implement __repr__
 
 _read_ext = {
-    '.csv': anndata.read_csv,
-    '.h5ad': anndata.read_h5ad,
-    '.xlsx': anndata.read_excel,
-    '.h5': anndata.read_hdf,
-    '.loom': anndata.read_loom,
-    '.mtx': anndata.read_mtx,
-    '.gz': anndata.read_umi_tools,
-    '.txt': anndata.read_text, # Wildcard
+    '.csv': anndata.io.read_csv,
+    '.h5ad': anndata.io.read_h5ad,
+    '.xlsx': anndata.io.read_excel,
+    '.h5': anndata.io.read_hdf,
+    '.loom': anndata.io.read_loom,
+    '.mtx': anndata.io.read_mtx,
+    '.gz': anndata.io.read_umi_tools,
+    '.txt': anndata.io.read_text, # Wildcard
 }
 
 
