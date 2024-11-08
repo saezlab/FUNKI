@@ -12,6 +12,12 @@ If you have any ideas/suggestions or if you find any bug, please feel free to
 open an [GitHub issue](https://github.com/saezlab/FUNKI/issues). You can also
 contribute via [pull request](https://github.com/saezlab/FUNKI/pulls).
 
+This package is being developed by Nicolàs Palacio-Escat based on previous work
+from Hanna Schumacher and Rosa Hernansaiz-Ballesteros as part of the Saezlab,
+Institute for Computational Biomedicine, Univeristy Hospital Heidelberg.
+
+This work is being funded by the CRC 1550 - Molecular Circuits of Heart Disease.
+
 ## Installation
 To install FUNKI in your local computer you can use `pip` as follows:
 
@@ -47,8 +53,12 @@ This should automatically open the application in your default internet browser.
 If that is not the case, you can type or copy the following address (default)
 in the  browser bar: `http://127.0.0.1:8050/`
 
-**Note:** Refreshing the page will also restart the application.
+**Note:** Refreshing the browser page will also restart the application.
 
 ## Documentation
 You can find the full documentation in the
 [FUNKI documentation webpage](https://saezlab.github.io/FUNKI/).
+
+---
+
+Developed by Nicolàs Palacio-Escat - Saezlab 2024
