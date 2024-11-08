@@ -71,7 +71,7 @@ app.layout = html.Div(
             id='save-config-button',
             style={'width': 90},
         ),
-        dcc.Dowload('save-config'),
+        dcc.Download('save-config'),
         html.Br(),
         html.Button(
             'Load config',
