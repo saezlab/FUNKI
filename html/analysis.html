@@ -47,6 +47,39 @@
   <section id="module-funki.analysis">
 <span id="funki-analysis"></span><h1>funki.analysis<a class="headerlink" href="#module-funki.analysis" title="Link to this heading">¶</a></h1>
 <dl class="py function">
+<dt class="sig sig-object py" id="funki.analysis.clustering">
+<span class="sig-prename descclassname"><span class="pre">funki.analysis.</span></span><span class="sig-name descname"><span class="pre">clustering</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'leiden'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resolution</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">neigh_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#funki.analysis.clustering" title="Link to this definition">¶</a></dt>
+<dd><p>Computes the clustering of the cells/samples according to the selected
+algorithm and resolution parameter. You can plot the resulting clustering
+with your dimensionality reduction approach of choice
+(<a class="reference internal" href="plots.html#funki.plots.plot_pca" title="funki.plots.plot_pca"><code class="xref py py-func docutils literal notranslate"><span class="pre">funki.plots.plot_pca()</span></code></a>, <a class="reference internal" href="plots.html#funki.plots.plot_tsne" title="funki.plots.plot_tsne"><code class="xref py py-func docutils literal notranslate"><span class="pre">funki.plots.plot_tsne()</span></code></a> or
+<a class="reference internal" href="plots.html#funki.plots.plot_umap" title="funki.plots.plot_umap"><code class="xref py py-func docutils literal notranslate"><span class="pre">funki.plots.plot_umap()</span></code></a>) by passing the clustering algorithm name to
+the keyword argument <code class="docutils literal notranslate"><span class="pre">color</span></code> (e.g.: <code class="docutils literal notranslate"><span class="pre">plot_tsne(mydata,</span> <span class="pre">color='leiden')</span></code>)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<a class="reference internal" href="input.html#funki.input.DataSet" title="funki.input.DataSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">funki.input.DataSet</span></code></a>) – The data set instance from which to compute the clustering.</p></li>
+<li><p><strong>alg</strong> (<em>str</em><em>, </em><em>optional</em>) – The algorithm to use for computing the clusters, can be either
+<code class="docutils literal notranslate"><span class="pre">'leiden'</span></code> or <code class="docutils literal notranslate"><span class="pre">'louvain'</span></code>, defaults to <code class="docutils literal notranslate"><span class="pre">'leiden'</span></code></p></li>
+<li><p><strong>resolution</strong> (<em>float</em><em>, </em><em>optional</em>) – The resolution of the clustering, a higher number
+generates more and smaller clusters, defaults to <code class="docutils literal notranslate"><span class="pre">1.0</span></code></p></li>
+<li><p><strong>**neigh_kwargs</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>any</em><em>]</em><em>, </em><em>optional</em>) – Other keyword arguments that are passed to
+<a class="reference external" href="https://scanpy.readthedocs.io/en/latest/api/generated/scanpy.pp.neighbors.html">scanpy.pp.neighbors()</a> function, defaults to <code class="docutils literal notranslate"><span class="pre">{}</span></code></p></li>
+<li><p><strong>**alg_kwargs</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>any</em><em>]</em><em>, </em><em>optional</em>) – Other keyword arguments that are passed to the
+clustering algorithm <a class="reference external" href="https://scanpy.readthedocs.io/en/latest/api/generated/scanpy.tl.louvain.html">scanpy.tl.louvain()</a> or <a class="reference external" href="https://scanpy.readthedocs.io/en/latest/api/generated/scanpy.tl.leiden.html">scanpy.tl.leiden()</a>
+functions, defaults to <code class="docutils literal notranslate"><span class="pre">{}</span></code></p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">None</span></code>, results are stored inplace of the passed <code class="docutils literal notranslate"><span class="pre">data</span></code> object</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>NoneType</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="funki.analysis.diff_exp">
 <span class="sig-prename descclassname"><span class="pre">funki.analysis.</span></span><span class="sig-name descname"><span class="pre">diff_exp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">design_factor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">contrast_var</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref_var</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_cpus</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#funki.analysis.diff_exp" title="Link to this definition">¶</a></dt>
 <dd><p>Computes differential expression analysis on the provided data based on a
@@ -131,39 +164,6 @@ label transfer function <a class="reference external" href="https://scanpy.readt
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="funki.analysis.sc_clustering">
-<span class="sig-prename descclassname"><span class="pre">funki.analysis.</span></span><span class="sig-name descname"><span class="pre">sc_clustering</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'leiden'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resolution</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">neigh_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#funki.analysis.sc_clustering" title="Link to this definition">¶</a></dt>
-<dd><p>Computes the clustering of the cells according to the selected algorithm and
-resolution parameter. You can plot the resulting clustering with your
-dimensionality reduction approach of choice (<a class="reference internal" href="plots.html#funki.plots.plot_pca" title="funki.plots.plot_pca"><code class="xref py py-func docutils literal notranslate"><span class="pre">funki.plots.plot_pca()</span></code></a>,
-<a class="reference internal" href="plots.html#funki.plots.plot_tsne" title="funki.plots.plot_tsne"><code class="xref py py-func docutils literal notranslate"><span class="pre">funki.plots.plot_tsne()</span></code></a> or <a class="reference internal" href="plots.html#funki.plots.plot_umap" title="funki.plots.plot_umap"><code class="xref py py-func docutils literal notranslate"><span class="pre">funki.plots.plot_umap()</span></code></a>) by passing
-the clustering algorithm name to the keyword argument <code class="docutils literal notranslate"><span class="pre">color</span></code> (e.g.:
-<code class="docutils literal notranslate"><span class="pre">plot_tsne(mydata,</span> <span class="pre">color='leiden')</span></code>)</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>data</strong> (<a class="reference internal" href="input.html#funki.input.DataSet" title="funki.input.DataSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">funki.input.DataSet</span></code></a>) – A single-cell transcriptomic data set instance</p></li>
-<li><p><strong>alg</strong> (<em>str</em><em>, </em><em>optional</em>) – The algorithm to use for computing the clusters, can be either
-<code class="docutils literal notranslate"><span class="pre">'leiden'</span></code> or <code class="docutils literal notranslate"><span class="pre">'louvain'</span></code>, defaults to <code class="docutils literal notranslate"><span class="pre">'leiden'</span></code></p></li>
-<li><p><strong>resolution</strong> (<em>float</em><em>, </em><em>optional</em>) – The resolution of the clustering, a higher number
-generates more and smaller clusters, defaults to <code class="docutils literal notranslate"><span class="pre">1.0</span></code></p></li>
-<li><p><strong>**neigh_kwargs</strong> (<em>dict</em><em>, </em><em>optional</em>) – Other keyword arguments that are passed to
-<a class="reference external" href="https://scanpy.readthedocs.io/en/latest/api/generated/scanpy.pp.neighbors.html">scanpy.pp.neighbors()</a> function, defaults to <code class="docutils literal notranslate"><span class="pre">{}</span></code></p></li>
-<li><p><strong>**alg_kwargs</strong> (<em>dict</em><em>, </em><em>optional</em>) – Other keyword arguments that are passed to the
-clustering algorithm <a class="reference external" href="https://scanpy.readthedocs.io/en/latest/api/generated/scanpy.tl.louvain.html">scanpy.tl.louvain()</a> or <a class="reference external" href="https://scanpy.readthedocs.io/en/latest/api/generated/scanpy.tl.leiden.html">scanpy.tl.leiden()</a>
-functions, defaults to <code class="docutils literal notranslate"><span class="pre">{}</span></code></p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">None</span></code>, results are stored inplace of the passed <code class="docutils literal notranslate"><span class="pre">data</span></code> object</p>
-</dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>NoneType</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
 <dt class="sig sig-object py" id="funki.analysis.sc_trans_qc_metrics">
 <span class="sig-prename descclassname"><span class="pre">funki.analysis.</span></span><span class="sig-name descname"><span class="pre">sc_trans_qc_metrics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">var_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mito'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#funki.analysis.sc_trans_qc_metrics" title="Link to this definition">¶</a></dt>
 <dd><p>Takes a single-cell transcriptomics data set and computes several quality
@@ -199,10 +199,10 @@ thresholds</p>
     <h3><a href="index.html">Table of Contents</a></h3>
     <ul>
 <li><a class="reference internal" href="#">funki.analysis</a><ul>
+<li><a class="reference internal" href="#funki.analysis.clustering"><code class="docutils literal notranslate"><span class="pre">clustering()</span></code></a></li>
 <li><a class="reference internal" href="#funki.analysis.diff_exp"><code class="docutils literal notranslate"><span class="pre">diff_exp()</span></code></a></li>
 <li><a class="reference internal" href="#funki.analysis.enrich"><code class="docutils literal notranslate"><span class="pre">enrich()</span></code></a></li>
 <li><a class="reference internal" href="#funki.analysis.label_transfer"><code class="docutils literal notranslate"><span class="pre">label_transfer()</span></code></a></li>
-<li><a class="reference internal" href="#funki.analysis.sc_clustering"><code class="docutils literal notranslate"><span class="pre">sc_clustering()</span></code></a></li>
 <li><a class="reference internal" href="#funki.analysis.sc_trans_qc_metrics"><code class="docutils literal notranslate"><span class="pre">sc_trans_qc_metrics()</span></code></a></li>
 </ul>
 </li>
