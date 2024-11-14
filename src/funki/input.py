@@ -43,7 +43,9 @@ class DataSet(anndata.AnnData):
 
     def __init__(self, X=None, **kwargs):
         super().__init__(X, **kwargs)
-        self.uns['funki'] = dict()
+        
+        if 'funki' not in self.uns:
+            self.uns['funki'] = dict()
 
     def __getitem__(self, index):
         '''
