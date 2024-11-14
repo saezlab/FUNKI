@@ -254,7 +254,10 @@ def label_transfer(data, ref_data, transfer_label, **kwargs):
 
     # Subsetting to common genes in both reference and target data sets
     common = sorted(set(data.var_names).intersection(ref_data.var_names))
-    data = data[:, common]
+    aux = data[:, common].copy()
     ref_data = ref_data[:, common]
 
-    sc.tl.ingest(data, ref_data, obs=transfer_label, **kwargs)
+    sc.tl.ingest(aux, ref_data, obs=transfer_label, **kwargs)
+
+    # Updating back the results to the original DataSet object
+    data.obs[transfer_label] = aux.obs[transfer_label]
