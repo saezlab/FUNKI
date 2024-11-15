@@ -56,7 +56,7 @@ in the  browser bar: `http://127.0.0.1:8050/`
 **Note:** Refreshing the browser page will also restart the application.
 
 ## Documentation
-You can find the full documentation in the
+You can find the full documentation here, in the
 [FUNKI documentation webpage](https://saezlab.github.io/FUNKI/).
 
 ---
