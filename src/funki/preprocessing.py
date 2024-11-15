@@ -49,7 +49,7 @@ def sc_trans_filter(data, min_genes=None, max_genes=None, mito_pct=None):
 
     return DataSet(aux)
 
-def sc_trans_normalize_total(data, target_sum=1e6, log_transform=False):
+def sc_trans_normalize_total(data, target_sum=None, log_transform=False):
     '''
     Normalizes the total counts per cell in a single-cell data set. The
     normaliztion scales the counts so that the sum of all genes in a cell add up
@@ -59,8 +59,8 @@ def sc_trans_normalize_total(data, target_sum=1e6, log_transform=False):
 
     :param data: A single-cell transcriptomic data set containing raw counts
     :type data: :class:`funki.input.DataSet`
-    :param target_sum: The targeted total counts per cell to normalize for,
-        defaults to ``None``, which is equivalent to CPM normalization
+    :param target_sum: The targeted total counts per cell to normalize for, e.g.
+        ``1e6`` is equivalent to CPM normalization, defaults to ``None``.
     :type target_sum: int | float, optional
     :param log_transform: Whether to apply log-transformation after normalizing
         the data, defaults to ``False``
