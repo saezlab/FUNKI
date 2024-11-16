@@ -83,7 +83,8 @@ def dataset_to_serial(dset):
     })
     
     if 'raw' in dset.__dict__.keys():
-        data['raw'] = dataset_to_serial(dset.raw)
+        df = pd.DataFame(dset.raw.X, columns=dset.raw.var)
+        data['raw'] = dataframe_to_serial(df)
     
     attrs = {}
 
