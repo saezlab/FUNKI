@@ -399,3 +399,61 @@ def plot_dex(data, logfc_thr=1.0, fdr_thr=0.05):
     )
 
     return fig
+
+# TODO: implement for multiple methods (and significance?)
+def plot_enrich(
+    data,
+    top=10,
+    #methods=None
+):
+    '''
+    Generates a horizontal barplot displaying the top results of an enrichment
+    analysis based on the consensus score across methods.
+
+    :param data: The data set from which to generate the figure (it is assumed
+        that ``funki.analysis.enrich()`` as been performed beforehand).
+    :type data: :class:`funki.input.DataSet`
+    :param top: Number of top enriched gene sets to display based on their
+        consensus score. If a negative number is provided, the bottom ones will
+        be displayed instead.
+    :type top: int
+
+    :returns: The figure contataining the resulting bar plot
+    :rtype: `plotly.graph_objs.Figure`_
+
+    .. _plotly.graph_objs.Figure: https://plotly.com/python-api-reference/gener\
+        ated/plotly.graph_objects.Figure.html
+    '''
+
+    try:
+        avail = data.uns['funki']['enrich']['methods']
+
+    except KeyError as ke:
+        raise ke(
+            'Enrichment results not found in DataSet, please run ,'
+            '`funki.analysis.enrich()` beforehand.'
+        )
+
+    # Ensuring list
+#    methods = methods if type(methods) is list else [methods]
+    # Ensuring methods are available
+#    methods = [m for m in methods if m in avail]
+    # If none available/provided default to all available ones
+#    methods = methods or avail
+
+    res = data.obsm['consensus_estimate'].mean(axis=0)
+    res.sort_values(ascending=top < 0, inplace=True)
+    res = res.head(abs(top))[::-1] if len(res) > abs(top) else res[::-1]
+
+    fig = px.bar(
+        res,
+        orientation='h',
+    )
+
+    fig.update_layout(
+        xaxis={'title': {'text': 'Consensus score'}},
+        yaxis={'title': {'text': 'Gene set'}},
+        showlegend=False,
+    )
+
+    return fig
