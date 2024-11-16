@@ -187,12 +187,6 @@ def apply_filter(n_clicks, data, max_genes, min_genes, mito_pct):
         mito_pct=mito_pct
     )
 
-    dset.uns.update({
-        'min_genes': min_genes,
-        'max_genes': max_genes,
-        'mito_pct': mito_pct
-    })
-
     serial = dataset_to_serial(dset)
 
     return serial
@@ -215,11 +209,6 @@ def apply_norm(n_clicks, data, size_factor, log_transform):
         target_sum=size_factor,
         log_transform=log_transform
     )
-
-    dset.uns.update({
-        'size_factor': size_factor,
-        'log_transform': log_transform
-    })
 
     serial = dataset_to_serial(dset)
 
