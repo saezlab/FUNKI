@@ -97,7 +97,7 @@ app.layout = html.Div(
     State('data', 'data'),
     prevent_initial_call=True,
 )
-def save_config(n_clicks):
+def save_config(n_clicks, data):
     if data is None:
         raise PreventUpdate
     
