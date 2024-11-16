@@ -6,7 +6,15 @@ from pydeseq2.ds import DeseqStats
 
 from .input import DataSet
 
-def enrich(data, net, methods=None, weight=None, **kwargs):
+def enrich(
+    data,
+    net,
+    methods=None,
+    source=None,
+    target=None,
+    weight=None,
+    **kwargs
+):
     '''
     Performs enrichment analysis using `Decoupler`_ based on a given network
     (e.g. gene set collection) and statistical method(s).
@@ -22,6 +30,13 @@ def enrich(data, net, methods=None, weight=None, **kwargs):
         see all the available methods, you can run `decoupler.show_methods()`_
         function
     :type methods: NoneType | str | list[str]
+    :param source: Column name from the provided ``net`` containing the gene
+        sets to enrich for.
+    :type source: str
+    :param target: Column name from the provided ``net`` containing the gene set
+        components (e.g. gene/protein names) that can be mapped back to the data
+        set variable names.
+    :type target: str
     :param weight: Defines the column in the network containing the weights to
         use in the enrichment, defaults to ``None``.
     :type weight: NoneType | str
@@ -55,7 +70,13 @@ def enrich(data, net, methods=None, weight=None, **kwargs):
     # Making copy as AnnData to bypass Decoupler type checks
     aux = ad.AnnData(data.copy())
 
-    dc.decouple(aux, net, methods=methods, use_raw=False, weight=weight,
+    dc.decouple(aux,
+                net,
+                methods=methods,
+                source=source,
+                target=target,
+                use_raw=False,
+                weight=weight,
                 **kwargs)
 
     # Updating back the results to the original DataSet object
