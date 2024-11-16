@@ -182,7 +182,7 @@ def apply_dex(n_clicks, data, obs_var, groups_a, groups_b):
 
     # Re-applying filters to raw data if any
     if 'uns' in data:
-        uns = data['uns']
+        uns = uns = data['uns']['funki']['sc_trans_filter']
         dset_raw = fpp.sc_trans_filter(
             dset_raw,
             min_genes=uns['min_genes'] if 'min_genes' in uns.keys() else None,
