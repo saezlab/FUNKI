@@ -350,16 +350,7 @@ def plot_enrich(n_clicks, data, gset_data, meth, gset):
         weight='weight' if 'weight' in net.columns else None,
     )
 
-    res = dset.obsm['consensus_estimate'].mean(axis=0)
-    res.sort_values(ascending=False, inplace=True)
-    res = res.head(10)[::-1] if len(res) > 10 else res[::-1]
-
-    fig = px.bar(
-        res,
-        orientation='h',
-    )
-
-    fig.update_layout(showlegend=False)
+    fig = fpl.plot_enrich(dset)
 
     return fig, dataset_to_serial(dset)
 
