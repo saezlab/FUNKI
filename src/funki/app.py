@@ -29,6 +29,7 @@ storage_type = 'memory'
 app.layout = html.Div(
     children=[
         dcc.Store(id='data', storage_type=storage_type),
+        dcc.Store(id='raw', storage_type=storage_type),
         html.Div(
             html.Img(
                 src='assets/logos/funki_logo.svg',

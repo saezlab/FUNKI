@@ -180,6 +180,7 @@ def apply_filter(n_clicks, data, max_genes, min_genes, mito_pct):
         raise PreventUpdate
 
     dset = serial_to_dataset(data)
+
     dset = fpp.sc_trans_filter(
         dset,
         min_genes=min_genes,

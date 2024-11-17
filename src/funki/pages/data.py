@@ -213,6 +213,7 @@ tab_data = dcc.Tab(
 
 @callback(
     Output('data', 'data', allow_duplicate=True),
+    Output('raw', 'data', allow_duplicate=True),
     Input('upload-data', 'contents'),
     State('upload-data', 'filename'),
     State('separator-data', 'value'),
@@ -225,19 +226,20 @@ def load_data(content, filename, sep):
     df = parse_contents(content, filename, sep=sep).astype(np.float32)
 
     serial = dataframe_to_serial(df)
-    serial.update({'raw': dataframe_to_serial(df.copy())})
 
-    return serial
+    return serial, serial.copy()
 
 @callback(
     Output('data', 'data', allow_duplicate=True),
+    Output('raw', 'data', allow_duplicate=True),
     Input('upload-obs', 'contents'),
     State('upload-obs', 'filename'),
     State('data', 'data'),
+    State('raw', 'data'),
     State('separator-obs', 'value'),
     prevent_initial_call=True
 )
-def load_obs(content, filename, data, sep):
+def load_obs(content, filename, data, raw, sep):
     if filename is None:
         raise PreventUpdate
     
@@ -246,8 +248,9 @@ def load_obs(content, filename, data, sep):
     
     serial = dataframe_to_serial(parse_contents(content, filename, sep=sep))
     data.update({'obs': serial})
+    raw.update({'obs': serial.copy()})
     
-    return data
+    return data, raw
 
 @callback(
     Output('table-data', 'columns'),

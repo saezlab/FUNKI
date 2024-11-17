@@ -158,20 +158,22 @@ def update_group_selector(data, obs_var, va, vb):
     Output('plot-dex', 'figure'),
     Input('apply-dex', 'n_clicks'),
     State('data', 'data'),
+    State('raw', 'data'),
     State('obs-selector', 'value'),
     State('group-selector-a', 'value'),
     State('group-selector-b', 'value'),
     prevent_initial_call=True
 )
-def apply_dex(n_clicks, data, obs_var, groups_a, groups_b):
+def apply_dex(n_clicks, data, raw, obs_var, groups_a, groups_b):
     if data is None:
         raise PreventUpdate
     
     if not all([obs_var, groups_a, groups_b]):
         raise PreventUpdate
 
-    dset_raw = serial_to_dataset(data['raw'])
-    dset_raw.obs = serial_to_dataframe(data['obs'])
+    dset_raw = serial_to_dataset(raw)
+    if 'obs' in raw.keys():
+        dset_raw.obs = serial_to_dataframe(raw['obs'])
     
     # Retrieve var as dataframe if available
     if 'var' in data.keys():
@@ -182,7 +184,7 @@ def apply_dex(n_clicks, data, obs_var, groups_a, groups_b):
 
     # Re-applying filters to raw data if any
     if 'uns' in data:
-        uns = uns = data['uns']['funki']['sc_trans_filter']
+        uns = data['uns']['funki']['sc_trans_filter']
         dset_raw = fpp.sc_trans_filter(
             dset_raw,
             min_genes=uns['min_genes'] if 'min_genes' in uns.keys() else None,

@@ -68,10 +68,9 @@ def serial_to_dataset(data):
         if k in data.keys()
     })
     
-    if 'raw' in data.keys():
-        kwargs.update({'raw': serial_to_dataset(data['raw'])})
+    dset = DataSet(df.astype(np.float32), **kwargs)
 
-    return DataSet(df.astype(np.float32), **kwargs)
+    return dset
 
 def dataset_to_serial(dset):
     data = dataframe_to_serial(dset.to_df())
@@ -81,10 +80,6 @@ def dataset_to_serial(dset):
         for k in ('obs', 'var')
         if not getattr(dset, k).empty
     })
-    
-    if 'raw' in dset.__dict__.keys():
-        df = pd.DataFame(dset.raw.X, columns=dset.raw.var)
-        data['raw'] = dataframe_to_serial(df)
     
     attrs = {}
 
