@@ -4,6 +4,7 @@ from plotly.subplots import make_subplots
 
 from .analysis import sc_trans_qc_metrics
 from .analysis import diff_exp
+from .analysis import enrich
 from .plots import plot_total_counts
 from .plots import plot_pct_counts_mito
 from .plots import plot_highest_expr
@@ -11,6 +12,7 @@ from .plots import plot_counts_vs_n_genes
 from .plots import plot_counts_vs_pct_mito
 from .plots import plot_n_genes
 from .plots import plot_dex
+from .plots import plot_enrich
 
 
 def sc_quality_control(data):
@@ -113,3 +115,74 @@ def differential_expression(
     diff_exp(data, design_factor, contrast_var, ref_var, n_cpus=n_cpus)
     
     return plot_dex(data, logfc_thr=logfc_thr, fdr_thr=fdr_thr)
+
+def enrichment_analysis(
+    data,
+    net,
+    methods=None,
+    source=None,
+    target=None,
+    weight=None,
+    top=10,
+    **kwargs
+):
+    '''
+    Performs enrichment analysis using `Decoupler`_ based on a given network
+    (e.g. gene set collection) and statistical method(s) and returns a
+    figure with the consensus score across methods for the enrichment results.
+
+    :param data: The data set from which to perform the enrichment
+    :type data: :class:`funki.input.DataSet`
+    :param net: The network linking the features of the data to the attributes
+        (e.g. pathways, gene sets, transcription factors, etc.)
+    :type net: `pandas.DataFrame`_
+    :param methods: Which statistical method(s) to use in order to compute the
+        enrichment, defaults to ``None``. If none is provided, uses ``'mlm'``,
+        ``'ulm'`` and ``'wsum'``. The option ``'all'`` performs all methods. To
+        see all the available methods, you can run `decoupler.show_methods()`_
+        function
+    :type methods: NoneType | str | list[str]
+    :param source: Column name from the provided ``net`` containing the gene
+        sets to enrich for.
+    :type source: str
+    :param target: Column name from the provided ``net`` containing the gene set
+        components (e.g. gene/protein names) that can be mapped back to the data
+        set variable names.
+    :type target: str
+    :param weight: Defines the column in the network containing the weights to
+        use in the enrichment, defaults to ``None``.
+    :type weight: NoneType | str
+    :param top: Number of top enriched gene sets to display based on their
+        consensus score. If a negative number is provided, the bottom ones will
+        be displayed instead.
+    :type top: int
+    :param \*\*kwargs: Other keyword arguments that passed to
+        `decoupler.decouple()`_ function
+    :type \*\*kwargs: optional
+
+    :returns: ``None``, results are stored inplace of the passed ``data``
+        object, which is a :class:`funki.input.DataSet` instance. Estimates,
+        p-values and consensus scores (in case of multiple methods) are stored
+        as part of the ``obsm`` attribute of the object.
+
+    :rtype: NoneType
+
+    .. _Decoupler: https://decoupler-py.readthedocs.io/en/latest/index.html
+    .. _pandas.DataFrame: https://pandas.pydata.org/docs/reference/api/pandas.D\
+        ataFrame.html
+    .. _decoupler.show_methods(): https://decoupler-py.readthedocs.io/en/latest\
+        /generated/decoupler.show_methods.html#decoupler.show_methods
+    .. _decoupler.decouple(): https://decoupler-py.readthedocs.io/en/latest/gen\
+        erated/decoupler.decouple.html#decoupler.decouple
+    '''
+        
+    enrich(
+        data,
+        net,
+        methods=methods,
+        source=source,
+        target=target,
+        weight=weight,
+        **kwargs
+    )
+    return plot_enrich(data, top=top)
