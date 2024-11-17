@@ -20,8 +20,7 @@ from utils.style import tab_selected_style
 from utils.style import page_style
 from utils.style import header_style
 from funki import _colors
-import funki.analysis as fan
-import funki.plots as fpl
+import funki.pipelines as fppl
 
 
 org_taxid = [
@@ -341,7 +340,7 @@ def plot_enrich(n_clicks, data, gset_data, meth, gset):
 
     meth = meth if type(meth) is list else [meth]
 
-    fan.enrich(
+    fig = fppl.enrichment_analysis(
         dset,
         net,
         methods=[m for m in meth],
@@ -349,8 +348,6 @@ def plot_enrich(n_clicks, data, gset_data, meth, gset):
         source=gset,
         weight='weight' if 'weight' in net.columns else None,
     )
-
-    fig = fpl.plot_enrich(dset)
 
     return fig, dataset_to_serial(dset)
 
