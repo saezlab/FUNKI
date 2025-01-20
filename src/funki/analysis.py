@@ -11,8 +11,8 @@ def enrich(
     data,
     net,
     methods=None,
-    source=None,
-    target=None,
+    source='source',
+    target='target',
     weight=None,
     **kwargs
 ):
@@ -32,11 +32,11 @@ def enrich(
         function
     :type methods: NoneType | str | list[str]
     :param source: Column name from the provided ``net`` containing the gene
-        sets to enrich for.
+        sets to enrich for. Defaults to ``'source'``.
     :type source: str
     :param target: Column name from the provided ``net`` containing the gene set
         components (e.g. gene/protein names) that can be mapped back to the data
-        set variable names.
+        set variable names. Defaults to ``'target'``.
     :type target: str
     :param weight: Defines the column in the network containing the weights to
         use in the enrichment, defaults to ``None``.
