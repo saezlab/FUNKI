@@ -1,3 +1,6 @@
+import json
+import datetime
+
 from dash import Dash
 from dash import html
 from dash import dcc
@@ -79,6 +82,7 @@ app.layout = html.Div(
             id='load-config-button',
             style={'width': 90},
         ),
+        dcc.Upload(),
         html.Div(
             'Developed by Nicolàs Palacio-Escat - Saezlab 2024',
             style={
@@ -101,10 +105,11 @@ app.layout = html.Div(
 def save_config(n_clicks, data):
     if data is None:
         raise PreventUpdate
-    
-    params = data['uns']['funki']
 
-    return dict(content="Hello world!", filename="hello.txt")
+    content = json.dump(data['uns']['funki'])
+    nowstr = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")
+
+    return dict(content=content, filename='funki_params_%s.json' % nowstr)
 
 # ============================================================================ #
 
