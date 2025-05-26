@@ -1,7 +1,7 @@
 import scanpy as sc
 import anndata as ad
 import decoupler as dc
-from decoupler.decouple import parse_methods
+from decoupler.mt import _methods
 from pydeseq2.dds import DeseqDataSet, DefaultInference
 from pydeseq2.ds import DeseqStats
 
@@ -63,7 +63,8 @@ def enrich(
 
     # Using methods parser from Decoupler before storing config
     # This prevents e.g. storing `None` when running with default methods
-    methods = parse_methods(methods, None)[0]
+    methods = [m for m in methods if m in {mt.name for mt in _methods}]
+    methods = methods or ['consensus']
 
     # Storing parameters
     data.uns['funki']['enrich'] = {
