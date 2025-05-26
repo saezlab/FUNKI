@@ -72,17 +72,21 @@ def enrich(
         **kwargs,
     }
 
+    # Preparing network matrix
+    readynet = net.rename(columns={
+        source: 'source',
+        target: 'target',
+        weight: 'weight'
+    })
+
     # Making copy as AnnData to bypass Decoupler type checks
     aux = ad.AnnData(data.copy())
 
-    dc.decouple(aux,
-                net,
-                methods=methods,
-                source=source,
-                target=target,
-                use_raw=False,
-                weight=weight,
-                **kwargs)
+    dc.mt.decouple(aux,
+                   readynet,
+                   methods=methods,
+                   use_raw=False,
+                   **kwargs)
 
     # Updating back the results to the original DataSet object
     data.obsm.update(aux.obsm)
