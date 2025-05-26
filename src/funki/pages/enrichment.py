@@ -55,7 +55,15 @@ tab_enrichment = dcc.Tab(
                                 id='gset-collection',
                                 options=[
                                     {'label': i, 'value': i}
-                                    for i in dc.show_resources()
+                                    for i in sorted(
+                                        [
+                                            'CollecTRI',
+                                            'DoRothEA',
+                                            'Hallmark',
+                                            'Progeny'
+                                        ] +
+                                        dc.op.show_resources()['name'].to_list()
+                                    )
                                 ],
                                 searchable=True,
                                 clearable=True,
@@ -165,10 +173,10 @@ tab_enrichment = dcc.Tab(
                                 id='enrich-methods',
                                 options=[
                                     {
-                                        'label': r['Name'].rstrip('.'),
-                                        'value': r['Function'].lstrip('run_')
+                                        'label': r['desc'],
+                                        'value': r['name']
                                     }
-                                    for i, r in dc.show_methods().iterrows()
+                                    for i, r in dc.mt.show().iterrows()
                                 ],
                                 value='consensus',
                                 searchable=True,
@@ -232,7 +240,13 @@ def load_gset_table(gset, organism):
     if gset is None:
         return None, None, [], True, []
 
-    df = dc.get_resource(gset, organism=organism)
+    # Resource has own method
+    if gset.lower() in dir(dc.op):
+        func = getattr(dc.op, gset.lower())
+        df = func(organism)
+
+    else:
+        df = dc.op.resource(gset, organism=organism)
 
     if len(df) == 0:
         return None, [{0: 'Error downloading the data'}], [], True, []
