@@ -28,7 +28,7 @@ def enrich(
     :param methods: Which statistical method(s) to use in order to compute the
         enrichment, defaults to ``None``. If none is provided, uses ``'mlm'``,
         ``'ulm'`` and ``'wsum'``. The option ``'all'`` performs all methods. To
-        see all the available methods, you can run `decoupler.show_methods()`_
+        see all the available methods, you can run `decoupler.mt.show()`_
         function
     :type methods: NoneType | str | list[str]
     :param source: Column name from the provided ``net`` containing the gene
@@ -42,7 +42,7 @@ def enrich(
         use in the enrichment, defaults to ``None``.
     :type weight: NoneType | str
     :param \*\*kwargs: Other keyword arguments that passed to
-        `decoupler.decouple()`_ function
+        `decoupler.mt.decouple()`_ function
     :type \*\*kwargs: optional
 
     :returns: ``None``, results are stored inplace of the passed ``data``
@@ -55,10 +55,10 @@ def enrich(
     .. _Decoupler: https://decoupler-py.readthedocs.io/en/latest/index.html
     .. _pandas.DataFrame: https://pandas.pydata.org/docs/reference/api/pandas.D\
         ataFrame.html
-    .. _decoupler.show_methods(): https://decoupler-py.readthedocs.io/en/latest\
-        /generated/decoupler.show_methods.html#decoupler.show_methods
-    .. _decoupler.decouple(): https://decoupler-py.readthedocs.io/en/latest/gen\
-        erated/decoupler.decouple.html#decoupler.decouple
+    .. _decoupler.mt.show(): https://decoupler-py.readthedocs.io/en/latest/api/\
+        mt.html
+    .. _decoupler.mt.decouple(): https://decoupler-py.readthedocs.io/en/latest/\
+        api/generated/decoupler.mt.decouple.html#decoupler.mt.decouple
     '''
 
     # Using methods parser from Decoupler before storing config
