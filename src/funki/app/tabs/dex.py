@@ -3,5 +3,5 @@ from tkinter import ttk
 
 
 class TabDex(tk.Frame):
-    def __init__ (self, root):
-        super().__init__(root)
+    def __init__ (self, root, **options):
+        super().__init__(root, **options)
