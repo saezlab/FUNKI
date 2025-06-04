@@ -11,33 +11,32 @@ class Funki:
 
     def __init__(self, root):
 
-        self.root = root
-        self.root.title('FUNKI v%s' % __version__)
+        root.title('FUNKI v%s' % __version__)
 
         # Main frame
-        self.mainframe = ttk.Frame(root)
-        self.mainframe.pack(fill='both', expand=True)
+        mainframe = ttk.Frame(root)
+        mainframe.pack(fill='both', expand=True)
 
         # Tab manager
-        self.tab_manager = ttk.Notebook(
-            self.mainframe,
+        tab_manager = ttk.Notebook(
+            mainframe,
             width=500,
             height=800,
         )
-        self.tab_manager.pack(fill='both', expand=True, pady=(50, 10))
+        tab_manager.pack(fill='both', expand=True, pady=(50, 10))
 
         # Adding tabs
-        self.tabs = {}
+        tabs = {}
 
         for name, (n, tab) in all_tabs.items():
 
-            self.tabs[n] = tab(self.tab_manager)
+            tabs[n] = tab(tab_manager)
             
-            for child in self.tabs[n].winfo_children(): 
+            for child in tabs[n].winfo_children(): 
             
                 child.grid_configure(padx=5, pady=5)
             
-            self.tab_manager.add(self.tabs[n], text=name)
+            tab_manager.add(tabs[n], text=name)
 
 
 if __name__ == '__main__':
