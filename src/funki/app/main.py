@@ -16,13 +16,7 @@ class Funki:
 
         # Main frame
         self.mainframe = ttk.Frame(root)
-        self.mainframe.grid(
-            column=0,
-            row=0,
-            sticky='NWES',
-        )
-        self.mainframe.columnconfigure(0, weight=1)
-        self.mainframe.rowconfigure(0, weight=1)
+        self.mainframe.pack(fill='both', expand=True)
 
         # Tab manager
         self.tab_manager = ttk.Notebook(
@@ -30,12 +24,7 @@ class Funki:
             width=500,
             height=800,
         )
-        self.tab_manager.grid(
-            column=0,
-            row=0,
-            sticky='NWES',
-            pady=(50, 10),
-        )
+        self.tab_manager.pack(fill='both', expand=True, pady=(50, 10))
 
         # Adding tabs
         self.tabs = {}
