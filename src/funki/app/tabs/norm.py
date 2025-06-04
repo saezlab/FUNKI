@@ -3,5 +3,5 @@ from tkinter import ttk
 
 
 class TabNorm(ttk.Frame):
-    def __init__ (self, root, **options):
-        super().__init__(root, **options)
+    def __init__ (self, parent, **options):
+        super().__init__(parent, **options)
