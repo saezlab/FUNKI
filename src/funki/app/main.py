@@ -13,16 +13,29 @@ class Funki:
         self.root = root
         self.root.title('FUNKI v%s' % __version__)
 
+        # Main frame
         self.mainframe = tk.Frame(root, bg=_colors['white'])
-        self.mainframe.grid()
+        self.mainframe.grid(
+            column=0,
+            row=0,
+            sticky='NWES',
+        )
+        self.mainframe.columnconfigure(0, weight=1)
+        self.mainframe.rowconfigure(0, weight=1)
 
+        # Tab manager
         self.tab_manager = ttk.Notebook(
             self.mainframe,
             width=500,
             height=800,
         )
-        self.tab_manager.grid(pady=(50, 10))
-        
+        self.tab_manager.grid(
+            column=0,
+            row=0,
+            sticky='NWES',
+            pady=(50, 10),
+        )
+
         # Adding tabs
         self.tabs = {}
 
