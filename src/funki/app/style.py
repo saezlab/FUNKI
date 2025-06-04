@@ -17,19 +17,20 @@ def load_style():
     style.configure(
         'TNotebook.Tab',
         padding=(5, 5, 5, 5),
-        background=_colors['red']
+        background=_colors['blue'],
+        foreground=_colors['white'],
     )
     style.map(
         'TNotebook.Tab',
         background=[
-            ('selected', _colors['blue']),
-            ('active', _colors['teal']),
-            ('disabled', _colors['teal'])
+            ('selected', _colors['teal']),
+            ('active', _colors['aqua']),
+            #('disabled', _colors['teal'])
         ],
         foreground=[
-            ('selected', _colors['red']),
-            ('active', _colors['yellow']),
-            ('disabled', _colors['yellow'])
+            ('selected', _colors['yellow']),
+            ('active', _colors['white']),
+            #('disabled', _colors['yellow'])
         ],
     )
 #    style.configure(
