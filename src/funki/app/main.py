@@ -32,6 +32,11 @@ class Funki:
         for name, (n, tab) in all_tabs.items():
 
             self.tabs[n] = tab(self.tab_manager)
+            
+            for child in self.tabs[n].winfo_children(): 
+            
+                child.grid_configure(padx=5, pady=5)
+            
             self.tab_manager.add(self.tabs[n], text=name)
 
 
