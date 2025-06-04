@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
+import tksvg
 
 from funki import __version__
 
@@ -17,13 +18,22 @@ class Funki:
         mainframe = ttk.Frame(root)
         mainframe.pack(fill='both', expand=True)
 
+        logo = tksvg.SvgImage(
+            file='../assets/logos/funki_logo.svg',
+            scale=0.25
+        )
+
+        header = ttk.Label(mainframe, image=logo, padding=(10, 10, 10, 10))
+        header.image = logo # Avoiding garbage collection
+        header.grid(column=0, row=0, sticky='NSEW')
+
         # Tab manager
         tab_manager = ttk.Notebook(
             mainframe,
             width=500,
             height=800,
         )
-        tab_manager.pack(fill='both', expand=True, pady=(50, 10))
+        tab_manager.grid(column=0, row=1, sticky='NSEW')
 
         # Adding tabs
         tabs = {}

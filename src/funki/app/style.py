@@ -14,6 +14,14 @@ def load_style():
         'TFrame',
         background=_colors['white'],
     )
+#    style.configure(
+#        'TNotebook',
+#        background=_colors['white'],
+#    )
+#    style.configure(
+#        'TLabel',
+#        background=_colors['white'],
+#    )
 
     return style
 
