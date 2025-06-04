@@ -2,9 +2,10 @@ import tkinter as tk
 from tkinter import ttk
 
 from funki import __version__
-from funki import _colors
 
 from tabs import all_tabs
+from style import load_style
+
 
 class Funki:
 
@@ -14,7 +15,7 @@ class Funki:
         self.root.title('FUNKI v%s' % __version__)
 
         # Main frame
-        self.mainframe = tk.Frame(root, bg=_colors['white'])
+        self.mainframe = ttk.Frame(root)
         self.mainframe.grid(
             column=0,
             row=0,
@@ -41,13 +42,14 @@ class Funki:
 
         for name, (n, tab) in all_tabs.items():
 
-            self.tabs[n] = tab(self.tab_manager, bg=_colors['white'])
+            self.tabs[n] = tab(self.tab_manager)
             self.tab_manager.add(self.tabs[n], text=name)
 
 
 if __name__ == '__main__':
 
     root = tk.Tk()
+    style = load_style()
 
     app = Funki(root)
     root.mainloop()
