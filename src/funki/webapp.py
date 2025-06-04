@@ -115,4 +115,4 @@ def save_config(n_clicks, data):
 
 if __name__ == '__main__':
     # Starting the app
-    app.run_server(debug=True)
+    app.run(debug=True)
