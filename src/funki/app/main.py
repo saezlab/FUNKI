@@ -14,10 +14,7 @@ PATH_LOGO = '../assets/logos/funki_logo.svg'
 
 class Funki:
 
-    _root = None
     _platform = None
-
-    data = None
 
     def __init__(self, root):
         self._root = root
@@ -25,6 +22,8 @@ class Funki:
         self._setup_root()
         self._setup_menu()
         self._setup_mainframe()
+
+        self.new_project()
 
 
     def _setup_root(self):
@@ -45,6 +44,7 @@ class Funki:
         menu_file = tk.Menu(menubar)
         menubar.add_cascade(menu=menu_file, label='File')
 
+        menu_file.add_command(label='New project', command=self.new_project)
         menu_file.add_command(label='Open...', command=self.open_file)
 
 
@@ -77,25 +77,31 @@ class Funki:
 
     def _setup_notebook(self):
 
-        tab_manager = ttk.Notebook(
+        self.tab_manager = ttk.Notebook(
             self.mainframe,
             width=500,
             height=800,
         )
-        tab_manager.grid(column=0, row=1, sticky='NSEW')
+        self.tab_manager.grid(column=0, row=1, sticky='NSEW')
 
         # Adding tabs
         tabs = {}
 
         for name, (n, tab) in TABS.items():
 
-            tabs[n] = tab(tab_manager)
+            tabs[n] = tab(self.tab_manager)
             
             for child in tabs[n].winfo_children():
             
                 child.grid_configure(padx=5, pady=5)
             
-            tab_manager.add(tabs[n], text=name, sticky='NSEW')
+            self.tab_manager.add(tabs[n], text=name, sticky='NSEW')
+
+
+    def new_project(self):
+
+        self.data = None
+        self.tab_manager.select(0)
 
 
     def open_file(self):
