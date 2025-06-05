@@ -8,7 +8,7 @@ def load_style(root):
 
     style.configure(
         '.',
-        font='Arial',
+        font=('Arial', 12),
     )
     #style.configure(
     #    'TFrame',
