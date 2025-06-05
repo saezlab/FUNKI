@@ -13,10 +13,16 @@ class Funki:
     def __init__(self, root):
 
         root.title('FUNKI v%s' % __version__)
+        root.columnconfigure(0, weight=1)
+        root.rowconfigure(0, weight=1)
 
         # Main frame
         mainframe = ttk.Frame(root)
-        mainframe.pack(fill='both', expand=True)
+        #mainframe.pack(fill='both', expand=True)
+        mainframe.grid(column=0, row=0, sticky='NSEW')
+        mainframe.columnconfigure(0, weight=1)
+        mainframe.rowconfigure(0, weight=0)
+        mainframe.rowconfigure(1, weight=1)
 
         logo = tksvg.SvgImage(
             file='../assets/logos/funki_logo.svg',
@@ -42,7 +48,7 @@ class Funki:
 
             tabs[n] = tab(tab_manager)
             
-            for child in tabs[n].winfo_children(): 
+            for child in tabs[n].winfo_children():
             
                 child.grid_configure(padx=5, pady=5)
             
