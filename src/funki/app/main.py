@@ -19,6 +19,7 @@ class Funki:
         self._root = root
 
         self._setup_root()
+        self._setup_menu()
         self._setup_mainframe()
 
 
@@ -27,9 +28,24 @@ class Funki:
         self._platform = self._root.tk.call('tk', 'windowingsystem')
 
         self._root.title('FUNKI v%s' % __version__)
-        self._root.option_add('*tearOff', False)
+        self._root.option_add('*tearOff', False) # Avoids menu detachment
         self._root.columnconfigure(0, weight=1)
         self._root.rowconfigure(0, weight=1)
+
+
+    def _setup_menu(self):
+
+        menubar = tk.Menu(self._root)
+        self._root.config(menu=menubar)
+
+        menu_file = tk.Menu(menubar)
+        menubar.add_cascade(menu=menu_file, label='File')
+
+        menu_file.add_command(label='Open...', command=self.openFile)
+
+
+    def openFile(self):
+        pass
 
 
     def _setup_mainframe(self):
