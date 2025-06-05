@@ -8,35 +8,61 @@ from tabs import all_tabs
 from style import load_style
 
 
+PATH_LOGO = '../assets/logos/funki_logo.svg'
+
 class Funki:
 
+    _root = None
+    _platform = None
+
     def __init__(self, root):
+        self._root = root
 
-        self._platform = root.tk.call('tk', 'windowingsystem')
+        self._setup_root()
+        self._setup_mainframe()
 
-        root.title('FUNKI v%s' % __version__)
-        root.columnconfigure(0, weight=1)
-        root.rowconfigure(0, weight=1)
 
-        # Main frame
-        mainframe = ttk.Frame(root)
-        mainframe.grid(column=0, row=0, sticky='NSEW')
-        mainframe.columnconfigure(0, weight=1)
-        mainframe.rowconfigure(0, weight=0)
-        mainframe.rowconfigure(1, weight=1)
+    def _setup_root(self):
 
-        logo = tksvg.SvgImage(
-            file='../assets/logos/funki_logo.svg',
-            scale=0.25
+        self._platform = self._root.tk.call('tk', 'windowingsystem')
+
+        self._root.title('FUNKI v%s' % __version__)
+        self._root.option_add('*tearOff', False)
+        self._root.columnconfigure(0, weight=1)
+        self._root.rowconfigure(0, weight=1)
+
+
+    def _setup_mainframe(self):
+
+        self.mainframe = ttk.Frame(self._root)
+        self.mainframe.grid(
+            column=0,
+            row=0,
+            sticky='NSEW',
+            padx=(5, 5),
+            pady=(5, 5)
         )
+        self.mainframe.columnconfigure(0, weight=1)
+        self.mainframe.rowconfigure(0, weight=0)
+        self.mainframe.rowconfigure(1, weight=1)
 
-        header = ttk.Label(mainframe, image=logo, padding=(10, 10, 10, 10))
+        self._setup_header()
+        self._setup_notebook()
+
+
+    def _setup_header(self):
+
+        logo = tksvg.SvgImage(file=PATH_LOGO, scale=0.25)
+
+        header = ttk.Label(self.mainframe, image=logo, padding=(10, 10, 10, 10))
         header.image = logo # Avoiding garbage collection
         header.grid(column=0, row=0, sticky='NSEW')
 
-        # Tab manager
+
+    def _setup_notebook(self):
+
         tab_manager = ttk.Notebook(
-            mainframe,
+            self.mainframe,
             width=500,
             height=800,
         )
