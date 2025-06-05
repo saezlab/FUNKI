@@ -1,7 +1,10 @@
+import os
+
 import tkinter as tk
 from tkinter import ttk
 from tkinter import filedialog as fd
 import tksvg
+import pandas as pd
 
 from funki import __version__
 from funki.input import read
@@ -158,10 +161,23 @@ class FunkiApp:
 
         path = fd.askopenfilename()
 
-        if path:
+        # Loading of measurement data
+        if path and dtype == 'raw':
 
             self.data = read(path)
 
+        # Loading of metadata
+        elif path and dtype == 'obs' and self.data:
+
+            fname, ext = os.path.splitext(path)
+
+            self.data.obs = pd.read_csv(
+                path,
+                sep=',' if ext == '.csv' else '\t',
+                index_col=0
+            )
+
+        # Reactivate the Load metadata in menu
         if self.data and dtype == 'raw':
 
             self.menu_file.entryconfig('Load metadata', state='normal')
