@@ -10,7 +10,9 @@ from style import load_style
 
 class Funki:
 
-    def __init__(self, root, sys=None):
+    def __init__(self, root):
+
+        self._platform = root.tk.call('tk', 'windowingsystem')
 
         root.title('FUNKI v%s' % __version__)
         root.columnconfigure(0, weight=1)
@@ -58,7 +60,6 @@ if __name__ == '__main__':
 
     root = tk.Tk()
     load_style(root)
-    sys = root.tk.call('tk', 'windowingsystem')
 
-    app = Funki(root, sys=sys)
+    app = Funki(root)
     root.mainloop()
