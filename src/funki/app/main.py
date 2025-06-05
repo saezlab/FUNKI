@@ -17,6 +17,11 @@ class Funki:
     _platform = None
 
     def __init__(self, root):
+        '''
+        Establishes application's root and platform, runs all setup methods and
+        starts a new project.
+        '''
+
         self._root = root
 
         self._setup_root()
@@ -27,6 +32,9 @@ class Funki:
 
 
     def _setup_root(self):
+        '''
+        Sets up the application's root configuration.
+        '''
 
         self._platform = self._root.tk.call('tk', 'windowingsystem')
 
@@ -37,6 +45,9 @@ class Funki:
 
 
     def _setup_menu(self):
+        '''
+        Sets up the top level menus.
+        '''
 
         menubar = tk.Menu(self._root)
         self._root.config(menu=menubar)
@@ -49,6 +60,10 @@ class Funki:
 
 
     def _setup_mainframe(self):
+        '''
+        Sets up the application's main parent frame where all children widgets
+        are to be placed. Calls setup of main children: header and notebook.
+        '''
 
         self.mainframe = ttk.Frame(self._root)
         self.mainframe.grid(
@@ -67,6 +82,9 @@ class Funki:
 
 
     def _setup_header(self):
+        '''
+        Sets up the header logo.
+        '''
 
         logo = tksvg.SvgImage(file=PATH_LOGO, scale=0.25)
 
@@ -76,6 +94,11 @@ class Funki:
 
 
     def _setup_notebook(self):
+        '''
+        Sets up the notebook, which is the main window of the application, where
+        all the tabs for the different steps are shown. These are coded in the
+        different submodules on the `tabs/` folder.
+        '''
 
         self.tab_manager = ttk.Notebook(
             self.mainframe,
@@ -99,12 +122,18 @@ class Funki:
 
 
     def new_project(self):
+        '''
+        Clears current data and positions the application in the home tab.
+        '''
 
         self.data = None
         self.tab_manager.select(0)
 
 
     def open_file(self):
+        '''
+        Pops up a open file dialog and passes the path to FUNKI's read method.
+        '''
 
         path = fd.askopenfilename()
 
