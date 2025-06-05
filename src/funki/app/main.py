@@ -51,13 +51,13 @@ class Funki:
             
                 child.grid_configure(padx=5, pady=5)
             
-            tab_manager.add(tabs[n], text=name)
+            tab_manager.add(tabs[n], text=name, sticky='NSEW')
 
 
 if __name__ == '__main__':
 
     root = tk.Tk()
-    style = load_style()
+    load_style(root)
 
     app = Funki(root)
     root.mainloop()
