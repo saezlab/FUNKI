@@ -26,10 +26,6 @@ class FunkiApp:
         self._root = root
         self._platform = self._root.tk.call('tk', 'windowingsystem')
 
-        self._setup_root()
-        self._setup_menu()
-        self._setup_mainframe()
-
         self.new_project()
 
 
@@ -49,14 +45,36 @@ class FunkiApp:
         Sets up the top level menus.
         '''
 
-        menubar = tk.Menu(self._root)
-        self._root.config(menu=menubar)
+        self.menubar = tk.Menu(self._root)
+        self._root.config(menu=self.menubar)
 
-        menu_file = tk.Menu(menubar)
-        menubar.add_cascade(menu=menu_file, label='File')
+        self.menu_file = tk.Menu(self.menubar)
+        self.menubar.add_cascade(menu=self.menu_file, label='File')
 
-        menu_file.add_command(label='New project', command=self.new_project)
-        menu_file.add_command(label='Open...', command=self.open_file)
+        menu_options = [
+            (
+                self.menu_file,
+                'New project',
+                self.new_project
+            ),
+            (
+                self.menu_file,
+                'Load data',
+                lambda: self.open_file(dtype='raw')
+            ),
+            (
+                self.menu_file,
+                'Load metadata',
+                lambda: self.open_file(dtype='obs')
+            ),
+        ]
+
+        for menu, label, command in menu_options:
+
+                menu.add_command(label=label, command=command)
+
+        # Disable metadata loading until data is available
+        self.menu_file.entryconfig('Load metadata', state='disabled')
 
 
     def _setup_mainframe(self):
@@ -123,14 +141,17 @@ class FunkiApp:
 
     def new_project(self):
         '''
-        Clears current data and positions the application in the home tab.
+        Clears current data and resets the application.
         '''
 
         self.data = None
-        self.tab_manager.select(0)
+
+        self._setup_root()
+        self._setup_menu()
+        self._setup_mainframe()
 
 
-    def open_file(self):
+    def open_file(self, dtype=None):
         '''
         Pops up a open file dialog and passes the path to FUNKI's read method.
         '''
@@ -140,6 +161,11 @@ class FunkiApp:
         if path:
 
             self.data = read(path)
+
+        if self.data and dtype == 'raw':
+
+            self.menu_file.entryconfig('Load metadata', state='normal')
+
 
 
 if __name__ == '__main__':
