@@ -4,7 +4,7 @@ import tksvg
 
 from funki import __version__
 
-from tabs import all_tabs
+from tabs import TABS
 from style import load_style
 
 
@@ -71,7 +71,7 @@ class Funki:
         # Adding tabs
         tabs = {}
 
-        for name, (n, tab) in all_tabs.items():
+        for name, (n, tab) in TABS.items():
 
             tabs[n] = tab(tab_manager)
             

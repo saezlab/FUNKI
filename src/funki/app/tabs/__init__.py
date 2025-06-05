@@ -5,7 +5,7 @@ from .dex import TabDex
 from .cluster import TabClust
 from .enrich import TabEnrich
 
-all_tabs = {
+TABS = {
     'Home': ('home', TabHome),
     'Data': ('data', TabData),
     'Normalization': ('norm', TabNorm),
