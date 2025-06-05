@@ -1,8 +1,10 @@
 import tkinter as tk
 from tkinter import ttk
+from tkinter import filedialog as fd
 import tksvg
 
 from funki import __version__
+from funki.input import read
 
 from tabs import TABS
 from style import load_style
@@ -14,6 +16,8 @@ class Funki:
 
     _root = None
     _platform = None
+
+    data = None
 
     def __init__(self, root):
         self._root = root
@@ -41,11 +45,7 @@ class Funki:
         menu_file = tk.Menu(menubar)
         menubar.add_cascade(menu=menu_file, label='File')
 
-        menu_file.add_command(label='Open...', command=self.openFile)
-
-
-    def openFile(self):
-        pass
+        menu_file.add_command(label='Open...', command=self.open_file)
 
 
     def _setup_mainframe(self):
@@ -96,6 +96,15 @@ class Funki:
                 child.grid_configure(padx=5, pady=5)
             
             tab_manager.add(tabs[n], text=name, sticky='NSEW')
+
+
+    def open_file(self):
+
+        path = fd.askopenfilename()
+
+        if path is not None:
+
+            self.data = read(path)
 
 
 if __name__ == '__main__':
