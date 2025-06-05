@@ -9,7 +9,7 @@ all_tabs = {
     'Home': ('home', TabHome),
     'Data': ('data', TabData),
     'Normalization': ('norm', TabNorm),
-    'Differential Expression': ('dex', TabDex),
+    'Diff. Expr.': ('dex', TabDex),
     'Clustering': ('clust', TabClust),
     'Enrichment': ('enrich', TabEnrich),
 }
