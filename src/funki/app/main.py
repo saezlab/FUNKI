@@ -12,7 +12,7 @@ from style import load_style
 
 PATH_LOGO = '../assets/logos/funki_logo.svg'
 
-class Funki:
+class FunkiApp:
 
     _platform = None
 
@@ -23,6 +23,7 @@ class Funki:
         '''
 
         self._root = root
+        self._platform = self._root.tk.call('tk', 'windowingsystem')
 
         self._setup_root()
         self._setup_menu()
@@ -35,8 +36,6 @@ class Funki:
         '''
         Sets up the application's root configuration.
         '''
-
-        self._platform = self._root.tk.call('tk', 'windowingsystem')
 
         self._root.title('FUNKI v%s' % __version__)
         self._root.option_add('*tearOff', False) # Avoids menu detachment
@@ -147,5 +146,5 @@ if __name__ == '__main__':
     root = tk.Tk()
     load_style(root)
 
-    app = Funki(root)
+    app = FunkiApp(root)
     root.mainloop()
