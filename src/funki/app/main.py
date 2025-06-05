@@ -10,7 +10,8 @@ from tabs import TABS
 from style import load_style
 
 
-PATH_LOGO = '../assets/logos/funki_logo.svg'
+PATH_LOGO = 'docs/source/_images/funki_logo.svg'
+
 
 class FunkiApp:
 
