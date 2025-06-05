@@ -18,7 +18,6 @@ class Funki:
 
         # Main frame
         mainframe = ttk.Frame(root)
-        #mainframe.pack(fill='both', expand=True)
         mainframe.grid(column=0, row=0, sticky='NSEW')
         mainframe.columnconfigure(0, weight=1)
         mainframe.rowconfigure(0, weight=0)
