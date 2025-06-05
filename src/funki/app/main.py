@@ -108,7 +108,7 @@ class Funki:
 
         path = fd.askopenfilename()
 
-        if path is not None:
+        if path:
 
             self.data = read(path)
 
