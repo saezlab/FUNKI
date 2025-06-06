@@ -10,25 +10,6 @@ def load_style(root):
         '.',
         font=('Arial', 12),
     )
-    # Table
-    style.configure(
-        'TLabel.Table.cell',
-        anchor='right',
-        background=_colors['white'],
-        font=('Courier', 10),
-    )
-    style.configure(
-        'TLabel.Table.index',
-        anchor='left',
-        background=_colors['gray'],
-        font=('Courier', 10, 'bold'),
-    )
-    style.configure(
-        'TLabel.Table.column',
-        anchor='center',
-        background=_colors['gray'],
-        font=('Courier', 10, 'bold'),
-    )
     # Tabs
     style.configure(
         'TNotebook',
@@ -58,3 +39,24 @@ def load_style(root):
 
     return style
 
+
+table = ttk.Style()
+
+table.configure(
+    'cell',
+    anchor='right',
+    background=_colors['white'],
+    font=('Courier', 10),
+)
+table.configure(
+    'index',
+    anchor='left',
+    background=_colors['gray'],
+    font=('Courier', 10, 'bold'),
+)
+table.configure(
+    'column',
+    anchor='center',
+    background=_colors['gray'],
+    font=('Courier', 10, 'bold'),
+)
