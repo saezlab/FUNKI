@@ -10,15 +10,25 @@ def load_style(root):
         '.',
         font=('Arial', 12),
     )
-    #style.configure(
-    #    'TFrame',
-    #    background=_colors['white'],
-    #)
-    #style.configure(
-    #    'TLabel',
-    #    background=_colors['white'],
-    #)
-    
+    # Table
+    style.configure(
+        'TLabel.Table.cell',
+        anchor='right',
+        background=_colors['white'],
+        font=('Courier', 10),
+    )
+    style.configure(
+        'TLabel.Table.index',
+        anchor='left',
+        background=_colors['gray'],
+        font=('Courier', 10, 'bold'),
+    )
+    style.configure(
+        'TLabel.Table.column',
+        anchor='center',
+        background=_colors['gray'],
+        font=('Courier', 10, 'bold'),
+    )
     # Tabs
     style.configure(
         'TNotebook',
