@@ -9,12 +9,10 @@ import pandas as pd
 from funki import __version__
 from funki.input import read
 
+from utils import PATH_LOGO
 from tabs import TABS
 from style import load_style
-from assets.help import Help
-
-
-PATH_LOGO = 'docs/source/_images/funki_logo.svg'
+from assets.help import Help, About
 
 
 class FunkiApp:

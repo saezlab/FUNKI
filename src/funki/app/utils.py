@@ -2,6 +2,9 @@ import tkinter as tk
 from tkinter import ttk
 
 
+PATH_LOGO = 'docs/source/_images/funki_logo.svg'
+
+
 def read_text(path):
 
     with open(path, 'r') as f:
