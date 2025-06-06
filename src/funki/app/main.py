@@ -11,6 +11,7 @@ from funki.input import read
 
 from tabs import TABS
 from style import load_style
+from assets.help import Help
 
 
 PATH_LOGO = 'docs/source/_images/funki_logo.svg'
@@ -53,6 +54,8 @@ class FunkiApp:
 
         self.menu_file = tk.Menu(self.menubar)
         self.menubar.add_cascade(menu=self.menu_file, label='File')
+        self.menu_help = tk.Menu(self.menubar)
+        self.menubar.add_cascade(menu=self.menu_help, label='Help')
 
         menu_options = [
             (
@@ -69,6 +72,16 @@ class FunkiApp:
                 self.menu_file,
                 'Load metadata',
                 lambda: self.open_file(dtype='obs')
+            ),
+            (
+                self.menu_help,
+                'FUNKI manual',
+                self.open_manual
+            ),
+            (
+                self.menu_help,
+                'About FUNKI',
+                self.open_about
             ),
         ]
 
@@ -182,6 +195,15 @@ class FunkiApp:
 
             self.menu_file.entryconfig('Load metadata', state='normal')
 
+
+    def open_manual(self):
+
+        Help()
+
+
+    def open_about(self):
+
+        pass
 
 
 if __name__ == '__main__':

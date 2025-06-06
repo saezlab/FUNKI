@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 
+
 def read_text(path):
 
     with open(path, 'r') as f:
@@ -8,6 +9,7 @@ def read_text(path):
         txt = ''.join(f.readlines())
 
     return txt
+
 
 # Adapted from thegamecracks' gist
 # https://gist.github.com/thegamecracks/5595dad631ec50bdc021f945054e86fb
