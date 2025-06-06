@@ -16,6 +16,8 @@ from assets.help import Help, About
 
 
 class FunkiApp:
+    # TODO: Check if some of the Label can be replaced with Text for better
+    # formatting and handling
 
     _platform = None
 
@@ -85,7 +87,7 @@ class FunkiApp:
 
         for menu, label, command in menu_options:
 
-                menu.add_command(label=label, command=command)
+            menu.add_command(label=label, command=command)
 
         # Disable metadata loading until data is available
         self.menu_file.entryconfig('Load metadata', state='disabled')
