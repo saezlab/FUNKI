@@ -201,7 +201,7 @@ class FunkiApp:
 
     def open_about(self):
 
-        pass
+        About()
 
 
 if __name__ == '__main__':

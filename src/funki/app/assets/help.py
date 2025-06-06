@@ -1,7 +1,10 @@
 import tkinter as tk
 from tkinter import ttk
+import tksvg
 
-from utils import WrapLabel
+from funki import __version__
+
+from utils import WrapLabel, PATH_LOGO
 from .msg_help import HELPMSG
 
 
@@ -66,3 +69,73 @@ class Help(tk.Toplevel):
         k = self.toc.get(self.toc.curselection()[0])
         self.title['text'] = k
         self.content['text'] = HELPMSG[k]
+
+
+class About(tk.Toplevel):
+
+    def __init__(self):
+
+        super().__init__()
+        self.title('About FUNKI')
+        self.resizable(False, False)
+        self.columnconfigure(0, weight=1)
+        self.rowconfigure(0, weight=1)
+
+        mainframe = ttk.Frame(self)
+        mainframe.grid(
+            column=0,
+            row=0,
+            sticky='NSEW',
+            padx=(15, 15),
+            pady=(15, 15)
+        )
+        mainframe.columnconfigure(0, weight=1)
+        mainframe.rowconfigure(0, weight=0) # Header (logo)
+        mainframe.rowconfigure(1, weight=0) # Title (name & version)
+        mainframe.rowconfigure(2, weight=1) # Desctiption
+        mainframe.rowconfigure(3, weight=0) # Close button
+
+        logo = tksvg.SvgImage(file=PATH_LOGO, scale=0.15)
+        header = ttk.Label(
+            mainframe,
+            image=logo,
+            anchor='center',
+            padding=(10, 10, 10, 10),
+        )
+        header.image = logo # Avoiding garbage collection
+        header.grid(column=0, row=0, sticky='NSEW')
+
+        title = ttk.Label(
+            mainframe,
+            anchor='center',
+            font=('Arial', 18, 'bold'),
+            text='FUNKI v%s' % __version__,
+        )
+        title.grid(row=1, column=0, sticky='NSEW')
+
+        descript = ttk.Label(
+            mainframe,
+            anchor='center',
+            font='Arial',
+            justify='center',
+            text=(
+                'Developed by Nicolàs Palacio-Escat\n'
+                'Based on previous work from\n'
+                'Rosa Hernansaiz-Ballesteros and Hanna Schumacher\n\n'
+                'Developed at Saezlab\n'
+                'Institute for Computational Biomedicine\n'
+                'University Hospital Heidelberg\n\n'
+                'https://github.com/saezlab/FUNKI\n\n'
+                'Licensed under GPL-3.0'
+            ),
+            padding=(0, 10, 0, 10)
+        )
+        descript.grid(row=2, column=0, sticky='NSEW')
+
+        button_close = ttk.Button(
+            mainframe,
+            text='Close',
+            command=self.destroy,
+            padding=(5, 5, 5, 5),
+        )
+        button_close.grid(row=3, column=0)
