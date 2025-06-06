@@ -12,5 +12,6 @@ _colors = {
     'teal': '#09a687',
     'blue': '#007fa0',
     'black': '#000000',
-    'white': '#ffffff'
+    'white': '#ffffff',
+    'gray': '#8a8a8a'
 }
