@@ -1,5 +1,13 @@
+from itertools import product
+
 import tkinter as tk
 from tkinter import ttk
+import pandas as pd
+import numpy as np
+
+from funki import _colors
+
+from style import table as _style
 
 
 PATH_LOGO = 'docs/source/_images/funki_logo.svg'
@@ -12,6 +20,66 @@ def read_text(path):
         txt = ''.join(f.readlines())
 
     return txt
+
+
+class Table(ttk.Frame):
+    '''
+    Generates a ttk.Frame displaying a table with values extracted from a pandas
+    DataFrame
+    '''
+
+    def __init__(self, parent, df, decimals=3, **options):
+
+        super().__init__(parent, **options)
+
+        if not isinstance(df, pd.DataFrame):
+
+            raise TypeError('Data provided is not a `pandas.DataFrame`')
+
+        # Setting up table cells
+        self.nrows, self.ncols = df.shape
+
+        for j in range(self.nrows + 1):
+
+            self.rowconfigure(j, weight=int(bool(j)))
+
+        for i in range(self.ncols + 1):
+
+            self.columnconfigure(i, weight=int(bool(i)))
+
+        # Setting up contents
+        self.index = df.index.to_list()
+        self.columns = df.columns.to_list()
+
+        for j, i in product(range(self.nrows + 1), range(self.ncols + 1)):
+
+            x, y = i - 1, j - 1 # Corresponding array indexes
+
+            if j + i == 0: # Do nothing on top left cell
+
+                continue
+
+            elif j == 0: # Column name cell
+
+                text = self.columns[x]
+                style = 'column'
+
+            elif i == 0: # Row name cell
+
+                text = self.index[y]
+                style = 'index'
+
+            else:
+
+                text = str(np.round(df.values[y, x], decimals=decimals))
+                style = 'cell'
+
+            cell = ttk.Label(
+                self,
+                text=text,
+                style=style,
+            )
+            cell.grid(row=j, column=i, sticky='NSEW')
 
 
 # Adapted from thegamecracks' gist
