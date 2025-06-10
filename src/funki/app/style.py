@@ -2,6 +2,7 @@ from tkinter import ttk
 
 from funki import _colors
 
+
 def load_style(root):
 
     style = ttk.Style(root)
@@ -9,6 +10,31 @@ def load_style(root):
     style.configure(
         '.',
         font=('Arial', 12),
+    )
+    # Table
+    style.configure(
+        'Cell.TLabel',
+        anchor='E',
+        background=_colors['white'],
+        font=('Courier', 12),
+        borderwidth=0.5,
+        relief='ridge',
+    )
+    style.configure(
+        'Index.TLabel',
+        anchor='W',
+        background=_colors['gray'],
+        font=('Courier', 12, 'bold'),
+        borderwidth=0.5,
+        relief='ridge',
+    )
+    style.configure(
+        'Column.TLabel',
+        anchor='center',
+        background=_colors['gray'],
+        font=('Courier', 12, 'bold'),
+        borderwidth=0.5,
+        relief='ridge',
     )
     # Tabs
     style.configure(
@@ -38,25 +64,3 @@ def load_style(root):
     )
 
     return style
-
-
-table = ttk.Style()
-
-table.configure(
-    'cell',
-    anchor='right',
-    background=_colors['white'],
-    font=('Courier', 10),
-)
-table.configure(
-    'index',
-    anchor='left',
-    background=_colors['gray'],
-    font=('Courier', 10, 'bold'),
-)
-table.configure(
-    'column',
-    anchor='center',
-    background=_colors['gray'],
-    font=('Courier', 10, 'bold'),
-)
