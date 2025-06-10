@@ -27,6 +27,8 @@ class Table(ttk.Frame):
 
     maxcellwidth = 25
     mincellwidth = 5
+    maxcols = 10
+    maxrows = 10
 
     def __init__(self, parent, df, decimals=3, **options):
 
@@ -35,6 +37,8 @@ class Table(ttk.Frame):
         if not isinstance(df, pd.DataFrame):
 
             raise TypeError('Data provided is not a `pandas.DataFrame`')
+        
+        df = self.crop_df(df)
 
         # Setting up table cells
         self.nrows, self.ncols = df.shape
@@ -77,8 +81,12 @@ class Table(ttk.Frame):
                 width = iwidth
 
             else:
-
-                text = str(np.round(df.values[y, x], decimals=decimals))
+                val = df.values[y, x]
+                text = (
+                    val
+                    if isinstance(val, str)
+                    else str(np.round(val, decimals=decimals))
+                )
                 style = 'Cell.TLabel'
                 width = cwidth
 
@@ -106,6 +114,43 @@ class Table(ttk.Frame):
             if width > self.maxcellwidth
             else width
         )
+    
+
+    def crop_df(self, df):
+        '''
+        Crops the data table based on maximum number of columns/rows for preview
+        purposes.
+        '''
+
+        # Cropping rows
+        if df.shape[0] > self.maxrows:
+
+            top = bttm = self.maxrows // 2
+            top += self.maxrows % 2
+
+            x = pd.DataFrame(
+                [['...'] * df.shape[1]],
+                columns=df.columns,
+                index=['...'],
+            )
+
+            df = pd.concat([df.iloc[:top, :], x, df.iloc[-bttm:, :]], axis=0)
+
+        # Cropping columns
+        if df.shape[1] > self.maxcols:
+
+            left = right = self.maxcols // 2
+            left += self.maxcols % 2
+
+            x = pd.DataFrame(
+                ['...'] * df.shape[0],
+                columns=['...'],
+                index=df.index,
+            )
+
+            df = pd.concat([df.iloc[:, :left], x, df.iloc[:, -right:]], axis=1)
+
+        return df
 
 
     def fmt_len(self, string, lim=0):
