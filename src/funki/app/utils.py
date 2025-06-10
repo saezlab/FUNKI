@@ -5,10 +5,6 @@ from tkinter import ttk
 import pandas as pd
 import numpy as np
 
-from funki import _colors
-
-from style import table as _style
-
 
 PATH_LOGO = 'docs/source/_images/funki_logo.svg'
 
@@ -22,11 +18,15 @@ def read_text(path):
     return txt
 
 
+# TODO: Add scrollbars when needed
 class Table(ttk.Frame):
     '''
     Generates a ttk.Frame displaying a table with values extracted from a pandas
     DataFrame
     '''
+
+    maxcellwidth = 25
+    mincellwidth = 5
 
     def __init__(self, parent, df, decimals=3, **options):
 
@@ -48,8 +48,13 @@ class Table(ttk.Frame):
             self.columnconfigure(i, weight=int(bool(i)))
 
         # Setting up contents
-        self.index = df.index.to_list()
-        self.columns = df.columns.to_list()
+        self.index = df.index.astype(str).to_list()
+        self.columns = df.columns.astype(str).to_list()
+
+        # Assuming labels will be longer than the numbers in the cells, so not
+        # checking number of digits in the cells of the array
+        cwidth = self.set_width(self.columns)
+        iwidth = self.set_width(self.index)
 
         for j, i in product(range(self.nrows + 1), range(self.ncols + 1)):
 
@@ -62,24 +67,64 @@ class Table(ttk.Frame):
             elif j == 0: # Column name cell
 
                 text = self.columns[x]
-                style = 'column'
+                style = 'Column.TLabel'
+                width = cwidth
 
             elif i == 0: # Row name cell
 
                 text = self.index[y]
-                style = 'index'
+                style = 'Index.TLabel'
+                width = iwidth
 
             else:
 
                 text = str(np.round(df.values[y, x], decimals=decimals))
-                style = 'cell'
+                style = 'Cell.TLabel'
+                width = cwidth
 
             cell = ttk.Label(
                 self,
-                text=text,
+                text=self.fmt_len(text, lim=width),
                 style=style,
+                width=width
             )
-            cell.grid(row=j, column=i, sticky='NSEW')
+            cell.grid(row=j, column=i)
+
+
+    def set_width(self, index):
+        '''
+        Establishes character width for cells in index/columns based on the
+        min/max thresholds.
+        '''
+
+        width = max(map(len, index))
+
+        return (
+            self.mincellwidth
+            if width < self.mincellwidth
+            else self.maxcellwidth
+            if width > self.maxcellwidth
+            else width
+        )
+
+
+    def fmt_len(self, string, lim=0):
+        '''
+        Formats a string of a cell based on the character limit. If the string
+        is over the limit, cuts the characters to the limit and adds ellipsis.
+        '''
+
+        if not isinstance(string, str):
+
+            raise TypeError('Value provided is not a string')
+
+        if len(string) > lim:
+
+            string = string[:lim - 3] + '...'
+
+        return string
+
+
 
 
 # Adapted from thegamecracks' gist
