@@ -143,17 +143,17 @@ class FunkiApp(tk.Tk):
         self.tab_manager.grid(column=0, row=1, sticky='NSEW')
 
         # Adding tabs
-        tabs = {}
+        self.tabs = {}
 
         for name, (n, tab) in TABS.items():
 
-            tabs[n] = tab(self.tab_manager)
+            self.tabs[n] = tab(self.tab_manager, self)
             
-            for child in tabs[n].winfo_children():
+            for child in self.tabs[n].winfo_children():
             
                 child.grid_configure(padx=5, pady=5)
             
-            self.tab_manager.add(tabs[n], text=name, sticky='NSEW')
+            self.tab_manager.add(self.tabs[n], text=name, sticky='NSEW')
 
 
     def new_project(self):
@@ -167,6 +167,9 @@ class FunkiApp(tk.Tk):
         self._setup_menu()
         self._setup_mainframe()
 
+        # Updating data tab
+        # NOTE: Worth creating own method that updates all tabs?
+        self.tabs['data'].update()
 
     def open_file(self, dtype=None):
         '''
@@ -179,7 +182,6 @@ class FunkiApp(tk.Tk):
         if path and dtype == 'raw':
 
             self.data = read(path)
-            self.event_generate('<<DataLoad>>')
 
         # Loading of metadata
         elif path and dtype == 'obs' and self.data:
@@ -196,6 +198,9 @@ class FunkiApp(tk.Tk):
         if self.data and dtype == 'raw':
 
             self.menu_file.entryconfig('Load metadata', state='normal')
+
+        # Updating data tab
+        self.tabs['data'].update()
 
 
     def open_manual(self):
