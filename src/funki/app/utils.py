@@ -29,19 +29,64 @@ class Table(ttk.Frame):
     mincellwidth = 5
     maxcols = 10
     maxrows = 10
+    decimals = 3
 
-    def __init__(self, parent, df, decimals=3, **options):
+    def __init__(self, parent, df=None, **options):
 
         super().__init__(parent, **options)
+
+        self.columnconfigure(0, weight=1)
+        self.columnconfigure(1, weight=1)
+        self.rowconfigure(0, weight=1)
+        self.rowconfigure(1, weight=1)
+        
+        # Setting up
+        canvas = tk.Canvas(self)
+        canvas.grid(column=0, row=0, sticky='NSEW')
+
+        xscrollbar = ttk.Scrollbar(
+            self,
+            orient='horizontal',
+            command=canvas.xview,
+        )
+        xscrollbar.grid(column=0, row=1, sticky='EW')
+        yscrollbar = ttk.Scrollbar(
+            self,
+            orient='vertical',
+            command=canvas.yview,
+        )
+        yscrollbar.grid(column=1, row=0, sticky='NS')
+        
+        self.tableframe = ttk.Frame(canvas)
+        self.tableframe.bind(
+            "<Configure>",
+            lambda e: canvas.configure(
+                scrollregion=canvas.bbox('all')
+            )
+        )
+        canvas.create_window((0, 0), window=self.tableframe, anchor='nw')
+
+        canvas.configure(yscrollcommand=yscrollbar.set)
+        canvas.configure(xscrollcommand=xscrollbar.set)
+
+        if df is not None:
+            
+            self.populate(df)
+
+    
+    def populate(self, df):
+        '''
+        Populates the table with the provided data.
+        '''
 
         if not isinstance(df, pd.DataFrame):
 
             raise TypeError('Data provided is not a `pandas.DataFrame`')
         
-        df = self.crop_df(df)
+        cropdf = self._crop_df(df)
 
         # Setting up table cells
-        self.nrows, self.ncols = df.shape
+        self.nrows, self.ncols = cropdf.shape
 
         for j in range(self.nrows + 1):
 
@@ -52,13 +97,13 @@ class Table(ttk.Frame):
             self.columnconfigure(i, weight=int(bool(i)))
 
         # Setting up contents
-        self.index = df.index.astype(str).to_list()
-        self.columns = df.columns.astype(str).to_list()
+        self.index = cropdf.index.astype(str).to_list()
+        self.columns = cropdf.columns.astype(str).to_list()
 
         # Assuming labels will be longer than the numbers in the cells, so not
         # checking number of digits in the cells of the array
-        cwidth = self.set_width(self.columns)
-        iwidth = self.set_width(self.index)
+        cwidth = self._set_width(self.columns)
+        iwidth = self._set_width(self.index)
 
         for j, i in product(range(self.nrows + 1), range(self.ncols + 1)):
 
@@ -81,25 +126,25 @@ class Table(ttk.Frame):
                 width = iwidth
 
             else:
-                val = df.values[y, x]
+                val = cropdf.values[y, x]
                 text = (
                     val
                     if isinstance(val, str)
-                    else str(np.round(val, decimals=decimals))
+                    else str(np.round(val, decimals=self.decimals))
                 )
                 style = 'Cell.TLabel'
                 width = cwidth
 
             cell = ttk.Label(
-                self,
-                text=self.fmt_len(text, lim=width),
+                self.tableframe,
+                text=self._fmt_len(text, lim=width),
                 style=style,
                 width=width
             )
             cell.grid(row=j, column=i)
 
 
-    def set_width(self, index):
+    def _set_width(self, index):
         '''
         Establishes character width for cells in index/columns based on the
         min/max thresholds.
@@ -116,7 +161,7 @@ class Table(ttk.Frame):
         )
     
 
-    def crop_df(self, df):
+    def _crop_df(self, df):
         '''
         Crops the data table based on maximum number of columns/rows for preview
         purposes.
@@ -153,7 +198,7 @@ class Table(ttk.Frame):
         return df
 
 
-    def fmt_len(self, string, lim=0):
+    def _fmt_len(self, string, lim=0):
         '''
         Formats a string of a cell based on the character limit. If the string
         is over the limit, cuts the characters to the limit and adds ellipsis.
@@ -168,8 +213,6 @@ class Table(ttk.Frame):
             string = string[:lim - 3] + '...'
 
         return string
-
-
 
 
 # Adapted from thegamecracks' gist
