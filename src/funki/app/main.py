@@ -15,20 +15,21 @@ from style import load_style
 from assets.help import Help, About
 
 
-class FunkiApp:
+class FunkiApp(tk.Tk):
     # TODO: Check if some of the Label can be replaced with Text for better
     # formatting and handling
 
     _platform = None
 
-    def __init__(self, root):
+    def __init__(self):
         '''
         Establishes application's root and platform, runs all setup methods and
         starts a new project.
         '''
 
-        self._root = root
-        self._platform = self._root.tk.call('tk', 'windowingsystem')
+        super().__init__()
+
+        self._platform = self.tk.call('tk', 'windowingsystem')
 
         self.new_project()
 
@@ -38,10 +39,10 @@ class FunkiApp:
         Sets up the application's root configuration.
         '''
 
-        self._root.title('FUNKI v%s' % __version__)
-        self._root.option_add('*tearOff', False) # Avoids menu detachment
-        self._root.columnconfigure(0, weight=1)
-        self._root.rowconfigure(0, weight=1)
+        self.title('FUNKI v%s' % __version__)
+        self.option_add('*tearOff', False) # Avoids menu detachment
+        self.columnconfigure(0, weight=1)
+        self.rowconfigure(0, weight=1)
 
 
     def _setup_menu(self):
@@ -49,8 +50,8 @@ class FunkiApp:
         Sets up the top level menus.
         '''
 
-        self.menubar = tk.Menu(self._root)
-        self._root.config(menu=self.menubar)
+        self.menubar = tk.Menu(self)
+        self.config(menu=self.menubar)
 
         self.menu_file = tk.Menu(self.menubar)
         self.menubar.add_cascade(menu=self.menu_file, label='File')
@@ -99,7 +100,7 @@ class FunkiApp:
         are to be placed. Calls setup of main children: header and notebook.
         '''
 
-        self.mainframe = ttk.Frame(self._root)
+        self.mainframe = ttk.Frame(self)
         self.mainframe.grid(
             column=0,
             row=0,
@@ -178,6 +179,7 @@ class FunkiApp:
         if path and dtype == 'raw':
 
             self.data = read(path)
+            self.event_generate('<<DataLoad>>')
 
         # Loading of metadata
         elif path and dtype == 'obs' and self.data:
@@ -208,8 +210,7 @@ class FunkiApp:
 
 if __name__ == '__main__':
 
-    root = tk.Tk()
-    load_style(root)
+    app = FunkiApp()
+    load_style(app)
 
-    app = FunkiApp(root)
-    root.mainloop()
+    app.mainloop()
