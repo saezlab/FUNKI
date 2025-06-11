@@ -1,5 +1,3 @@
-from itertools import product
-
 import tkinter as tk
 from tkinter import ttk
 import pandas as pd
@@ -18,59 +16,50 @@ def read_text(path):
     return txt
 
 
-# TODO: Add scrollbars when needed
 class Table(ttk.Frame):
     '''
     Generates a ttk.Frame displaying a table with values extracted from a pandas
     DataFrame
     '''
 
-    maxcellwidth = 25
-    mincellwidth = 5
-    maxcols = 10
-    maxrows = 10
+    maxcols = 100
+    maxrows = 100
     decimals = 3
+    charlim = 25
 
     def __init__(self, parent, df=None, **options):
 
         super().__init__(parent, **options)
 
         self.columnconfigure(0, weight=1)
-        self.columnconfigure(1, weight=1)
+        self.columnconfigure(1, weight=0)
         self.rowconfigure(0, weight=1)
-        self.rowconfigure(1, weight=1)
-        
+        self.rowconfigure(1, weight=0)
+
         # Setting up
-        canvas = tk.Canvas(self)
-        canvas.grid(column=0, row=0, sticky='NSEW')
+        self.tree = ttk.Treeview(self)
+        self.tree.grid(column=0, row=0, sticky='NSEW')
 
         xscrollbar = ttk.Scrollbar(
             self,
             orient='horizontal',
-            command=canvas.xview,
+            command=self.tree.xview,
         )
         xscrollbar.grid(column=0, row=1, sticky='EW')
         yscrollbar = ttk.Scrollbar(
             self,
             orient='vertical',
-            command=canvas.yview,
+            command=self.tree.yview,
         )
         yscrollbar.grid(column=1, row=0, sticky='NS')
-        
-        self.tableframe = ttk.Frame(canvas)
-        self.tableframe.bind(
-            "<Configure>",
-            lambda e: canvas.configure(
-                scrollregion=canvas.bbox('all')
-            )
-        )
-        canvas.create_window((0, 0), window=self.tableframe, anchor='nw')
 
-        canvas.configure(yscrollcommand=yscrollbar.set)
-        canvas.configure(xscrollcommand=xscrollbar.set)
+        self.tree.configure(
+            xscrollcommand=xscrollbar.set,
+            yscrollcommand=yscrollbar.set,
+        )
 
         if df is not None:
-            
+
             self.populate(df)
 
     
@@ -85,81 +74,22 @@ class Table(ttk.Frame):
         
         cropdf = self._crop_df(df)
 
-        # Setting up table cells
-        self.nrows, self.ncols = cropdf.shape
-
-        for j in range(self.nrows + 1):
-
-            self.rowconfigure(j, weight=int(bool(j)))
-
-        for i in range(self.ncols + 1):
-
-            self.columnconfigure(i, weight=int(bool(i)))
-
         # Setting up contents
-        self.index = cropdf.index.astype(str).to_list()
-        self.columns = cropdf.columns.astype(str).to_list()
+        columns = cropdf.columns.astype(str).to_list()
+        self.tree['columns'] = columns
+        self.tree.column('#0', width=150)
 
-        # Assuming labels will be longer than the numbers in the cells, so not
-        # checking number of digits in the cells of the array
-        cwidth = self._set_width(self.columns)
-        iwidth = self._set_width(self.index)
+        for c in columns:
 
-        for j, i in product(range(self.nrows + 1), range(self.ncols + 1)):
+            self.tree.heading(c, text=c)
+            self.tree.column(c, width=50)
 
-            x, y = i - 1, j - 1 # Corresponding array indexes
+        for i, r in cropdf.iterrows():
 
-            if j + i == 0: # Do nothing on top left cell
+            self.tree.insert('', 'end', text=i, values=[
+                self._fmt_val(v) for v in r
+            ])
 
-                continue
-
-            elif j == 0: # Column name cell
-
-                text = self.columns[x]
-                style = 'Column.TLabel'
-                width = cwidth
-
-            elif i == 0: # Row name cell
-
-                text = self.index[y]
-                style = 'Index.TLabel'
-                width = iwidth
-
-            else:
-                val = cropdf.values[y, x]
-                text = (
-                    val
-                    if isinstance(val, str)
-                    else str(np.round(val, decimals=self.decimals))
-                )
-                style = 'Cell.TLabel'
-                width = cwidth
-
-            cell = ttk.Label(
-                self.tableframe,
-                text=self._fmt_len(text, lim=width),
-                style=style,
-                width=width
-            )
-            cell.grid(row=j, column=i)
-
-
-    def _set_width(self, index):
-        '''
-        Establishes character width for cells in index/columns based on the
-        min/max thresholds.
-        '''
-
-        width = max(map(len, index))
-
-        return (
-            self.mincellwidth
-            if width < self.mincellwidth
-            else self.maxcellwidth
-            if width > self.maxcellwidth
-            else width
-        )
-    
 
     def _crop_df(self, df):
         '''
@@ -198,21 +128,25 @@ class Table(ttk.Frame):
         return df
 
 
-    def _fmt_len(self, string, lim=0):
+    def _fmt_val(self, val):
         '''
-        Formats a string of a cell based on the character limit. If the string
-        is over the limit, cuts the characters to the limit and adds ellipsis.
+        Formats a value in the table based on character/decimal limits. If the
+        string is over the limit, cuts the characters to the limit and adds
+        ellipsis. If the number has more decimals than the limit, it's rounded
+        and cut up to those decimal positions.
         '''
 
-        if not isinstance(string, str):
+        if isinstance(val, float):
+            
+            val = np.round(val, decimals=self.decimals)
 
-            raise TypeError('Value provided is not a string')
+        val = str(val)
 
-        if len(string) > lim:
+        if len(val) > self.charlim:
 
-            string = string[:lim - 3] + '...'
+            val = val[:self.charlim - 3] + '...'
 
-        return string
+        return val
 
 
 # Adapted from thegamecracks' gist
