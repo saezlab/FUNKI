@@ -16,7 +16,7 @@ def load_style(root):
         'Cell.TLabel',
         anchor='E',
         background=_colors['white'],
-        font=('Courier', 12),
+        font=('Courier', 11),
         borderwidth=0.5,
         relief='ridge',
     )
@@ -24,7 +24,7 @@ def load_style(root):
         'Index.TLabel',
         anchor='W',
         background=_colors['gray'],
-        font=('Courier', 12, 'bold'),
+        font=('Courier', 11, 'bold'),
         borderwidth=0.5,
         relief='ridge',
     )
@@ -32,7 +32,7 @@ def load_style(root):
         'Column.TLabel',
         anchor='center',
         background=_colors['gray'],
-        font=('Courier', 12, 'bold'),
+        font=('Courier', 11, 'bold'),
         borderwidth=0.5,
         relief='ridge',
     )
