@@ -13,29 +13,10 @@ def load_style(root):
     )
     # Table
     style.configure(
-        'Cell.TLabel',
-        anchor='E',
-        background=_colors['white'],
+        'Treeview',
         font=('Courier', 11),
-        borderwidth=0.5,
-        relief='ridge',
     )
-    style.configure(
-        'Index.TLabel',
-        anchor='W',
-        background=_colors['gray'],
-        font=('Courier', 11, 'bold'),
-        borderwidth=0.5,
-        relief='ridge',
-    )
-    style.configure(
-        'Column.TLabel',
-        anchor='center',
-        background=_colors['gray'],
-        font=('Courier', 11, 'bold'),
-        borderwidth=0.5,
-        relief='ridge',
-    )
+    # TODO: Add borders or different backgrounds to distinguish cells
     # Tabs
     style.configure(
         'TNotebook',
