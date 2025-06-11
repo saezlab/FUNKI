@@ -25,5 +25,11 @@ class TabData(ttk.Frame):
         if self.controller.data:
 
             df = self.controller.data.to_df()
-            table_data = Table(self, df)
-            table_data.grid(row=0, column=0)
+            table_data = Table(self, df, padding=(5, 5, 5, 5))
+            table_data.grid(row=0, column=0, sticky='NSWE')
+
+            if not self.controller.data.obs.empty:
+
+                obs = self.controller.data.obs
+                table_obs = Table(self, obs, padding=(5, 5, 5, 5))
+                table_obs.grid(row=0, column=1, sticky='NSWE')
