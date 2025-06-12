@@ -56,19 +56,36 @@ class FunkiApp(tk.Tk):
         self.config(menu=self.menubar)
 
         self.menu_file = tk.Menu(self.menubar)
-        self.menubar.add_cascade(menu=self.menu_file, label='File')
+        self.menu_open = tk.Menu(self.menu_file)
         self.menu_view = tk.Menu(self.menubar)
-        self.menubar.add_cascade(menu=self.menu_view, label='View')
         self.menu_help = tk.Menu(self.menubar)
-        self.menubar.add_cascade(menu=self.menu_help, label='Help')
 
+        # Keys are parent menu instance, values are either:
+        # * '---': Will add a separator in that position
+        # * tuple: Contains 3 elements:
+        #   - Label/text, status and command will create that option
+        #   - Label/text, None, parent menu instance will add a cascade
         menu_options = {
+            self.menubar: [
+                ('File', None, self.menu_file),
+                ('View', None, self.menu_view),
+                ('Help', None, self.menu_help),
+            ],
             self.menu_file: [
                 (
                     'New project',
                     'normal',
                     self.new_project
                 ),
+                ('Open...', None, self.menu_open,),
+                '---',
+                (
+                    'Exit',
+                    'normal',
+                    self.destroy
+                ),
+            ],
+            self.menu_open: [
                 (
                     'Load data',
                     'normal',
@@ -110,7 +127,17 @@ class FunkiApp(tk.Tk):
 
             for label, state, command in options:
 
-                menu.add_command(label=label, command=command, state=state)
+                if label == '-':
+
+                    menu.add_separator()
+
+                elif state == None:
+
+                    menu.add_cascade(menu=command, label=label)
+
+                else:
+
+                    menu.add_command(label=label, command=command, state=state)
 
 
     def _setup_mainframe(self):
