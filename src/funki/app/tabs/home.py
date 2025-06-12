@@ -18,6 +18,8 @@ class TabHome(ttk.Frame):
         self.rowconfigure(0, weight=1)
         self.rowconfigure(1, weight=0)
 
+        self.controller = controller
+
         # Welcome text
         maintext = WrapLabel(
             self,
@@ -40,29 +42,33 @@ class TabHome(ttk.Frame):
         rframe.columnconfigure(0, weight=0)
 
         # Buttons raw data
-        button_loadraw = ttk.Button(
+        self.button_loadraw = ttk.Button(
             lframe,
             text='Load data',
             padding=(5, 5, 5, 5),
+            command=lambda: self.controller.open_file(dtype='raw'),
         )
-        button_loadraw.grid(row=0, column=0, pady=(5, 5))
-        button_viewraw = ttk.Button(
+        self.button_loadraw.grid(row=0, column=0, pady=(5, 5))
+        self.button_viewraw = ttk.Button(
             lframe,
             text='View data',
             padding=(5, 5, 5, 5),
+            command=lambda: self.controller.view_data(dtype='raw'),
         )
-        button_viewraw.grid(row=1, column=0, pady=(5, 5))
+        self.button_viewraw.grid(row=1, column=0, pady=(5, 5))
 
         # Buttons metadata
-        button_loadobs = ttk.Button(
+        self.button_loadobs = ttk.Button(
             rframe,
             text='Load metadata',
             padding=(5, 5, 5, 5),
+            command=lambda: self.controller.open_file(dtype='obs'),
         )
-        button_loadobs.grid(row=0, column=1, pady=(5, 5))
-        button_viewobs = ttk.Button(
+        self.button_loadobs.grid(row=0, column=1, pady=(5, 5))
+        self.button_viewobs = ttk.Button(
             rframe,
             text='View metadata',
             padding=(5, 5, 5, 5),
+            command=lambda: self.controller.view_data(dtype='obs'),
         )
-        button_viewobs.grid(row=1, column=1, pady=(5, 5))
+        self.button_viewobs.grid(row=1, column=1, pady=(5, 5))

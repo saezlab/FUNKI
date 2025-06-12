@@ -10,6 +10,7 @@ from funki import __version__
 from funki.input import read
 
 from utils import PATH_LOGO
+from utils import Table
 from tabs import TABS
 from style import load_style
 from assets.help import Help, About
@@ -159,14 +160,13 @@ class FunkiApp(tk.Tk):
         '''
 
         self.data = None
+        self.fname_raw = None
+        self.fname_obs = None
 
         self._setup_root()
         self._setup_menu()
         self._setup_mainframe()
 
-        # Updating data tab
-        # NOTE: Worth creating own method that updates all tabs?
-        self.tabs['data'].update()
 
     def open_file(self, dtype=None):
         '''
@@ -178,6 +178,7 @@ class FunkiApp(tk.Tk):
         # Loading of measurement data
         if path and dtype == 'raw':
 
+            self.fname_raw = path
             self.data = read(path)
 
         # Loading of metadata
@@ -185,6 +186,7 @@ class FunkiApp(tk.Tk):
 
             fname, ext = os.path.splitext(path)
 
+            self.fname_obs = path
             self.data.obs = pd.read_csv(
                 path,
                 sep=',' if ext == '.csv' else '\t',
@@ -196,9 +198,6 @@ class FunkiApp(tk.Tk):
 
             self.menu_file.entryconfig('Load metadata', state='normal')
 
-        # Updating data tab
-        self.tabs['data'].update()
-
 
     def open_manual(self):
 
@@ -208,6 +207,42 @@ class FunkiApp(tk.Tk):
     def open_about(self):
 
         About()
+
+
+    def view_data(self, dtype=None):
+
+        df = pd.DataFrame()
+        title = ''
+
+        if dtype == 'raw' and self.data:
+
+            title = 'Data - %s' % self.fname_raw
+            df = self.data.to_df()
+
+        elif dtype == 'obs' and (self.data and not self.data.obs.empty):
+
+            title = 'Metadata - %s' % self.fname_obs
+            df = self.data.obs
+
+        win = tk.Toplevel()
+
+        win.title(title)
+        win.columnconfigure(0, weight=1)
+        win.rowconfigure(0, weight=1)
+        win.rowconfigure(1, weight=0)
+
+        if not df.empty:
+
+            table = Table(win, df, padding=(5, 5, 5, 5))
+            table.grid(row=0, column=0, sticky='NSWE')
+
+        button_close = ttk.Button(
+            win,
+            text='Close',
+            command=win.destroy,
+            padding=(5, 5, 5, 5),
+        )
+        button_close.grid(row=1, column=0)
 
 
 if __name__ == '__main__':
