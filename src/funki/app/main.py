@@ -62,54 +62,55 @@ class FunkiApp(tk.Tk):
         self.menu_help = tk.Menu(self.menubar)
         self.menubar.add_cascade(menu=self.menu_help, label='Help')
 
-        menu_options = [
-            (
-                self.menu_file,
-                'New project',
-                'normal',
-                self.new_project
-            ),
-            (
-                self.menu_file,
-                'Load data',
-                'normal',
-                lambda: self.open_file(dtype='raw')
-            ),
-            (
-                self.menu_file,
-                'Load metadata',
-                'disabled',
-                lambda: self.open_file(dtype='obs')
-            ),
-            (
-                self.menu_view,
-                'Data',
-                'disabled',
-                lambda: self.view_data(dtype='raw')
-            ),
-            (
-                self.menu_view,
-                'Metadata',
-                'disabled',
-                lambda: self.view_data(dtype='obs')
-            ),
-            (
-                self.menu_help,
-                'FUNKI manual',
-                'normal',
-                self.open_manual
-            ),
-            (
-                self.menu_help,
-                'About FUNKI',
-                'normal',
-                self.open_about
-            ),
-        ]
+        menu_options = {
+            self.menu_file: [
+                (
+                    'New project',
+                    'normal',
+                    self.new_project
+                ),
+                (
+                    'Load data',
+                    'normal',
+                    lambda: self.open_file(dtype='raw')
+                ),
+                (
+                    'Load metadata',
+                    'disabled',
+                    lambda: self.open_file(dtype='obs')
+                ),
+            ],
+            self.menu_view: [
+                (
+                    'Data',
+                    'disabled',
+                    lambda: self.view_data(dtype='raw')
+                ),
+                (
+                    'Metadata',
+                    'disabled',
+                    lambda: self.view_data(dtype='obs')
+                ),
+            ],
+            self.menu_help: [
+                (
+                    'FUNKI manual',
+                    'normal',
+                    self.open_manual
+                ),
+                (
+                    'About FUNKI',
+                    'normal',
+                    self.open_about
+                ),
+            ],
+        }
 
-        for menu, label, state, command in menu_options:
+        for menu, options in menu_options.items():
 
-            menu.add_command(label=label, command=command, state=state)
+            for label, state, command in options:
+
+                menu.add_command(label=label, command=command, state=state)
 
 
     def _setup_mainframe(self):
