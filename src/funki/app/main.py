@@ -57,6 +57,8 @@ class FunkiApp(tk.Tk):
 
         self.menu_file = tk.Menu(self.menubar)
         self.menubar.add_cascade(menu=self.menu_file, label='File')
+        self.menu_view = tk.Menu(self.menubar)
+        self.menubar.add_cascade(menu=self.menu_view, label='View')
         self.menu_help = tk.Menu(self.menubar)
         self.menubar.add_cascade(menu=self.menu_help, label='Help')
 
@@ -64,36 +66,50 @@ class FunkiApp(tk.Tk):
             (
                 self.menu_file,
                 'New project',
+                'normal',
                 self.new_project
             ),
             (
                 self.menu_file,
                 'Load data',
+                'normal',
                 lambda: self.open_file(dtype='raw')
             ),
             (
                 self.menu_file,
                 'Load metadata',
+                'disabled',
                 lambda: self.open_file(dtype='obs')
+            ),
+            (
+                self.menu_view,
+                'Data',
+                'disabled',
+                lambda: self.view_data(dtype='raw')
+            ),
+            (
+                self.menu_view,
+                'Metadata',
+                'disabled',
+                lambda: self.view_data(dtype='obs')
             ),
             (
                 self.menu_help,
                 'FUNKI manual',
+                'normal',
                 self.open_manual
             ),
             (
                 self.menu_help,
                 'About FUNKI',
+                'normal',
                 self.open_about
             ),
         ]
 
-        for menu, label, command in menu_options:
+        for menu, label, state, command in menu_options:
 
-            menu.add_command(label=label, command=command)
-
-        # Disable metadata loading until data is available
-        self.menu_file.entryconfig('Load metadata', state='disabled')
+            menu.add_command(label=label, command=command, state=state)
 
 
     def _setup_mainframe(self):
@@ -200,7 +216,7 @@ class FunkiApp(tk.Tk):
             self.menu_file.entryconfig('Load metadata', state='normal')
             self.tabs['home'].button_viewraw.configure(state='normal')
             self.tabs['home'].button_loadobs.configure(state='normal')
-        
+
         # Reactivating view metadata
         elif dtype == 'obs' and (self.data and not self.data.obs.empty):
 
