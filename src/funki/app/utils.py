@@ -3,6 +3,8 @@ from tkinter import ttk
 import pandas as pd
 import numpy as np
 
+from funki import _colors
+
 
 PATH_LOGO = 'docs/source/_images/funki_logo.svg'
 
@@ -77,18 +79,21 @@ class Table(ttk.Frame):
         # Setting up contents
         columns = cropdf.columns.astype(str).to_list()
         self.tree['columns'] = columns
-        self.tree.column('#0', width=150)
+        self.tree.column('#0', width=150, anchor='w', stretch=False)
 
         for c in columns:
 
             self.tree.heading(c, text=c)
-            self.tree.column(c, width=50)
+            self.tree.column(c, width=50, anchor='e', stretch=False)
 
-        for i, r in cropdf.iterrows():
+        for i, (n, r) in enumerate(cropdf.iterrows()):
 
-            self.tree.insert('', 'end', text=i, values=[
+            self.tree.insert('', 'end', text=n, tag=i % 2, values=[
                 self._fmt_val(v) for v in r
             ])
+
+        self.tree.tag_configure(0, background=_colors['white'])
+        self.tree.tag_configure(1, background=_colors['lightgray'])
 
 
     def _crop_df(self, df):

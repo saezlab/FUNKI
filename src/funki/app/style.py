@@ -16,7 +16,6 @@ def load_style(root):
         'Treeview',
         font=('Courier', 11),
     )
-    # TODO: Add borders or different backgrounds to distinguish cells
     # Tabs
     style.configure(
         'TNotebook',
