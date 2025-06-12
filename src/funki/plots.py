@@ -1,19 +1,26 @@
 import numpy as np
 import pandas as pd
 import scanpy as sc
-import plotly.express as px
+import matplotlib.pyplot as plt
+from matplotlib.lines import Line2D
+import matplotlib.patches as mpatches
 
 from .analysis import sc_trans_qc_metrics
 
 
-def plot_pca(data, color=None, use_highly_variable=True, recalculate=False,
-             **kwargs):
+def plot_pca(
+        data,
+        color=None,
+        use_highly_variable=True,
+        recalculate=False,
+        **kwargs,
+):
     '''
     Plots the dimensionality reduction PCA results of a data set.
 
     :param data: The data set from which to compute the PCA
     :type data: :class:`funki.input.DataSet`
-    :param color: Variables or observations to color from, defaults to ``None``
+    :param color: Variable to color from, defaults to ``None``
     :type color: str | list[str], optional
     :param use_highly_variable: Whether to use highly variable genes only or all
         genes available, defaults to ``True``
@@ -26,41 +33,69 @@ def plot_pca(data, color=None, use_highly_variable=True, recalculate=False,
     :type \*\*kwargs: optional
 
     :returns: The figure contataining the scatter plot showing the PCA embedding
-    :rtype: `plotly.graph_objs.Figure`_
+    :rtype: `matplotlib.figure.Figure`_
 
-    .. _plotly.graph_objs.Figure: https://plotly.com/python-api-reference/gener\
-        ated/plotly.graph_objects.Figure.html
+    .. _matplotlib.figure.Figure: https://matplotlib.org/stable/api/_as_gen/mat\
+        plotlib.figure.Figure.html#matplotlib.figure.Figure
     .. _scanpy.pp.pca(): https://scanpy.readthedocs.io/en/latest/generated/scan\
         py.pp.pca.html
     '''
 
     if recalculate:
+
         data._del_meta({'obsm': 'X_pca'})
 
     if use_highly_variable:
+
         sc.pp.highly_variable_genes(data, inplace=True)
 
     if 'X_pca' not in data.obsm:
+
         sc.pp.pca(data, use_highly_variable=use_highly_variable, **kwargs)
 
-    colors = data.obs[color].values if color in data.obs_keys() else None
+    color_vals = data.obs[color].values if color in data.obs_keys() else None
     
-    fig = px.scatter(
-        data.obsm.to_df(),
-        x='X_pca1',
-        y='X_pca2',
-        color=colors,
-        labels={
-            'X_pca1': 'PC 1',
-            'X_pca2': 'PC 2',
-            'color': color
-        },
-        width=800,
-        height=500
+    if color_vals is None:
+
+        colors = 'C0'
+
+    # Categorical variable
+    elif color_vals.dtype is np.dtype(object):
+
+        cmap = {v: f'C{i % 10}' for i, v in enumerate(sorted(set(color_vals)))}
+        colors = [cmap[c] for c in color_vals]
+
+    # Numerical variable
+    else:
+
+        colors = color_vals
+
+    fig, ax = plt.subplots()
+
+    df = data.obsm.to_df()[['X_pca1', 'X_pca2']]
+
+    im = ax.scatter(
+        x=df.X_pca1.values,
+        y=df.X_pca2.values,
+        c=colors,
     )
-    fig.update_yaxes(scaleanchor='x', scaleratio=1)
+
+    ax.set_xlabel('PC 1')
+    ax.set_ylabel('PC 2')
+
+    if color_vals.dtype is np.dtype(object):
+        
+        ax.legend(loc=0, handles=[
+            Line2D([0], [0], label=k, marker='.', ms=10, mfc=v, mec=v, ls='')
+            for k, v in cmap.items()
+        ])
+    
+    else:
+
+        fig.colorbar(im)
 
     return fig
+
 
 def plot_tsne(data, color=None, perplexity=30, recalculate=False):
     '''
