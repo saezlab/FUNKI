@@ -13,5 +13,6 @@ _colors = {
     'blue': '#007fa0',
     'black': '#000000',
     'white': '#ffffff',
-    'gray': '#8a8a8a'
+    'gray': '#8a8a8a',
+    'lightgray': "#DADADA",
 }
