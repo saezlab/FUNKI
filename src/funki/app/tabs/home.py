@@ -54,6 +54,7 @@ class TabHome(ttk.Frame):
             text='View data',
             padding=(5, 5, 5, 5),
             command=lambda: self.controller.view_data(dtype='raw'),
+            state='disabled',
         )
         self.button_viewraw.grid(row=1, column=0, pady=(5, 5))
 
@@ -63,6 +64,7 @@ class TabHome(ttk.Frame):
             text='Load metadata',
             padding=(5, 5, 5, 5),
             command=lambda: self.controller.open_file(dtype='obs'),
+            state='disabled',
         )
         self.button_loadobs.grid(row=0, column=1, pady=(5, 5))
         self.button_viewobs = ttk.Button(
@@ -70,5 +72,6 @@ class TabHome(ttk.Frame):
             text='View metadata',
             padding=(5, 5, 5, 5),
             command=lambda: self.controller.view_data(dtype='obs'),
+            state='disabled',
         )
         self.button_viewobs.grid(row=1, column=1, pady=(5, 5))

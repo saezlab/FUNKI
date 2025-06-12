@@ -193,10 +193,18 @@ class FunkiApp(tk.Tk):
                 index_col=0
             )
 
-        # Reactivate the Load metadata in menu
+        # TODO: Create separate functions?
+        # Reactivating load metadata and view data
         if self.data and dtype == 'raw':
 
             self.menu_file.entryconfig('Load metadata', state='normal')
+            self.tabs['home'].button_viewraw.configure(state='normal')
+            self.tabs['home'].button_loadobs.configure(state='normal')
+        
+        # Reactivating view metadata
+        elif dtype == 'obs' and (self.data and not self.data.obs.empty):
+
+            self.tabs['home'].button_viewobs.configure(state='normal')
 
 
     def open_manual(self):
