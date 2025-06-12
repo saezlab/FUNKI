@@ -153,7 +153,8 @@ class Table(ttk.Frame):
 
         return val
 
-
+# TODO: Should probably replace with Text widget, so we can add scrollbar and
+#       also current solution does not wrap text very well
 # Adapted from thegamecracks' gist
 # https://gist.github.com/thegamecracks/5595dad631ec50bdc021f945054e86fb
 class WrapLabel(ttk.Label):
