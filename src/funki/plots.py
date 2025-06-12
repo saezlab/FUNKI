@@ -21,7 +21,7 @@ def plot_pca(
     :param data: The data set from which to compute the PCA
     :type data: :class:`funki.input.DataSet`
     :param color: Variable to color from, defaults to ``None``
-    :type color: str | list[str], optional
+    :type color: str, optional
     :param use_highly_variable: Whether to use highly variable genes only or all
         genes available, defaults to ``True``
     :type use_highly_variable: bool, optional
@@ -84,12 +84,12 @@ def plot_pca(
     ax.set_ylabel('PC 2')
 
     if color_vals.dtype is np.dtype(object):
-        
+
         ax.legend(loc=0, handles=[
             Line2D([0], [0], label=k, marker='.', ms=10, mfc=v, mec=v, ls='')
             for k, v in cmap.items()
         ])
-    
+
     else:
 
         fig.colorbar(im)
@@ -97,14 +97,19 @@ def plot_pca(
     return fig
 
 
-def plot_tsne(data, color=None, perplexity=30, recalculate=False):
+def plot_tsne(
+    data,
+    color=None,
+    perplexity=30,
+    recalculate=False
+):
     '''
     Plots the dimensionality reduction t-SNE results of a data set.
 
     :param data: The data set from which to compute the t-SNE
     :type data: :class:`funki.input.DataSet`
-    :param color: Variables or observations to color from, defaults to ``None``
-    :type color: str | list[str], optional
+    :param color: Variable to color from, defaults to ``None``
+    :type color: str, optional
     :param perplexity: Perplexity hyperparmaeter for the t-SNE representation.
         Relates to the number of nearest neighbours, defaults to ``30``
     :type perplexity: int, optional
@@ -114,34 +119,61 @@ def plot_tsne(data, color=None, perplexity=30, recalculate=False):
 
     :returns: The figure contataining the scatter plot showing the tSNE
         embedding
-    :rtype: `plotly.graph_objs.Figure`_
+    :rtype: `matplotlib.figure.Figure`_
 
-    .. _plotly.graph_objs.Figure: https://plotly.com/python-api-reference/gener\
-        ated/plotly.graph_objects.Figure.html
+    .. _matplotlib.figure.Figure: https://matplotlib.org/stable/api/_as_gen/mat\
+        plotlib.figure.Figure.html#matplotlib.figure.Figure
     '''
 
     if recalculate:
+
         data._del_meta({'obsm': ['X_pca', 'X_tsne'], 'uns': 'tsne'})
 
     if 'X_tsne' not in data.obsm:
+
         sc.tl.tsne(data, perplexity=perplexity)
 
-    colors = data.obs[color].values if color in data.obs_keys() else None
+    # TODO: Could probably move this to an external function?
+    color_vals = data.obs[color].values if color in data.obs_keys() else None
     
-    fig = px.scatter(
-        data.obsm.to_df(),
-        x='X_tsne1',
-        y='X_tsne2',
-        color=colors,
-        labels={
-            'X_tsne1': 'tSNE 1',
-            'X_tsne2': 'tSNE 2',
-            'color': color
-        },
-        width=800,
-        height=500
+    if color_vals is None:
+
+        colors = 'C0'
+
+    # Categorical variable
+    elif color_vals.dtype is np.dtype(object):
+
+        cmap = {v: f'C{i % 10}' for i, v in enumerate(sorted(set(color_vals)))}
+        colors = [cmap[c] for c in color_vals]
+
+    # Numerical variable
+    else:
+
+        colors = color_vals
+
+    fig, ax = plt.subplots()
+
+    df = data.obsm.to_df()[['X_tsne1', 'X_tsne2']]
+
+    im = ax.scatter(
+        x=df.X_tsne1.values,
+        y=df.X_tsne2.values,
+        c=colors,
     )
-    fig.update_yaxes(scaleanchor='x', scaleratio=1)
+
+    ax.set_xlabel('tSNE 1')
+    ax.set_ylabel('tSNE 2')
+
+    if color_vals.dtype is np.dtype(object):
+
+        ax.legend(loc=0, handles=[
+            Line2D([0], [0], label=k, marker='.', ms=10, mfc=v, mec=v, ls='')
+            for k, v in cmap.items()
+        ])
+
+    else:
+
+        fig.colorbar(im)
 
     return fig
 
