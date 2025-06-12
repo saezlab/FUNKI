@@ -171,6 +171,24 @@ class FunkiApp(tk.Tk):
             self.tab_manager.add(self.tabs[n], text=name, sticky='NSEW')
 
 
+    def _data_loaded(self, dtype=None):
+        '''
+        Handles the activation of diverse options upon loading of raw/obs data.
+        '''
+
+        if dtype == 'raw' and self.data:
+
+            self.menu_file.entryconfig('Load metadata', state='normal')
+            self.menu_view.entryconfig('Data', state='normal')
+            self.tabs['home'].button_viewraw.configure(state='normal')
+            self.tabs['home'].button_loadobs.configure(state='normal')
+
+        elif dtype == 'obs' and (self.data and not self.data.obs.empty):
+
+            self.menu_view.entryconfig('Metadata', state='normal')
+            self.tabs['home'].button_viewobs.configure(state='normal')
+
+
     def new_project(self):
         '''
         Clears current data and resets the application.
@@ -210,20 +228,7 @@ class FunkiApp(tk.Tk):
                 index_col=0
             )
 
-        # TODO: Create separate functions?
-        # Reactivating load metadata and view data
-        if self.data and dtype == 'raw':
-
-            self.menu_file.entryconfig('Load metadata', state='normal')
-            self.menu_view.entryconfig('Data', state='normal')
-            self.tabs['home'].button_viewraw.configure(state='normal')
-            self.tabs['home'].button_loadobs.configure(state='normal')
-
-        # Reactivating view metadata
-        elif dtype == 'obs' and (self.data and not self.data.obs.empty):
-            
-            self.menu_view.entryconfig('Metadata', state='normal')
-            self.tabs['home'].button_viewobs.configure(state='normal')
+        self._data_loaded(dtype=dtype)
 
 
     def open_manual(self):
