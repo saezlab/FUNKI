@@ -178,15 +178,23 @@ def plot_tsne(
     return fig
 
 
-def plot_umap(data, color=None, min_dist=0.5, spread=1.0, alpha=1.0, gamma=1.0,
-              recalculate=False, **kwargs):
+def plot_umap(
+    data,
+    color=None,
+    min_dist=0.5,
+    spread=1.0,
+    alpha=1.0,
+    gamma=1.0,
+    recalculate=False,
+    **kwargs
+):
     '''
     Plots the dimensionality reduction UMAP results of a data set.
 
     :param data: The data set from which to compute the UMAP
     :type data: :class:`funki.input.DataSet`
-    :param color: Variables or observations to color from, defaults to ``None``
-    :type color: str | list[str], optional
+    :param color: Variable to color from, defaults to ``None``
+    :type color: str, optional
     :param min_dist: Effective minimum distance between the embedded points
     :type min_dist: float, optional
     :param spread: Effective scale of embedded points
@@ -204,44 +212,74 @@ def plot_umap(data, color=None, min_dist=0.5, spread=1.0, alpha=1.0, gamma=1.0,
 
     :returns: The figure contataining the scatter plot showing the UMAP
         embedding
-    :rtype: `plotly.graph_objs.Figure`_
+    :rtype: `matplotlib.figure.Figure`_
 
-    .. _plotly.graph_objs.Figure: https://plotly.com/python-api-reference/gener\
-        ated/plotly.graph_objects.Figure.html
+    .. _matplotlib.figure.Figure: https://matplotlib.org/stable/api/_as_gen/mat\
+        plotlib.figure.Figure.html#matplotlib.figure.Figure
     .. _scanpy.tl.umap(): https://scanpy.readthedocs.io/en/latest/generated/scan\
         py.tl.umap.html
     '''
 
     if recalculate:
-        data._del_meta({'obsm': ['X_pca', 'X_umap'],
-                        'obsp': ['distances', 'connectivities'],
-                        'uns': ['umap', 'neighbors']})
+
+        data._del_meta({
+            'obsm': ['X_pca', 'X_umap'],
+            'obsp': ['distances', 'connectivities'],
+            'uns': ['umap', 'neighbors']
+        })
     
     if not 'neighbors' in data.uns:
+
         sc.pp.neighbors(data)
 
     if 'X_umap' not in data.obsm:
+
         sc.tl.umap(data, min_dist=min_dist, spread=spread, alpha=alpha,
                    gamma=gamma, **kwargs)
 
-    colors = data.obs[color].values if color in data.obs_keys() else None
+    color_vals = data.obs[color].values if color in data.obs_keys() else None
     
-    fig = px.scatter(
-        data.obsm.to_df(),
-        x='X_umap1',
-        y='X_umap2',
-        color=colors,
-        labels={
-            'X_umap1': 'UMAP 1',
-            'X_umap2': 'UMAP 2',
-            'color': color
-        },
-        width=800,
-        height=500
+    if color_vals is None:
+
+        colors = 'C0'
+
+    # Categorical variable
+    elif color_vals.dtype is np.dtype(object):
+
+        cmap = {v: f'C{i % 10}' for i, v in enumerate(sorted(set(color_vals)))}
+        colors = [cmap[c] for c in color_vals]
+
+    # Numerical variable
+    else:
+
+        colors = color_vals
+
+    fig, ax = plt.subplots()
+
+    df = data.obsm.to_df()[['X_uamp1', 'X_umap2']]
+
+    im = ax.scatter(
+        x=df.X_umap1.values,
+        y=df.X_umap2.values,
+        c=colors,
     )
-    fig.update_yaxes(scaleanchor='x', scaleratio=1)
+
+    ax.set_xlabel('UMAP 1')
+    ax.set_ylabel('UMAP 2')
+
+    if color_vals.dtype is np.dtype(object):
+
+        ax.legend(loc=0, handles=[
+            Line2D([0], [0], label=k, marker='.', ms=10, mfc=v, mec=v, ls='')
+            for k, v in cmap.items()
+        ])
+
+    else:
+
+        fig.colorbar(im)
 
     return fig
+
 
 def plot_highest_expr(data, top=10):
     '''
