@@ -217,11 +217,13 @@ class WrapLabel(ttk.Label):
 
         if self.winfo_manager() == "grid":
 
-            # Wrap to the bounding box reserved for the label
-            # instead of the container's full width.
-            # Not doing this might lead to clipped text.
             options = self.grid_info()
-            bbox = self.master.grid_bbox(options["column"], options["row"])
+            col = int(options.get("column", 0))
+            row = int(options.get("row", 0))
+            colspan = int(options.get("columnspan", 1))
+
+            # Get bbox for the full span (start_col to end_col)
+            bbox = self.master.grid_bbox(col, row, col + colspan, row + 1)
 
             if bbox is None:
 
@@ -229,15 +231,17 @@ class WrapLabel(ttk.Label):
 
             width = bbox[2]
 
-            if isinstance(options["padx"], int):
+            padx = options.get("padx", 0)
 
-                padx = options["padx"] * 2
+            if isinstance(padx, tuple):
+
+                padx = sum(padx)
 
             else:
 
-                padx = sum(options["padx"])
+                padx *= 2
 
-            return width - padx
+            return max(1, width - padx)
 
         else:
 
