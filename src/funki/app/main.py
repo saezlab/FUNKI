@@ -29,6 +29,7 @@ class FunkiApp(tk.Tk):
 
         super().__init__()
 
+        self.geometry('700x800')
         self._platform = self.tk.call('tk', 'windowingsystem')
 
         self.new_project()
@@ -135,11 +136,7 @@ class FunkiApp(tk.Tk):
         different submodules on the `tabs/` folder.
         '''
 
-        self.tab_manager = ttk.Notebook(
-            self.mainframe,
-            width=500,
-            height=800,
-        )
+        self.tab_manager = ttk.Notebook(self.mainframe)
         self.tab_manager.grid(column=0, row=1, sticky='NSEW')
 
         # Adding tabs
