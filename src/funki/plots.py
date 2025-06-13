@@ -289,7 +289,7 @@ def plot_umap(
     return fig
 
 
-def plot_highest_expr(data, top=10):
+def plot_highest_expr(data, top=10, ax=None):
     '''
     Generates a box plot of the top expressed genes (based on mean expression).
 
@@ -313,7 +313,14 @@ def plot_highest_expr(data, top=10):
 
     df = data.to_df().loc[:, usegenes]
 
-    fig, ax = plt.subplots()
+    if ax is None:
+
+        fig, ax = plt.subplots()
+        return_fig = True
+
+    else:
+
+        return_fig = False
 
     ax.boxplot(df)
 
@@ -324,12 +331,14 @@ def plot_highest_expr(data, top=10):
     ax.set_xticks(range(1, top + 1))
     ax.set_xticklabels(usegenes, rotation=90)
 
-    fig.tight_layout()
-    
-    return fig
+    if return_fig:
+
+        fig.tight_layout()
+
+        return fig
 
 
-def plot_n_genes(data):
+def plot_n_genes(data, ax=None):
     '''
     Generates a violin plot displaying the number of genes by counts. This is,
     number of genes per cell that have non-zero counts.
@@ -348,7 +357,14 @@ def plot_n_genes(data):
 
         data = sc_trans_qc_metrics(sc_trans_filter(data, mito_pct=100))
 
-    fig, ax = plt.subplots()
+    if ax is None:
+
+        fig, ax = plt.subplots()
+        return_fig = True
+
+    else:
+
+        return_fig = False
 
     ax.violinplot(
         data.obs['n_genes_by_counts'].values,
@@ -360,12 +376,14 @@ def plot_n_genes(data):
 
     ax.xaxis.set_visible(False)
 
-    fig.tight_layout()
+    if return_fig:
 
-    return fig
+        fig.tight_layout()
+
+        return fig
 
 
-def plot_total_counts(data):
+def plot_total_counts(data, ax=None):
     '''
     Generates a violin plot displaying the total counts per gene.
 
@@ -383,7 +401,14 @@ def plot_total_counts(data):
 
         data = sc_trans_qc_metrics(sc_trans_filter(data, mito_pct=100))
 
-    fig, ax = plt.subplots()
+    if ax is None:
+
+        fig, ax = plt.subplots()
+        return_fig = True
+
+    else:
+
+        return_fig = False
 
     ax.violinplot(
         data.var['total_counts'].values,
@@ -395,12 +420,14 @@ def plot_total_counts(data):
 
     ax.xaxis.set_visible(False)
 
-    fig.tight_layout()
+    if return_fig:
 
-    return fig
+        fig.tight_layout()
+
+        return fig
 
 
-def plot_pct_counts_mito(data):
+def plot_pct_counts_mito(data, ax=None):
     '''
     Generates a violin plot displaying the percentage of mitochondrial genes.
 
@@ -418,7 +445,14 @@ def plot_pct_counts_mito(data):
 
         data = sc_trans_qc_metrics(sc_trans_filter(data, mito_pct=100))
 
-    fig, ax = plt.subplots()
+    if ax is None:
+
+        fig, ax = plt.subplots()
+        return_fig = True
+
+    else:
+
+        return_fig = False
 
     ax.violinplot(
         data.obs['pct_counts_mito'].values,
@@ -430,12 +464,14 @@ def plot_pct_counts_mito(data):
 
     ax.xaxis.set_visible(False)
 
-    fig.tight_layout()
+    if return_fig:
 
-    return fig
+        fig.tight_layout()
+
+        return fig
 
 
-def plot_counts_vs_pct_mito(data):
+def plot_counts_vs_pct_mito(data, ax=None):
     '''
     Generates a scatter plot displaying the percentage of mitochondrial genes
     versus total gene counts.
@@ -457,7 +493,14 @@ def plot_counts_vs_pct_mito(data):
 
         data = sc_trans_qc_metrics(sc_trans_filter(data, mito_pct=100))
 
-    fig, ax = plt.subplots()
+    if ax is None:
+
+        fig, ax = plt.subplots()
+        return_fig = True
+
+    else:
+
+        return_fig = False
 
     ax.scatter(
         x=data.obs['total_counts'].values,
@@ -467,12 +510,14 @@ def plot_counts_vs_pct_mito(data):
     ax.set_ylabel('Pct. of mito. genes')
     ax.set_xlabel('Counts')
 
-    fig.tight_layout()
+    if return_fig:
 
-    return fig
+        fig.tight_layout()
+
+        return fig
 
 
-def plot_counts_vs_n_genes(data):
+def plot_counts_vs_n_genes(data, ax=None):
     '''
     Generates a scatter plot displaying the number of genes by counts versus
     total gene counts.
@@ -494,7 +539,14 @@ def plot_counts_vs_n_genes(data):
 
         data = sc_trans_qc_metrics(sc_trans_filter(data, mito_pct=100))
 
-    fig, ax = plt.subplots()
+    if ax is None:
+
+        fig, ax = plt.subplots()
+        return_fig = True
+
+    else:
+
+        return_fig = False
 
     ax.scatter(
         x=data.obs['total_counts'].values,
@@ -504,9 +556,11 @@ def plot_counts_vs_n_genes(data):
     ax.set_ylabel('No. of genes')
     ax.set_xlabel('Counts')
 
-    fig.tight_layout()
+    if return_fig:
 
-    return fig
+        fig.tight_layout()
+
+        return fig
 
 
 def plot_dex(data, logfc_thr=1.0, fdr_thr=0.05, top=15):
