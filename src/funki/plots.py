@@ -552,23 +552,22 @@ def plot_dex(data, logfc_thr=1.0, fdr_thr=0.05, top=15):
     return fig
 
 
-# TODO: implement for multiple methods (and significance?)
 def plot_enrich(
     data,
     top=10,
-    #methods=None
+    method=None,
 ):
     '''
-    Generates a horizontal barplot displaying the top results of an enrichment
-    analysis based on the consensus score across methods.
+    Generates a dotplot displaying the top results of an enrichment analysis
+    based on the provided methods.
 
     :param data: The data set from which to generate the figure (it is assumed
         that ``funki.analysis.enrich()`` as been performed beforehand).
     :type data: :class:`funki.input.DataSet`
     :param top: Number of top enriched gene sets to display based on their
-        consensus score. If a negative number is provided, the bottom ones will
-        be displayed instead.
-    :type top: int
+        score, defaults to ``10``.
+    :type top: int, optional
+    :param method: Name of the enrichment method to plot the results from.
 
     :returns: The figure contataining the resulting bar plot
     :rtype: `matplotlib.figure.Figure`_
@@ -578,34 +577,47 @@ def plot_enrich(
     '''
 
     try:
-        avail = data.uns['funki']['enrich']['methods']
+
+        # Raise error if method not present or no enrichment has ben run at all
+        if not method in data.uns['funki']['enrich']['methods']:
+
+            raise KeyError
 
     except KeyError as ke:
+
         raise ke(
-            'Enrichment results not found in DataSet, please run ,'
+            'Enrichment results for method not found in DataSet, please run ,'
             '`funki.analysis.enrich()` beforehand.'
         )
 
-    # Ensuring list
-#    methods = methods if type(methods) is list else [methods]
-    # Ensuring methods are available
-#    methods = [m for m in methods if m in avail]
-    # If none available/provided default to all available ones
-#    methods = methods or avail
+    score = data.obsm[f'score_{method}']
+    pval = data.obsm[f'padj_{method}']
 
-    res = data.obsm['consensus_estimate'].mean(axis=0)
-    res.sort_values(ascending=top < 0, inplace=True)
-    res = res.head(abs(top))[::-1] if len(res) > abs(top) else res[::-1]
-
-    fig = px.bar(
-        res,
-        orientation='h',
+    res = (
+        score
+        .melt(value_name='score')
+        .merge(
+            pval
+            .melt(value_name='pvalue')
+            .assign(logpval=lambda x: x['pvalue'].clip(2.22e-4, 1))
+            .assign(logpval=lambda x: np.log10(x['logpval']))
+        )
     )
 
-    fig.update_layout(
-        xaxis={'title': {'text': 'Consensus score'}},
-        yaxis={'title': {'text': 'Gene set'}},
-        showlegend=False,
+    fig, ax = plt.subplots()
+
+    dc.pl.dotplot(
+        df=res,
+        x='score',
+        y='variable',
+        s='logpval',
+        c='score',
+        scale=1,
+        top=top,
+        ax=ax
     )
+    ax.set_title(f'Enrichment results from method {method}')
+    
+    fig.tight_layout()
 
     return fig
