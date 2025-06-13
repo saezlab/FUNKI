@@ -357,6 +357,8 @@ def plot_n_genes(data):
     ax.set_title('Number of genes per cell')
     ax.set_ylabel('No. of genes')
 
+    ax.xaxis.set_visible(False)
+
     fig.tight_layout()
 
     return fig
@@ -390,6 +392,8 @@ def plot_total_counts(data):
     ax.set_title('Counts per gene')
     ax.set_ylabel('Counts')
 
+    ax.xaxis.set_visible(False)
+
     fig.tight_layout()
 
     return fig
@@ -410,14 +414,22 @@ def plot_pct_counts_mito(data):
     '''
 
     if 'pct_counts_mito' not in data.obs.keys():
-        data = sc_trans_qc_metrics(data)
 
-    fig = px.violin(
-        data.obs['pct_counts_mito'],
-        y='pct_counts_mito',
-        title='Pct. of mitochondrial genes',
+        data = sc_trans_qc_metrics(sc_trans_filter(data, mito_pct=100))
+
+    fig, ax = plt.subplots()
+
+    ax.violinplot(
+        data.obs['pct_counts_mito'].values,
+        widths=1,
+        showmedians=True,
     )
-    fig.update_layout(yaxis_title='Pct. mito. genes')
+    ax.set_title('Mitochondrial genes per cell')
+    ax.set_ylabel('Pct. of mito. genes')
+
+    ax.xaxis.set_visible(False)
+
+    fig.tight_layout()
 
     return fig
 
