@@ -370,10 +370,10 @@ def plot_total_counts(data):
     :type data: :class:`funki.input.DataSet`
 
     :returns: The figure contataining the resulting violin plot
-    :rtype: `plotly.graph_objs.Figure`_
+    :rtype: `matplotlib.figure.Figure`_
 
-    .. _plotly.graph_objs.Figure: https://plotly.com/python-api-reference/gener\
-        ated/plotly.graph_objects.Figure.html
+    .. _matplotlib.figure.Figure: https://matplotlib.org/stable/api/_as_gen/mat\
+        plotlib.figure.Figure.html#matplotlib.figure.Figure
     '''
 
     if 'total_counts' not in data.var.keys():
@@ -388,6 +388,7 @@ def plot_total_counts(data):
 
     return fig
 
+
 def plot_pct_counts_mito(data):
     '''
     Generates a violin plot displaying the percentage of mitochondrial genes.
@@ -396,10 +397,10 @@ def plot_pct_counts_mito(data):
     :type data: :class:`funki.input.DataSet`
 
     :returns: The figure contataining the resulting violin plot
-    :rtype: `plotly.graph_objs.Figure`_
+    :rtype: `matplotlib.figure.Figure`_
 
-    .. _plotly.graph_objs.Figure: https://plotly.com/python-api-reference/gener\
-        ated/plotly.graph_objects.Figure.html
+    .. _matplotlib.figure.Figure: https://matplotlib.org/stable/api/_as_gen/mat\
+        plotlib.figure.Figure.html#matplotlib.figure.Figure
     '''
 
     if 'pct_counts_mito' not in data.obs.keys():
@@ -414,6 +415,7 @@ def plot_pct_counts_mito(data):
 
     return fig
 
+
 def plot_counts_vs_pct_mito(data):
     '''
     Generates a scatter plot displaying the percentage of mitochondrial genes
@@ -423,10 +425,10 @@ def plot_counts_vs_pct_mito(data):
     :type data: :class:`funki.input.DataSet`
 
     :returns: The figure contataining the resulting scatter plot
-    :rtype: `plotly.graph_objs.Figure`_
+    :rtype: `matplotlib.figure.Figure`_
 
-    .. _plotly.graph_objs.Figure: https://plotly.com/python-api-reference/gener\
-        ated/plotly.graph_objects.Figure.html
+    .. _matplotlib.figure.Figure: https://matplotlib.org/stable/api/_as_gen/mat\
+        plotlib.figure.Figure.html#matplotlib.figure.Figure
     '''
 
     if (
@@ -447,6 +449,7 @@ def plot_counts_vs_pct_mito(data):
 
     return fig
 
+
 def plot_counts_vs_n_genes(data):
     '''
     Generates a scatter plot displaying the number of genes by counts versus
@@ -456,10 +459,10 @@ def plot_counts_vs_n_genes(data):
     :type data: :class:`funki.input.DataSet`
 
     :returns: The figure contataining the resulting scatter plot
-    :rtype: `plotly.graph_objs.Figure`_
+    :rtype: `matplotlib.figure.Figure`_
 
-    .. _plotly.graph_objs.Figure: https://plotly.com/python-api-reference/gener\
-        ated/plotly.graph_objects.Figure.html
+    .. _matplotlib.figure.Figure: https://matplotlib.org/stable/api/_as_gen/mat\
+        plotlib.figure.Figure.html#matplotlib.figure.Figure
     '''
 
     if (
@@ -480,6 +483,7 @@ def plot_counts_vs_n_genes(data):
 
     return fig
 
+
 def plot_dex(data, logfc_thr=1.0, fdr_thr=0.05):
     '''
     Plots the results of the differential expression analisis as a volcano plot.
@@ -494,10 +498,10 @@ def plot_dex(data, logfc_thr=1.0, fdr_thr=0.05):
     :type fdr_thr: float, optional
 
     :returns: The figure contataining the resulting scatter plot
-    :rtype: `plotly.graph_objs.Figure`_
+    :rtype: `matplotlib.figure.Figure`_
 
-    .. _plotly.graph_objs.Figure: https://plotly.com/python-api-reference/gener\
-        ated/plotly.graph_objects.Figure.html
+    .. _matplotlib.figure.Figure: https://matplotlib.org/stable/api/_as_gen/mat\
+        plotlib.figure.Figure.html#matplotlib.figure.Figure
     '''
 
     if any(x not in data.var_keys() for x in ['log2FoldChange', 'padj']):
@@ -532,6 +536,7 @@ def plot_dex(data, logfc_thr=1.0, fdr_thr=0.05):
 
     return fig
 
+
 # TODO: implement for multiple methods (and significance?)
 def plot_enrich(
     data,
@@ -551,10 +556,10 @@ def plot_enrich(
     :type top: int
 
     :returns: The figure contataining the resulting bar plot
-    :rtype: `plotly.graph_objs.Figure`_
+    :rtype: `matplotlib.figure.Figure`_
 
-    .. _plotly.graph_objs.Figure: https://plotly.com/python-api-reference/gener\
-        ated/plotly.graph_objects.Figure.html
+    .. _matplotlib.figure.Figure: https://matplotlib.org/stable/api/_as_gen/mat\
+        plotlib.figure.Figure.html#matplotlib.figure.Figure
     '''
 
     try:
