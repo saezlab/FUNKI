@@ -4,7 +4,7 @@ from . import plots
 from . import preprocessing
 from . import pipelines
 
-__version__ = '0.1.1'
+__version__ = '0.1.5'
 _colors = {
     'red': '#eb3f1b',
     'yellow': '#f6c510',
