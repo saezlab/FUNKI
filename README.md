@@ -46,14 +46,8 @@ pip install ./
 Now you can launch the FUNKI by simply running the application script:
 
 ```bash
-python src/funki/app.py
+python src/funki/app/main.py
 ```
-
-This should automatically open the application in your default internet browser.
-If that is not the case, you can type or copy the following address (default)
-in the  browser bar: `http://127.0.0.1:8050/`
-
-**Note:** Refreshing the browser page will also restart the application.
 
 ## Documentation
 You can find the full documentation here, in the
@@ -61,4 +55,4 @@ You can find the full documentation here, in the
 
 ---
 
-Developed by Nicolàs Palacio-Escat - Saezlab 2024
+Developed by Nicolàs Palacio-Escat - Saezlab 2025
