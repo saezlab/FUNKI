@@ -94,6 +94,8 @@ def plot_pca(
 
         fig.colorbar(im)
 
+    fig.tight_layout()
+
     return fig
 
 
@@ -174,6 +176,8 @@ def plot_tsne(
     else:
 
         fig.colorbar(im)
+
+    fig.tight_layout()
 
     return fig
 
@@ -278,6 +282,8 @@ def plot_umap(
 
         fig.colorbar(im)
 
+    fig.tight_layout()
+
     return fig
 
 
@@ -291,10 +297,10 @@ def plot_highest_expr(data, top=10):
     :type top: int, optional
 
     :returns: The figure contataining the resulting box plot
-    :rtype: `plotly.graph_objs.Figure`_
+    :rtype: `matplotlib.figure.Figure`_
 
-    .. _plotly.graph_objs.Figure: https://plotly.com/python-api-reference/gener\
-        ated/plotly.graph_objects.Figure.html
+    .. _matplotlib.figure.Figure: https://matplotlib.org/stable/api/_as_gen/mat\
+        plotlib.figure.Figure.html#matplotlib.figure.Figure
     '''
 
     mean = data.X.mean(axis=0)
@@ -303,10 +309,23 @@ def plot_highest_expr(data, top=10):
     
     usegenes = data.var_names[inds].values[::-1]
 
-    fig = px.box(data.to_df(), y=usegenes, title=f'Top {top} expressed genes')
-    fig.update_layout(xaxis_title='Genes', yaxis_title='Expression')
+    df = data.to_df().loc[:, usegenes]
+
+    fig, ax = plt.subplots()
+
+    ax.boxplot(df)
+
+    ax.set_title(f'Top {top} expressed genes')
+    ax.set_xlabel('Genes')
+    ax.set_ylabel('Expression')
+
+    ax.set_xticks(range(1, top + 1))
+    ax.set_xticklabels(usegenes, rotation=90)
+
+    fig.tight_layout()
     
     return fig
+
 
 def plot_n_genes(data):
     '''
