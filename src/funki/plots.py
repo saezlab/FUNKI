@@ -4,6 +4,7 @@ import scanpy as sc
 import matplotlib.pyplot as plt
 from matplotlib.lines import Line2D
 import matplotlib.patches as mpatches
+import decoupler as dc
 
 from .analysis import sc_trans_qc_metrics
 from .preprocessing import sc_trans_filter
@@ -508,7 +509,7 @@ def plot_counts_vs_n_genes(data):
     return fig
 
 
-def plot_dex(data, logfc_thr=1.0, fdr_thr=0.05):
+def plot_dex(data, logfc_thr=1.0, fdr_thr=0.05, top=15):
     '''
     Plots the results of the differential expression analisis as a volcano plot.
 
@@ -520,6 +521,9 @@ def plot_dex(data, logfc_thr=1.0, fdr_thr=0.05):
     :param fdr_thr: Threshold for signifacnce based on the FDR value, defaults
         to ``0.05``
     :type fdr_thr: float, optional
+    :param top: Number of top genes for which to display their gene name,
+        defaults to ``15``.
+    :type top: int, optional
 
     :returns: The figure contataining the resulting scatter plot
     :rtype: `matplotlib.figure.Figure`_
@@ -529,33 +533,20 @@ def plot_dex(data, logfc_thr=1.0, fdr_thr=0.05):
     '''
 
     if any(x not in data.var_keys() for x in ['log2FoldChange', 'padj']):
+
         raise KeyError(
             'Results of differential expression not found in the DataSet '
             'provided, please run funki.analysis.diff_exp() first'
         )
     
-    df = pd.DataFrame(
-        [data.var['log2FoldChange'], -np.log10(data.var['padj'])]
-    ).T
-    df.columns = ['log2(FC)', '-log10(FDR)']
-    df['sig'] = [
-        ('UP' if r['log2FoldChange'] >= logfc_thr else 'DW')
-        if r['padj'] <= fdr_thr and abs(r['log2FoldChange']) >= logfc_thr
-        else 'NS'
-        for i, r in data.var.iterrows()
-    ]
-
-    fig = px.scatter(
-        df,
-        x='log2(FC)',
-        y='-log10(FDR)',
-        color='sig',
-        color_discrete_map={
-            'NS': 'gray',
-            'UP': 'red',
-            'DW': 'blue'
-        },
-        title='Differential expression',
+    fig = dc.pl.volcano(
+        data=data.var,
+        x='log2FoldChange',
+        y='padj',
+        thr_stat=logfc_thr,
+        thr_sign=fdr_thr,
+        top=top,
+        return_fig=True,
     )
 
     return fig
