@@ -490,17 +490,20 @@ def plot_counts_vs_n_genes(data):
         'n_genes_by_counts' not in data.obs.keys()
         or 'total_counts' not in data.obs.keys()
     ):
-        data = sc_trans_qc_metrics(data)
 
-    df = pd.DataFrame([data.obs['n_genes_by_counts'], data.obs['total_counts']])
+        data = sc_trans_qc_metrics(sc_trans_filter(data, mito_pct=100))
 
-    fig = px.scatter(
-        df.T,
-        x='total_counts',
-        y='n_genes_by_counts',
-        title='Total counts vs. number of genes',
+    fig, ax = plt.subplots()
+
+    ax.scatter(
+        x=data.obs['total_counts'].values,
+        y=data.obs['n_genes_by_counts'].values,
     )
-    fig.update_layout(xaxis_title='Counts', yaxis_title='Genes')
+    ax.set_title('Total counts vs. number of genes')
+    ax.set_ylabel('No. of genes')
+    ax.set_xlabel('Counts')
+
+    fig.tight_layout()
 
     return fig
 
