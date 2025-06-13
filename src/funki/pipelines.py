@@ -15,7 +15,7 @@ from .plots import plot_dex
 from .plots import plot_enrich
 
 
-def sc_quality_control(data):
+def sc_quality_control(data, ax=None):
     '''
     Computes QC metrics on a single-cell data set and generates several plots
     to visualize them. Generates a multipanel figure with the follwoing plots:
@@ -29,19 +29,33 @@ def sc_quality_control(data):
 
     :param data: The data set from which to compute the QC metrics
     :type data: :class:`funki.input.DataSet`
+    :param ax: Matplotlib Axes instance where to draw the plots. Defaults to
+        ``None``, meaning a new figure and axes will be generated. If passed,
+        an axes with at least 2 columns and 3 rows is expected.
+    :type ax: `matplotlib.axes.Axes`_
 
     :returns: The figure contataining the resulting plot with multiple panels
-        for different metrics and comparisons
-    :rtype: `plotly.graph_objs.Figure`_
+        for different metrics and comparisons. If an axes is passed, nothing is
+        returned.
+    :rtype: `matplotlib.figure.Figure`_ | None
 
-    .. _plotly.graph_objs.Figure: https://plotly.com/python-api-reference/gener\
-        ated/plotly.graph_objects.Figure.html
+    .. _matplotlib.axes.Axes: https://matplotlib.org/stable/api/_as_gen/matplot\
+        lib.axes.Axes.html#matplotlib.axes.Axes
+    .. _matplotlib.figure.Figure: https://matplotlib.org/stable/api/_as_gen/mat\
+        plotlib.figure.Figure.html#matplotlib.figure.Figure
     '''
 
     data.var['mito'] = data.var_names.str.startswith('MT-')
     data = sc_trans_qc_metrics(data)
 
-    fig, ax = plt.subplots(nrows=2, ncols=3)
+    if ax is None:
+
+        fig, ax = plt.subplots(nrows=2, ncols=3)
+        return_fig = True
+
+    else:
+
+        return_fig = False
 
     funs = [
         plot_highest_expr,
@@ -56,9 +70,11 @@ def sc_quality_control(data):
 
         funs[n](data, ax=ax[j, i])
 
-    fig.tight_layout()
+    if return_fig:
 
-    return fig
+        fig.tight_layout()
+
+        return fig
 
 
 def differential_expression(
