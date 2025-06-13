@@ -352,10 +352,10 @@ def plot_n_genes(data):
     ax.violinplot(
         data.obs['n_genes_by_counts'].values,
         widths=1,
-        showmedians=True
+        showmedians=True,
     )
     ax.set_title('Number of genes per cell')
-    ax.set_ylabel('no. of genes')
+    ax.set_ylabel('No. of genes')
 
     fig.tight_layout()
 
@@ -364,7 +364,7 @@ def plot_n_genes(data):
 
 def plot_total_counts(data):
     '''
-    Generates a violin plot displaying the total gene counts.
+    Generates a violin plot displaying the total counts per gene.
 
     :param data: The data set from which to generate the figure
     :type data: :class:`funki.input.DataSet`
@@ -377,14 +377,20 @@ def plot_total_counts(data):
     '''
 
     if 'total_counts' not in data.var.keys():
-        data = sc_trans_qc_metrics(data)
 
-    fig = px.violin(
-        data.var['total_counts'],
-        y='total_counts',
-        title='Total counts'
+        data = sc_trans_qc_metrics(sc_trans_filter(data, mito_pct=100))
+
+    fig, ax = plt.subplots()
+
+    ax.violinplot(
+        data.var['total_counts'].values,
+        widths=1,
+        showmedians=True,
     )
-    fig.update_layout(yaxis_title='Counts')
+    ax.set_title('Counts per gene')
+    ax.set_ylabel('Counts')
+
+    fig.tight_layout()
 
     return fig
 
