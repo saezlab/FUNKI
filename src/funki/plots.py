@@ -453,17 +453,20 @@ def plot_counts_vs_pct_mito(data):
         'pct_counts_mito' not in data.obs.keys()
         or 'total_counts' not in data.obs.keys()
     ):
-        data = sc_trans_qc_metrics(data)
 
-    df = pd.DataFrame([data.obs['pct_counts_mito'], data.obs['total_counts']])
+        data = sc_trans_qc_metrics(sc_trans_filter(data, mito_pct=100))
 
-    fig = px.scatter(
-        df.T,
-        x='total_counts',
-        y='pct_counts_mito',
-        title='Total counts vs. pct. mitochondrial genes',
+    fig, ax = plt.subplots()
+
+    ax.scatter(
+        x=data.obs['total_counts'].values,
+        y=data.obs['pct_counts_mito'].values,
     )
-    fig.update_layout(xaxis_title='Counts', yaxis_title='Pct. mito. genes')
+    ax.set_title('Total counts vs. pct. mitochondrial genes')
+    ax.set_ylabel('Pct. of mito. genes')
+    ax.set_xlabel('Counts')
+
+    fig.tight_layout()
 
     return fig
 
