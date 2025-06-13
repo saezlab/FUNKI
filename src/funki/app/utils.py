@@ -2,6 +2,9 @@ import tkinter as tk
 from tkinter import ttk
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+from matplotlib.backends.backend_tkagg import NavigationToolbar2Tk
 
 from funki import _colors
 
@@ -16,6 +19,32 @@ def read_text(path):
         txt = ''.join(f.readlines())
 
     return txt
+
+class Figure(ttk.Frame):
+    '''
+    Container for a matplotlib figure with corresponding toolbar.
+    '''
+
+    def __init__(self, parent, fig, **options):
+
+        super().__init__(parent, **options)
+        
+        self.columnconfigure(0, weight=1)
+        self.rowconfigure(0, weight=1)
+        self.rowconfigure(1, weight=0)
+        
+        self.canvas = FigureCanvasTkAgg(fig, master=self)
+
+        toolbar = NavigationToolbar2Tk(self.canvas, self, pack_toolbar=False)
+        toolbar.update()
+        toolbar.grid(column=0, row=1, sticky='NSWE')
+        
+        self.canvas.get_tk_widget().grid(column=0, row=0, sticky='NSWE')
+
+    
+    def update(self):
+
+        self.canvas.draw()
 
 
 class Table(ttk.Frame):
