@@ -6,6 +6,7 @@ from matplotlib.lines import Line2D
 import matplotlib.patches as mpatches
 
 from .analysis import sc_trans_qc_metrics
+from .preprocessing import sc_trans_filter
 
 
 def plot_pca(
@@ -336,23 +337,30 @@ def plot_n_genes(data):
     :type data: :class:`funki.input.DataSet`
 
     :returns: The figure contataining the resulting violin plot
-    :rtype: `plotly.graph_objs.Figure`_
+    :rtype: `matplotlib.figure.Figure`_
 
-    .. _plotly.graph_objs.Figure: https://plotly.com/python-api-reference/gener\
-        ated/plotly.graph_objects.Figure.html
+    .. _matplotlib.figure.Figure: https://matplotlib.org/stable/api/_as_gen/mat\
+        plotlib.figure.Figure.html#matplotlib.figure.Figure
     '''
 
     if 'n_genes_by_counts' not in data.obs.keys():
-        data = sc_trans_qc_metrics(data)
 
-    fig = px.violin(
-        data.obs['n_genes_by_counts'],
-        y='n_genes_by_counts',
-        title='Number of genes',
+        data = sc_trans_qc_metrics(sc_trans_filter(data, mito_pct=100))
+
+    fig, ax = plt.subplots()
+
+    ax.violinplot(
+        data.obs['n_genes_by_counts'].values,
+        widths=1,
+        showmedians=True
     )
-    fig.update_layout(yaxis_title='Genes')
+    ax.set_title('Number of genes per cell')
+    ax.set_ylabel('no. of genes')
+
+    fig.tight_layout()
 
     return fig
+
 
 def plot_total_counts(data):
     '''
