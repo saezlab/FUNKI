@@ -1,4 +1,6 @@
-from plotly.subplots import make_subplots
+from itertools import product
+
+import matplotlib.pyplot as plt
 
 from .analysis import sc_trans_qc_metrics
 from .analysis import diff_exp
@@ -39,31 +41,25 @@ def sc_quality_control(data):
     data.var['mito'] = data.var_names.str.startswith('MT-')
     data = sc_trans_qc_metrics(data)
 
-    fig = make_subplots(rows=2, cols=3, subplot_titles=[' '] * 6)
+    fig, ax = plt.subplots(nrows=2, ncols=3)
 
-    plt1 = plot_highest_expr(data, top=5)
-    plt2 = plot_n_genes(data)
-    plt3 = plot_total_counts(data)
-    plt4 = plot_pct_counts_mito(data)
-    plt5 = plot_counts_vs_pct_mito(data)
-    plt6 = plot_counts_vs_n_genes(data)
+    funs = [
+        plot_highest_expr,
+        plot_n_genes,
+        plot_total_counts,
+        plot_pct_counts_mito,
+        plot_counts_vs_pct_mito,
+        plot_counts_vs_n_genes,
+    ]
 
-    for i, plt in enumerate([plt1, plt2, plt3, plt4, plt5, plt6]):
-        c, r = (i % 3) + 1, (i // 3) + 1
-        fig.add_trace(plt.data[0], row=r, col=c)
-        fig.update_xaxes(
-            title_text=plt.layout['xaxis']['title']['text'],
-            row=r,
-            col=c
-        )
-        fig.update_yaxes(
-            title_text=plt.layout['yaxis']['title']['text'],
-            row=r,
-            col=c
-        )
-        fig.layout.annotations[i].update(text=plt.layout['title']['text'])
+    for n, (j, i) in enumerate(product(range(2), range(3))):
+
+        funs[n](data, ax=ax[j, i])
+
+    fig.tight_layout()
 
     return fig
+
 
 def differential_expression(
     data,
@@ -113,6 +109,7 @@ def differential_expression(
     diff_exp(data, design_factor, contrast_var, ref_var, n_cpus=n_cpus)
     
     return plot_dex(data, logfc_thr=logfc_thr, fdr_thr=fdr_thr)
+
 
 def enrichment_analysis(
     data,
