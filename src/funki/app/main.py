@@ -77,7 +77,7 @@ class FunkiApp(tk.Tk):
                     'normal',
                     self.new_project
                 ),
-                ('Open...', None, self.menu_open,),
+                ('Open...', None, self.menu_open),
                 '---',
                 (
                     'Exit',
@@ -205,7 +205,7 @@ class FunkiApp(tk.Tk):
 
         if dtype == 'raw' and self.data:
 
-            self.menu_file.entryconfig('Load metadata', state='normal')
+            self.menu_open.entryconfig('Load metadata', state='normal')
             self.menu_view.entryconfig('Data', state='normal')
             self.tabs['home'].button_viewraw.configure(state='normal')
             self.tabs['home'].button_loadobs.configure(state='normal')
