@@ -297,10 +297,16 @@ def plot_highest_expr(data, top=10, ax=None):
     :type data: :class:`funki.input.DataSet`
     :param top: Number of top genes to represent, defaults to ``10``
     :type top: int, optional
+    :param ax: Matplotlib Axes instance where to draw the plot. Defaults to
+        ``None``, meaning a new figure and axes will be generated.
+    :type ax: `matplotlib.axes.Axes`_
 
-    :returns: The figure contataining the resulting box plot
-    :rtype: `matplotlib.figure.Figure`_
+    :returns: The figure contataining the resulting box plot. If an axes is
+        passed, nothing is returned.
+    :rtype: `matplotlib.figure.Figure`_ | None
 
+    .. _matplotlib.axes.Axes: https://matplotlib.org/stable/api/_as_gen/matplot\
+        lib.axes.Axes.html#matplotlib.axes.Axes
     .. _matplotlib.figure.Figure: https://matplotlib.org/stable/api/_as_gen/mat\
         plotlib.figure.Figure.html#matplotlib.figure.Figure
     '''
@@ -345,10 +351,16 @@ def plot_n_genes(data, ax=None):
 
     :param data: The data set from which to generate the figure
     :type data: :class:`funki.input.DataSet`
+    :param ax: Matplotlib Axes instance where to draw the plot. Defaults to
+        ``None``, meaning a new figure and axes will be generated.
+    :type ax: `matplotlib.axes.Axes`_
 
-    :returns: The figure contataining the resulting violin plot
-    :rtype: `matplotlib.figure.Figure`_
+    :returns: The figure contataining the resulting violin plot. If an axes is
+        passed, nothing is returned.
+    :rtype: `matplotlib.figure.Figure`_ | None
 
+    .. _matplotlib.axes.Axes: https://matplotlib.org/stable/api/_as_gen/matplot\
+        lib.axes.Axes.html#matplotlib.axes.Axes
     .. _matplotlib.figure.Figure: https://matplotlib.org/stable/api/_as_gen/mat\
         plotlib.figure.Figure.html#matplotlib.figure.Figure
     '''
@@ -389,10 +401,16 @@ def plot_total_counts(data, ax=None):
 
     :param data: The data set from which to generate the figure
     :type data: :class:`funki.input.DataSet`
+    :param ax: Matplotlib Axes instance where to draw the plot. Defaults to
+        ``None``, meaning a new figure and axes will be generated.
+    :type ax: `matplotlib.axes.Axes`_
 
-    :returns: The figure contataining the resulting violin plot
-    :rtype: `matplotlib.figure.Figure`_
+    :returns: The figure contataining the resulting violin plot. If an axes is
+        passed, nothing is returned.
+    :rtype: `matplotlib.figure.Figure`_ | None
 
+    .. _matplotlib.axes.Axes: https://matplotlib.org/stable/api/_as_gen/matplot\
+        lib.axes.Axes.html#matplotlib.axes.Axes
     .. _matplotlib.figure.Figure: https://matplotlib.org/stable/api/_as_gen/mat\
         plotlib.figure.Figure.html#matplotlib.figure.Figure
     '''
@@ -433,10 +451,16 @@ def plot_pct_counts_mito(data, ax=None):
 
     :param data: The data set from which to generate the figure
     :type data: :class:`funki.input.DataSet`
+    :param ax: Matplotlib Axes instance where to draw the plot. Defaults to
+        ``None``, meaning a new figure and axes will be generated.
+    :type ax: `matplotlib.axes.Axes`_
 
-    :returns: The figure contataining the resulting violin plot
-    :rtype: `matplotlib.figure.Figure`_
+    :returns: The figure contataining the resulting violin plot. If an axes is
+        passed, nothing is returned.
+    :rtype: `matplotlib.figure.Figure`_ | None
 
+    .. _matplotlib.axes.Axes: https://matplotlib.org/stable/api/_as_gen/matplot\
+        lib.axes.Axes.html#matplotlib.axes.Axes
     .. _matplotlib.figure.Figure: https://matplotlib.org/stable/api/_as_gen/mat\
         plotlib.figure.Figure.html#matplotlib.figure.Figure
     '''
@@ -478,10 +502,16 @@ def plot_counts_vs_pct_mito(data, ax=None):
 
     :param data: The data set from which to generate the figure
     :type data: :class:`funki.input.DataSet`
+    :param ax: Matplotlib Axes instance where to draw the plot. Defaults to
+        ``None``, meaning a new figure and axes will be generated.
+    :type ax: `matplotlib.axes.Axes`_
 
-    :returns: The figure contataining the resulting scatter plot
-    :rtype: `matplotlib.figure.Figure`_
+    :returns: The figure contataining the resulting scatter plot. If an axes is
+        passed, nothing is returned.
+    :rtype: `matplotlib.figure.Figure`_ | None
 
+    .. _matplotlib.axes.Axes: https://matplotlib.org/stable/api/_as_gen/matplot\
+        lib.axes.Axes.html#matplotlib.axes.Axes
     .. _matplotlib.figure.Figure: https://matplotlib.org/stable/api/_as_gen/mat\
         plotlib.figure.Figure.html#matplotlib.figure.Figure
     '''
@@ -524,10 +554,16 @@ def plot_counts_vs_n_genes(data, ax=None):
 
     :param data: The data set from which to generate the figure
     :type data: :class:`funki.input.DataSet`
+    :param ax: Matplotlib Axes instance where to draw the plot. Defaults to
+        ``None``, meaning a new figure and axes will be generated.
+    :type ax: `matplotlib.axes.Axes`_
 
-    :returns: The figure contataining the resulting scatter plot
-    :rtype: `matplotlib.figure.Figure`_
+    :returns: The figure contataining the resulting scatter plot. If an axes is
+        passed, nothing is returned.
+    :rtype: `matplotlib.figure.Figure`_ | None
 
+    .. _matplotlib.axes.Axes: https://matplotlib.org/stable/api/_as_gen/matplot\
+        lib.axes.Axes.html#matplotlib.axes.Axes
     .. _matplotlib.figure.Figure: https://matplotlib.org/stable/api/_as_gen/mat\
         plotlib.figure.Figure.html#matplotlib.figure.Figure
     '''
