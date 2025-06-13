@@ -21,6 +21,7 @@ dependencies = [
     'numpy',
     'pandas',
     'anndata',
+    'matplotlib',
     'loompy',
     'scanpy',
     'leidenalg',
@@ -28,7 +29,8 @@ dependencies = [
     'harmonypy',
     'decoupler',
     'omnipath',
-    'dash',
+    'tkinter',
+    'tksvg',
     'pydeseq2',
 ]
 
