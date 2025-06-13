@@ -8,6 +8,7 @@ import decoupler as dc
 
 from .analysis import sc_trans_qc_metrics
 from .preprocessing import sc_trans_filter
+from . import _colors
 
 
 def plot_pca(
@@ -59,7 +60,7 @@ def plot_pca(
     
     if color_vals is None:
 
-        colors = 'C0'
+        colors = _colors['blue']
 
     # Categorical variable
     elif color_vals.dtype is np.dtype(object):
@@ -142,7 +143,7 @@ def plot_tsne(
     
     if color_vals is None:
 
-        colors = 'C0'
+        colors = _colors['blue']
 
     # Categorical variable
     elif color_vals.dtype is np.dtype(object):
@@ -247,7 +248,7 @@ def plot_umap(
     
     if color_vals is None:
 
-        colors = 'C0'
+        colors = _colors['blue']
 
     # Categorical variable
     elif color_vals.dtype is np.dtype(object):
@@ -328,7 +329,15 @@ def plot_highest_expr(data, top=10, ax=None):
 
         return_fig = False
 
-    ax.boxplot(df)
+    ax.boxplot(
+        df,
+        patch_artist=True,
+        boxprops={'color': _colors['blue'], 'facecolor': _colors['white']},
+        capprops={'color': _colors['blue']},
+        whiskerprops={'color': _colors['blue']},
+        flierprops={'markeredgecolor': _colors['blue']},
+        medianprops={'color': _colors['red']},
+    )
 
     ax.set_title(f'Top {top} expressed genes')
     ax.set_xlabel('Genes')
@@ -378,11 +387,17 @@ def plot_n_genes(data, ax=None):
 
         return_fig = False
 
-    ax.violinplot(
+    parts = ax.violinplot(
         data.obs['n_genes_by_counts'].values,
         widths=1,
         showmedians=True,
     )
+
+    for p in parts['bodies']:
+
+        p.set_facecolor(_colors['blue'])
+        p.set_edgecolor(_colors['blue'])
+
     ax.set_title('Number of genes per cell')
     ax.set_ylabel('No. of genes')
 
@@ -428,11 +443,17 @@ def plot_total_counts(data, ax=None):
 
         return_fig = False
 
-    ax.violinplot(
+    parts = ax.violinplot(
         data.var['total_counts'].values,
         widths=1,
         showmedians=True,
     )
+
+    for p in parts['bodies']:
+
+        p.set_facecolor(_colors['blue'])
+        p.set_edgecolor(_colors['blue'])
+
     ax.set_title('Counts per gene')
     ax.set_ylabel('Counts')
 
@@ -478,11 +499,17 @@ def plot_pct_counts_mito(data, ax=None):
 
         return_fig = False
 
-    ax.violinplot(
+    parts = ax.violinplot(
         data.obs['pct_counts_mito'].values,
         widths=1,
         showmedians=True,
     )
+
+    for p in parts['bodies']:
+
+        p.set_facecolor(_colors['blue'])
+        p.set_edgecolor(_colors['blue'])
+
     ax.set_title('Mitochondrial genes per cell')
     ax.set_ylabel('Pct. of mito. genes')
 
@@ -535,6 +562,7 @@ def plot_counts_vs_pct_mito(data, ax=None):
     ax.scatter(
         x=data.obs['total_counts'].values,
         y=data.obs['pct_counts_mito'].values,
+        c=_colors['blue'],
     )
     ax.set_title('Total counts vs. pct. mitochondrial genes')
     ax.set_ylabel('Pct. of mito. genes')
@@ -587,6 +615,7 @@ def plot_counts_vs_n_genes(data, ax=None):
     ax.scatter(
         x=data.obs['total_counts'].values,
         y=data.obs['n_genes_by_counts'].values,
+        c=_colors['blue'],
     )
     ax.set_title('Total counts vs. number of genes')
     ax.set_ylabel('No. of genes')
@@ -637,6 +666,9 @@ def plot_dex(data, logfc_thr=1.0, fdr_thr=0.05, top=15):
         thr_sign=fdr_thr,
         top=top,
         return_fig=True,
+        color_neg=_colors['red'],
+        color_null=_colors['gray'],
+        color_pos=_colors['blue'],
     )
 
     return fig
