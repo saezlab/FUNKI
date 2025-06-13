@@ -84,7 +84,7 @@ versus total gene counts.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="funki.plots.plot_dex">
-<span class="sig-prename descclassname"><span class="pre">funki.plots.</span></span><span class="sig-name descname"><span class="pre">plot_dex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logfc_thr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fdr_thr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.05</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#funki.plots.plot_dex" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">funki.plots.</span></span><span class="sig-name descname"><span class="pre">plot_dex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logfc_thr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fdr_thr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">15</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#funki.plots.plot_dex" title="Link to this definition">¶</a></dt>
 <dd><p>Plots the results of the differential expression analisis as a volcano plot.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -94,6 +94,8 @@ versus total gene counts.</p>
 defaults to <code class="docutils literal notranslate"><span class="pre">1.0</span></code></p></li>
 <li><p><strong>fdr_thr</strong> (<em>float</em><em>, </em><em>optional</em>) – Threshold for signifacnce based on the FDR value, defaults
 to <code class="docutils literal notranslate"><span class="pre">0.05</span></code></p></li>
+<li><p><strong>top</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of top genes for which to display their gene name,
+defaults to <code class="docutils literal notranslate"><span class="pre">15</span></code>.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -107,17 +109,17 @@ to <code class="docutils literal notranslate"><span class="pre">0.05</span></cod
 
 <dl class="py function">
 <dt class="sig sig-object py" id="funki.plots.plot_enrich">
-<span class="sig-prename descclassname"><span class="pre">funki.plots.</span></span><span class="sig-name descname"><span class="pre">plot_enrich</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#funki.plots.plot_enrich" title="Link to this definition">¶</a></dt>
-<dd><p>Generates a horizontal barplot displaying the top results of an enrichment
-analysis based on the consensus score across methods.</p>
+<span class="sig-prename descclassname"><span class="pre">funki.plots.</span></span><span class="sig-name descname"><span class="pre">plot_enrich</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#funki.plots.plot_enrich" title="Link to this definition">¶</a></dt>
+<dd><p>Generates a dotplot displaying the top results of an enrichment analysis
+based on the provided methods.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>data</strong> (<a class="reference internal" href="input.html#funki.input.DataSet" title="funki.input.DataSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">funki.input.DataSet</span></code></a>) – The data set from which to generate the figure (it is assumed
 that <code class="docutils literal notranslate"><span class="pre">funki.analysis.enrich()</span></code> as been performed beforehand).</p></li>
-<li><p><strong>top</strong> (<em>int</em>) – Number of top enriched gene sets to display based on their
-consensus score. If a negative number is provided, the bottom ones will
-be displayed instead.</p></li>
+<li><p><strong>top</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of top enriched gene sets to display based on their
+score, defaults to <code class="docutils literal notranslate"><span class="pre">10</span></code>.</p></li>
+<li><p><strong>method</strong> – Name of the enrichment method to plot the results from.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
