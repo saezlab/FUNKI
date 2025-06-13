@@ -209,6 +209,7 @@ class FunkiApp(tk.Tk):
             self.menu_view.entryconfig('Data', state='normal')
             self.tabs['home'].button_viewraw.configure(state='normal')
             self.tabs['home'].button_loadobs.configure(state='normal')
+            self.tabs['data'].update()
 
         elif dtype == 'obs' and (self.data and not self.data.obs.empty):
 
