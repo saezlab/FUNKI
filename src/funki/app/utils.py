@@ -6,7 +6,8 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.backends.backend_tkagg import NavigationToolbar2Tk
 
-from funki.plots import _colors
+from funki.common import _colors
+
 
 PATH_LOGO = 'docs/source/_images/funki_logo.svg'
 

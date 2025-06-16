@@ -1,6 +1,6 @@
 from tkinter import ttk
 
-from funki.plots import _colors
+from funki.common import _colors
 
 
 def load_style(root):

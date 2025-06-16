@@ -5,6 +5,7 @@ from .dex import TabDex
 from .cluster import TabClust
 from .enrich import TabEnrich
 
+
 TABS = {
     'Home': ('home', TabHome),
     'Data': ('data', TabData),
