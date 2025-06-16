@@ -743,3 +743,68 @@ def plot_enrich(
     fig.tight_layout()
 
     return fig
+
+
+def plot_obs(data, obs_var, ax=None):
+    '''
+    Generates a plot to visualize the metadata.
+
+    :param data: The data set from which to generate the figure (it is assumed
+        that ``funki.analysis.enrich()`` as been performed beforehand).
+    :type data: :class:`funki.input.DataSet`
+    :param obs_var: The variable (column name) of the observations matrix to
+        plot.
+    :type obs_var: str
+    :param ax: Matplotlib Axes instance where to draw the plot. Defaults to
+        ``None``, meaning a new figure and axes will be generated.
+    :type ax: `matplotlib.axes.Axes`_
+
+    :returns: The figure contataining the resulting plot. If an axes is passed,
+        nothing is returned.
+    :rtype: `matplotlib.figure.Figure`_ | None
+
+    .. _matplotlib.axes.Axes: https://matplotlib.org/stable/api/_as_gen/matplot\
+        lib.axes.Axes.html#matplotlib.axes.Axes
+    .. _matplotlib.figure.Figure: https://matplotlib.org/stable/api/_as_gen/mat\
+        plotlib.figure.Figure.html#matplotlib.figure.Figure
+    '''
+
+    if obs_var not in data.obs_keys():
+
+        raise KeyError(
+            f'Variable {obs_var} not found in the observations table.'
+        )
+
+    if ax is None:
+
+        fig, ax = plt.subplots()
+        return_fig = True
+
+    else:
+
+        return_fig = False
+
+    if is_numeric(data.obs[obs_var].values):
+
+        df = data.obs[obs_var]
+        ax.hist(df.values, color=_colors['blue'])
+
+        ax.set_xlabel('Values')
+
+    else:
+
+        df = data.obs.value_counts(obs_var)
+        rng = range(len(df))
+        ax.bar(rng, df.values, color=_colors['blue'])
+
+        ax.set_xticks(rng)
+        ax.set_xticklabels(df.index, rotation=90)
+
+    ax.set_ylabel('Count')
+    ax.set_title(obs_var)
+
+    if return_fig:
+
+        fig.tight_layout()
+
+        return fig
