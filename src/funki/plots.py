@@ -8,7 +8,7 @@ import decoupler as dc
 
 from .analysis import sc_trans_qc_metrics
 from .preprocessing import sc_trans_filter
-from .common import _colors
+from .common import _colors, is_numeric
 
 
 def plot_pca(
@@ -63,7 +63,7 @@ def plot_pca(
         colors = _colors['blue']
 
     # Categorical variable
-    elif color_vals.dtype is np.dtype(object):
+    elif not is_numeric(color_vals):
 
         cmap = {v: f'C{i % 10}' for i, v in enumerate(sorted(set(color_vals)))}
         colors = [cmap[c] for c in color_vals]
@@ -146,7 +146,7 @@ def plot_tsne(
         colors = _colors['blue']
 
     # Categorical variable
-    elif color_vals.dtype is np.dtype(object):
+    elif not is_numeric(color_vals):
 
         cmap = {v: f'C{i % 10}' for i, v in enumerate(sorted(set(color_vals)))}
         colors = [cmap[c] for c in color_vals]
@@ -251,7 +251,7 @@ def plot_umap(
         colors = _colors['blue']
 
     # Categorical variable
-    elif color_vals.dtype is np.dtype(object):
+    elif not is_numeric(color_vals):
 
         cmap = {v: f'C{i % 10}' for i, v in enumerate(sorted(set(color_vals)))}
         colors = [cmap[c] for c in color_vals]

@@ -20,6 +20,7 @@ def read_text(path):
 
     return txt
 
+
 class Figure(ttk.Frame):
     '''
     Container for a matplotlib figure with corresponding toolbar.
@@ -181,6 +182,7 @@ class Table(ttk.Frame):
             val = val[:self.charlim - 3] + '...'
 
         return val
+
 
 # TODO: Should probably replace with Text widget, so we can add scrollbar and
 #       also current solution does not wrap text very well
