@@ -10,6 +10,7 @@ def load_style(root):
     style.configure(
         '.',
         font=('Arial', 12),
+        background=_colors['lightgray'],
     )
     style.configure(
         'Title.TLabel',
