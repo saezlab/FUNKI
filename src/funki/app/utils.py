@@ -21,6 +21,54 @@ def read_text(path):
     return txt
 
 
+class LabeledWidget(ttk.Frame):
+    '''
+    Meta-widget consisting of a frame with a label in a specified position
+    relative to a desired widget.
+    '''
+
+    def __init__(
+        self,
+        parent,
+        Widget,
+        label_text,
+        lpos='N',
+        wget_kwargs={},
+        **options
+    ):
+
+        super().__init__(parent, **options)
+
+        self.wg = Widget(self, **wget_kwargs)
+        self.label = ttk.Label(self, text=label_text)
+
+        # Positioning
+        lpos = lpos.lower()[0]
+
+        if lpos not in 'nswe':
+
+            raise ValueError(
+                'Label position invalid, must be one of N, S, W or E.'
+            )
+
+        if lpos in 'ns':
+
+            self.rowconfigure(0, weight=int(lpos == 's'))
+            self.rowconfigure(1, weight=int(lpos == 'n'))
+
+            self.wg.grid(column=0, row=int(lpos == 'n'), sticky='NSWE')
+            self.label.grid(column=0, row=int(lpos == 's'), sticky='NSWE')
+
+        elif lpos in 'we':
+
+            self.columnconfigure(0, weight=int(lpos == 'e'))
+            self.columnconfigure(1, weight=int(lpos == 'w'))
+
+            self.wg.grid(row=0, column=int(lpos == 'w'), sticky='NSWE')
+            self.label.grid(row=0, column=int(lpos == 'e'), sticky='NSWE')
+
+
+
 class Figure(ttk.Frame):
     '''
     Container for a matplotlib figure with corresponding toolbar.
