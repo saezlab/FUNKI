@@ -20,28 +20,31 @@ class TabData(ttk.Frame):
         self.columnconfigure(0, weight=1)
         self.columnconfigure(1, weight=1)
         self.rowconfigure(0, weight=0)
-        self.rowconfigure(1, weight=1)
+        self.rowconfigure(1, weight=0)
+        self.rowconfigure(2, weight=1)
 
         # Raw data viz
-
+        title_raw = ttk.Label(self, text='Raw data QC:', style='Title.TLabel')
+        title_raw.grid(row=0, column=0, sticky='NSWE')
         self.fig_raw, self.ax_raw = plt.subplots(nrows=2, ncols=3)
 
         self.figframe_raw = Figure(self, self.fig_raw)
-        self.figframe_raw.grid(row=1, column=0, sticky='NSWE')
+        self.figframe_raw.grid(row=2, column=0, sticky='NSWE')
 
         # Obs data viz
-
+        title_obs = ttk.Label(self, text='Metadata:', style='Title.TLabel')
+        title_obs.grid(row=0, column=1, sticky='NSWE')
         self.combox_obs = ttk.Combobox(
             self,
             state='disabled'
         )
-        self.combox_obs.grid(row=0, column=1)
+        self.combox_obs.grid(row=1, column=1)
         self.combox_obs.bind('<<ComboboxSelected>>', self.update)
 
         self.fig_obs, self.ax_obs = plt.subplots()
 
         self.figframe_obs = Figure(self, self.fig_obs)
-        self.figframe_obs.grid(row=1, column=1, sticky='NSWE')
+        self.figframe_obs.grid(row=2, column=1, sticky='NSWE')
 
 
     def update(self, *ev):
