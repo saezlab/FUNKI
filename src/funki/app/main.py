@@ -221,6 +221,7 @@ class FunkiApp(tk.Tk):
             self.tabs['data'].combox_obs.wg.set(list(self.data.obs_keys())[0])
 
         self.tabs['data'].update()
+        self.tabs['norm'].update()
 
 
     def new_project(self):
