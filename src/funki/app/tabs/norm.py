@@ -30,7 +30,7 @@ class TabNorm(ttk.Frame):
         self.figframe_raw.grid(row=5, columnspan=2, sticky='NSWE')
 
     
-    def update(self, *ev):
+    def _update(self, *ev):
 
         if self.controller.data:
 
@@ -39,4 +39,4 @@ class TabNorm(ttk.Frame):
                 ax.clear()
 
             sc_quality_control(self.controller.data, ax=self.ax_raw)
-            self.figframe_raw.update()
+            self.figframe_raw._update()

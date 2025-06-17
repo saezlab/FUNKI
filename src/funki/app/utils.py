@@ -91,7 +91,7 @@ class Figure(ttk.Frame):
         self.canvas.get_tk_widget().grid(column=0, row=0, sticky='NSWE')
 
     
-    def update(self):
+    def _update(self):
 
         self.canvas.draw()
 

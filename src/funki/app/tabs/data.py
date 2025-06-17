@@ -23,50 +23,51 @@ class TabData(ttk.Frame):
         self.rowconfigure(1, weight=0)
         self.rowconfigure(2, weight=1)
 
-        # Raw data viz
-        title_raw = ttk.Label(self, text='Raw data QC:', style='Title.TLabel')
+        # Raw data panel
+        title_raw = ttk.Label(self, text='Raw data:', style='Title.TLabel')
         title_raw.grid(row=0, column=0, sticky='NSWE')
-        self.fig_raw, self.ax_raw = plt.subplots(nrows=2, ncols=3)
 
-        self.figframe_raw = Figure(self, self.fig_raw)
-        self.figframe_raw.grid(row=2, column=0, sticky='NSWE')
-
-        # Obs data viz
+        # Obs data panel
         title_obs = ttk.Label(self, text='Metadata:', style='Title.TLabel')
         title_obs.grid(row=0, column=1, sticky='NSWE')
-        self.combox_obs = LabeledWidget(
+        self.combox = LabeledWidget(
             self,
             ttk.Combobox,
             'Select variable to visualize: ',
             lpos='w',
             wget_kwargs={'state': 'disabled'}
         )
-        self.combox_obs.grid(row=1, column=1)
-        self.combox_obs.wg.bind('<<ComboboxSelected>>', self.update)
+        self.combox.grid(row=1, column=1)
+        self.combox.wg.bind('<<ComboboxSelected>>', self._update)
 
-        self.fig_obs, self.ax_obs = plt.subplots()
+        self.fig, self.ax = plt.subplots()
 
-        self.figframe_obs = Figure(self, self.fig_obs)
-        self.figframe_obs.grid(row=2, column=1, sticky='NSWE')
+        self.figframe = Figure(self, self.fig)
+        self.figframe.grid(row=2, column=1, sticky='NSWE')
 
 
-    def update(self, *ev):
+    def _update(self, *ev):
 
         if self.controller.data:
 
-            for ax in self.ax_raw.flat:
+            if not self.controller.data.obs.empty:
 
-                ax.clear()
+                # Set combox
+                if not self.combox.wg.get():
 
-            sc_quality_control(self.controller.data, ax=self.ax_raw)
-            self.figframe_raw.update()
+                    obs_keys = list(self.controller.data.obs_keys())
 
-            if not self.controller.data.obs.empty and self.combox_obs.wg.get():
+                    self.combox.wg.configure(
+                        state='readonly',
+                        values=obs_keys,
+                    )
+                    self.combox.wg.set(obs_keys[0])
 
-                self.ax_obs.clear()
+                # Plot
+                self.ax.clear()
                 plot_obs(
                     self.controller.data,
-                    obs_var=self.combox_obs.wg.get(),
-                    ax=self.ax_obs
+                    obs_var=self.combox.wg.get(),
+                    ax=self.ax
                 )
-                self.figframe_obs.update()
+                self.figframe._update()

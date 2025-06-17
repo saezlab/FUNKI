@@ -75,3 +75,15 @@ class TabHome(ttk.Frame):
             state='disabled',
         )
         self.button_viewobs.grid(row=1, column=1, pady=(5, 5))
+
+
+    def _update(self):
+
+        if self.controller.data:
+
+            self.button_viewraw.configure(state='normal')
+            self.button_loadobs.configure(state='normal')
+
+            if not self.controller.data.obs.empty:
+
+                self.button_viewobs.configure(state='normal')

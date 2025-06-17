@@ -207,21 +207,16 @@ class FunkiApp(tk.Tk):
 
             self.menu_open.entryconfig('Load metadata', state='normal')
             self.menu_view.entryconfig('Data', state='normal')
-            self.tabs['home'].button_viewraw.configure(state='normal')
-            self.tabs['home'].button_loadobs.configure(state='normal')
 
         elif dtype == 'obs' and (self.data and not self.data.obs.empty):
 
             self.menu_view.entryconfig('Metadata', state='normal')
-            self.tabs['home'].button_viewobs.configure(state='normal')
-            self.tabs['data'].combox_obs.wg.configure(
-                state='readonly',
-                values=list(self.data.obs_keys()),
-            )
-            self.tabs['data'].combox_obs.wg.set(list(self.data.obs_keys())[0])
 
-        self.tabs['data'].update()
-        self.tabs['norm'].update()
+        for tab in self.tabs.values():
+
+            if hasattr(tab, '_update'):
+
+                tab._update()
 
 
     def new_project(self):
