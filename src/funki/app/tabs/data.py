@@ -61,12 +61,12 @@ class TabData(ttk.Frame):
             sc_quality_control(self.controller.data, ax=self.ax_raw)
             self.figframe_raw.update()
 
-        if not self.controller.data.obs.empty and self.combox_obs.wg.get():
+            if not self.controller.data.obs.empty and self.combox_obs.wg.get():
 
-            self.ax_obs.clear()
-            plot_obs(
-                self.controller.data,
-                obs_var=self.combox_obs.wg.get(),
-                ax=self.ax_obs
-            )
-            self.figframe_obs.update()
+                self.ax_obs.clear()
+                plot_obs(
+                    self.controller.data,
+                    obs_var=self.combox_obs.wg.get(),
+                    ax=self.ax_obs
+                )
+                self.figframe_obs.update()
