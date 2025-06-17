@@ -339,7 +339,7 @@ def plot_highest_expr(data, top=10, ax=None):
         medianprops={'color': _colors['red']},
     )
 
-    ax.set_title(f'Top {top} expressed genes')
+    ax.set_title(f'Top {top} expr. genes')
     ax.set_xlabel('Genes')
     ax.set_ylabel('Expression')
 
@@ -398,7 +398,7 @@ def plot_n_genes(data, ax=None):
         p.set_facecolor(_colors['blue'])
         p.set_edgecolor(_colors['blue'])
 
-    ax.set_title('Number of genes per cell')
+    ax.set_title('No. of genes x cell')
     ax.set_ylabel('No. of genes')
 
     ax.xaxis.set_visible(False)
@@ -510,7 +510,7 @@ def plot_pct_counts_mito(data, ax=None):
         p.set_facecolor(_colors['blue'])
         p.set_edgecolor(_colors['blue'])
 
-    ax.set_title('Mitochondrial genes per cell')
+    ax.set_title('Mito. genes x cell')
     ax.set_ylabel('Pct. of mito. genes')
 
     ax.xaxis.set_visible(False)
@@ -564,8 +564,8 @@ def plot_counts_vs_pct_mito(data, ax=None):
         y=data.obs['pct_counts_mito'].values,
         c=_colors['blue'],
     )
-    ax.set_title('Total counts vs. pct. mitochondrial genes')
-    ax.set_ylabel('Pct. of mito. genes')
+    ax.set_title('Total counts vs. % mito. genes')
+    ax.set_ylabel('% of mito. genes')
     ax.set_xlabel('Counts')
 
     if return_fig:
@@ -617,7 +617,7 @@ def plot_counts_vs_n_genes(data, ax=None):
         y=data.obs['n_genes_by_counts'].values,
         c=_colors['blue'],
     )
-    ax.set_title('Total counts vs. number of genes')
+    ax.set_title('Total counts vs. no. of genes')
     ax.set_ylabel('No. of genes')
     ax.set_xlabel('Counts')
 
