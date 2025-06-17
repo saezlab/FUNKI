@@ -11,6 +11,11 @@ def load_style(root):
         '.',
         font=('Arial', 12),
     )
+    style.configure(
+        'Title.TLabel',
+        font=('Arial', 18, 'bold'),
+        foreground=_colors['blue'],
+    )
     # Table
     style.configure(
         'Treeview',
