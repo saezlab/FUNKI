@@ -29,7 +29,7 @@ class Figure(ttk.Frame):
     def __init__(self, parent, fig, **options):
 
         super().__init__(parent, **options)
-        
+
         self.columnconfigure(0, weight=1)
         self.rowconfigure(0, weight=1)
         self.rowconfigure(1, weight=0)
