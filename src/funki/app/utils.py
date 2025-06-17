@@ -28,7 +28,7 @@ class Figure(ttk.Frame):
 
     def __init__(self, parent, fig, **options):
 
-        super().__init__(parent, **options)
+        super().__init__(parent, relief='sunken', borderwidth=1, **options)
 
         self.columnconfigure(0, weight=1)
         self.rowconfigure(0, weight=1)
