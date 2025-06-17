@@ -193,7 +193,7 @@ class FunkiApp(tk.Tk):
             
             for child in self.tabs[n].winfo_children():
             
-                child.grid_configure(padx=5, pady=5)
+                child.grid_configure(padx=10, pady=10)
             
             self.tab_manager.add(self.tabs[n], text=name, sticky='NSEW')
 
@@ -271,7 +271,7 @@ class FunkiApp(tk.Tk):
         About()
 
 
-    def view_data(self, dtype=None):
+    def view_data(self, dtype=None): # NOTE: Could move to new class?
 
         df = pd.DataFrame()
         title = ''
