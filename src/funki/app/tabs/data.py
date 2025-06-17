@@ -23,16 +23,16 @@ class TabData(ttk.Frame):
         self.rowconfigure(1, weight=1)
 
         # Raw data viz
+
         self.fig_raw, self.ax_raw = plt.subplots(nrows=2, ncols=3)
 
         self.figframe_raw = Figure(self, self.fig_raw)
         self.figframe_raw.grid(row=1, column=0, sticky='NSWE')
 
         # Obs data viz
-        self.obs_var = tk.StringVar()
+
         self.combox_obs = ttk.Combobox(
             self,
-            textvariable=self.obs_var,
             state='disabled'
         )
         self.combox_obs.grid(row=0, column=1)
@@ -55,12 +55,12 @@ class TabData(ttk.Frame):
             sc_quality_control(self.controller.data, ax=self.ax_raw)
             self.figframe_raw.update()
 
-        if not self.controller.data.obs.empty and self.obs_var.get():
+        if not self.controller.data.obs.empty and self.combox_obs.get():
 
             self.ax_obs.clear()
             plot_obs(
                 self.controller.data,
-                obs_var=self.obs_var.get(),
+                obs_var=self.combox_obs.get(),
                 ax=self.ax_obs
             )
             self.figframe_obs.update()
