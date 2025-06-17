@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 from funki.pipelines import sc_quality_control
 from funki.plots import plot_obs
 
-from utils import Figure
+from utils import Figure, LabeledWidget
 
 
 class TabData(ttk.Frame):
@@ -34,12 +34,15 @@ class TabData(ttk.Frame):
         # Obs data viz
         title_obs = ttk.Label(self, text='Metadata:', style='Title.TLabel')
         title_obs.grid(row=0, column=1, sticky='NSWE')
-        self.combox_obs = ttk.Combobox(
+        self.combox_obs = LabeledWidget(
             self,
-            state='disabled'
+            ttk.Combobox,
+            'Select variable to visualize: ',
+            lpos='w',
+            wget_kwargs={'state': 'disabled'}
         )
         self.combox_obs.grid(row=1, column=1)
-        self.combox_obs.bind('<<ComboboxSelected>>', self.update)
+        self.combox_obs.wg.bind('<<ComboboxSelected>>', self.update)
 
         self.fig_obs, self.ax_obs = plt.subplots()
 
@@ -58,12 +61,12 @@ class TabData(ttk.Frame):
             sc_quality_control(self.controller.data, ax=self.ax_raw)
             self.figframe_raw.update()
 
-        if not self.controller.data.obs.empty and self.combox_obs.get():
+        if not self.controller.data.obs.empty and self.combox_obs.wg.get():
 
             self.ax_obs.clear()
             plot_obs(
                 self.controller.data,
-                obs_var=self.combox_obs.get(),
+                obs_var=self.combox_obs.wg.get(),
                 ax=self.ax_obs
             )
             self.figframe_obs.update()

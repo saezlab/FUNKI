@@ -214,11 +214,11 @@ class FunkiApp(tk.Tk):
 
             self.menu_view.entryconfig('Metadata', state='normal')
             self.tabs['home'].button_viewobs.configure(state='normal')
-            self.tabs['data'].combox_obs.configure(
-                state='normal',
+            self.tabs['data'].combox_obs.wg.configure(
+                state='readonly',
                 values=list(self.data.obs_keys()),
             )
-            self.tabs['data'].combox_obs.set(list(self.data.obs_keys())[0])
+            self.tabs['data'].combox_obs.wg.set(list(self.data.obs_keys())[0])
 
         self.tabs['data'].update()
 
