@@ -1,6 +1,5 @@
 import tkinter as tk
 from tkinter import ttk
-
 import matplotlib.pyplot as plt
 
 from funki.plots import plot_obs
@@ -89,7 +88,7 @@ class TabData(ttk.Frame):
 
             if not self.controller.data.obs.empty:
 
-                # Set combox
+                # Set combobox
                 if not self.combox.wg.get():
 
                     obs_keys = list(self.controller.data.obs_keys())

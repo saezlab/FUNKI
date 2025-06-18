@@ -1,6 +1,5 @@
 import tkinter as tk
 from tkinter import ttk
-
 import matplotlib.pyplot as plt
 
 from funki.pipelines import sc_quality_control
