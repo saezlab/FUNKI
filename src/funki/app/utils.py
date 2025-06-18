@@ -41,13 +41,16 @@ class LabeledWidget(ttk.Frame):
         label_text,
         lpos='N',
         wget_kwargs={},
+        label_kwargs={},
+        wget_grid_kwargs={},
+        label_grid_kwargs={},
         **options
     ):
 
         super().__init__(parent, **options)
 
         self.wg = Widget(self, **wget_kwargs)
-        self.label = ttk.Label(self, text=label_text)
+        self.label = ttk.Label(self, text=label_text, **label_kwargs)
 
         # Positioning
         lpos = lpos.lower()[0]
@@ -63,16 +66,16 @@ class LabeledWidget(ttk.Frame):
             self.rowconfigure(0, weight=int(lpos == 's'))
             self.rowconfigure(1, weight=int(lpos == 'n'))
 
-            self.wg.grid(column=0, row=int(lpos == 'n'), sticky='NSWE')
-            self.label.grid(column=0, row=int(lpos == 's'), sticky='NSWE')
+            self.wg.grid(column=0, row=int(lpos == 'n'), **wget_grid_kwargs)
+            self.label.grid(column=0, row=int(lpos == 's'), **label_grid_kwargs)
 
         elif lpos in 'we':
 
             self.columnconfigure(0, weight=int(lpos == 'e'))
             self.columnconfigure(1, weight=int(lpos == 'w'))
 
-            self.wg.grid(row=0, column=int(lpos == 'w'), sticky='NSWE')
-            self.label.grid(row=0, column=int(lpos == 'e'), sticky='NSWE')
+            self.wg.grid(row=0, column=int(lpos == 'w'), **wget_grid_kwargs)
+            self.label.grid(row=0, column=int(lpos == 'e'), **label_grid_kwargs)
 
 
 
