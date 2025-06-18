@@ -253,10 +253,16 @@ class FunkiApp(tk.Tk):
             fname, ext = os.path.splitext(path)
 
             self.fname_obs = path
-            self.data.obs = pd.read_csv(
+            obs = pd.read_csv(
                 path,
                 sep=',' if ext == '.csv' else '\t',
                 index_col=0
+            )
+            self.data.obs = self.data.obs.merge(
+                obs,
+                how='outer',
+                left_index=True,
+                right_index=True,
             )
 
         self._update(dtype=dtype)
