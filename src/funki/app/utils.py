@@ -1,3 +1,5 @@
+import re
+
 import tkinter as tk
 from tkinter import ttk
 import pandas as pd
@@ -19,6 +21,11 @@ def read_text(path):
         txt = ''.join(f.readlines())
 
     return txt
+
+
+def check_num(n):
+
+    return re.match('^[0-9]*$', n) is not None
 
 
 class LabeledWidget(ttk.Frame):
