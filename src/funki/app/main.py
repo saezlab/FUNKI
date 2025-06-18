@@ -31,7 +31,7 @@ class FunkiApp(tk.Tk):
 
         super().__init__()
 
-        self.geometry('700x800')
+        self.geometry('800x800')
         self._platform = self.tk.call('tk', 'windowingsystem')
 
         self.check_num = (self.register(check_num), '%P')
