@@ -2,6 +2,8 @@ import tkinter as tk
 from tkinter import ttk
 import matplotlib.pyplot as plt
 
+from funki.analysis import diff_exp
+
 from utils import Figure
 from utils import LabeledWidget
 from utils import PATH_ICON_SWP
@@ -21,7 +23,8 @@ class TabDex(ttk.Frame):
         self.rowconfigure(0, weight=0)
         self.rowconfigure(1, weight=0)
         self.rowconfigure(2, weight=0)
-        self.rowconfigure(3, weight=1)
+        self.rowconfigure(3, weight=0)
+        self.rowconfigure(4, weight=1)
 
         title_dex = ttk.Label(
             self,
@@ -92,8 +95,14 @@ class TabDex(ttk.Frame):
         )
         self.button_compute.grid(row=3, column=0, sticky='NW')
 
+        # Figure
+        self.fig, self.ax = plt.subplots()
 
-    def _update(self, *ev):
+        self.figframe = Figure(self, self.fig)
+        self.figframe.grid(row=4, columnspan=3, sticky='NSWE')
+
+
+    def _update(self, *ev): # TODO: Could probably split to simplify
 
         if self.controller.data and not self.controller.data.obs.empty:
 
@@ -185,4 +194,9 @@ class TabDex(ttk.Frame):
             self.combox_B.wg.set(curA)
 
     def compute(self):
-        pass
+
+        # Compute DEX here or run all pipeline below
+
+        self.ax.clear()
+        # Run plot function with ax here (or whole DEX pipeline)
+        self.figframe._update()
