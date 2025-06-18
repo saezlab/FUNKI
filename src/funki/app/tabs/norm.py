@@ -135,22 +135,22 @@ class TabNorm(ttk.Frame):
         self.button_apply_norm.grid(row=4, column=1, sticky='W')
 
         # Figure
-        self.fig_raw, self.ax_raw = plt.subplots(nrows=2, ncols=3)
+        self.fig, self.ax = plt.subplots(nrows=2, ncols=3)
 
-        self.figframe_raw = Figure(self, self.fig_raw)
-        self.figframe_raw.grid(row=5, columnspan=2, sticky='NSWE')
+        self.figframe = Figure(self, self.fig)
+        self.figframe.grid(row=5, columnspan=2, sticky='NSWE')
 
 
     def _update(self, *ev):
 
         if self.controller.data:
 
-            for ax in self.ax_raw.flat:
+            for ax in self.ax.flat:
 
                 ax.clear()
 
-            sc_quality_control(self.controller.data, ax=self.ax_raw)
-            self.figframe_raw._update()
+            sc_quality_control(self.controller.data, ax=self.ax)
+            self.figframe._update()
 
 
     def apply_filter(self, *ev):
