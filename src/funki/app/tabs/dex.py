@@ -44,6 +44,8 @@ class TabDex(ttk.Frame):
         self.combox_contrast_var.grid(row=1, columnspan=3, sticky='NSEW')
         self.combox_contrast_var.wg.bind('<<ComboboxSelected>>', self._update)
 
+        # TODO: Handle multiple groups?
+
         # Contrast group A
         self.combox_A = LabeledWidget(
             self,
@@ -72,9 +74,23 @@ class TabDex(ttk.Frame):
 
         # Swap button
         icon = tk.PhotoImage(file=PATH_ICON_SWP)
-        self.button_swap = ttk.Button(self, image=icon, command=self.swap_ab)
+        self.button_swap = ttk.Button(
+            self,
+            image=icon,
+            command=self.swap_ab,
+            state='disabled',
+        )
         self.button_swap.image = icon
         self.button_swap.grid(row=2, column=1, sticky='SW')
+
+        # Compute button
+        self.button_compute = ttk.Button(
+            self,
+            text='Compute',
+            command=self.compute,
+            state='disabled',
+        )
+        self.button_compute.grid(row=3, column=0, sticky='NW')
 
 
     def _update(self, *ev):
@@ -131,6 +147,7 @@ class TabDex(ttk.Frame):
 
                 # A/B not empty -> ensure mutual exclusivity
                 else:
+
                     curA = self.combox_A.wg.get()
                     curB = self.combox_B.wg.get()
 
@@ -141,6 +158,10 @@ class TabDex(ttk.Frame):
                     self.combox_B.wg.configure(
                         values=[i for i in options if i != curA],
                     )
+
+                # Reactivating buttons
+                self.button_compute.configure(state='normal')
+                self.button_swap.configure(state='normal')
 
 
     def swap_ab(self):
@@ -162,3 +183,6 @@ class TabDex(ttk.Frame):
                 values=[i for i in options if i != curB],
             )
             self.combox_B.wg.set(curA)
+
+    def compute(self):
+        pass
