@@ -9,8 +9,7 @@ import pandas as pd
 from funki import __version__
 from funki.input import read
 
-from utils import PATH_LOGO
-from utils import Table
+from utils import PATH_LOGO, Table, check_num
 from tabs import TABS
 from style import load_style
 from assets.help import Help, About
@@ -32,6 +31,8 @@ class FunkiApp(tk.Tk):
 
         self.geometry('700x800')
         self._platform = self.tk.call('tk', 'windowingsystem')
+
+        self.check_num = (self.register(check_num), '%P')
 
         self.new_project()
 
@@ -198,7 +199,7 @@ class FunkiApp(tk.Tk):
             self.tab_manager.add(self.tabs[n], text=name, sticky='NSEW')
 
 
-    def _data_loaded(self, dtype=None):
+    def _update(self, dtype=None):
         '''
         Handles the activation of diverse options upon loading of raw/obs data.
         '''
@@ -258,7 +259,7 @@ class FunkiApp(tk.Tk):
                 index_col=0
             )
 
-        self._data_loaded(dtype=dtype)
+        self._update(dtype=dtype)
 
 
     def open_manual(self):
