@@ -2,7 +2,8 @@ import tkinter as tk
 from tkinter import ttk
 import matplotlib.pyplot as plt
 
-from utils import Figure, LabeledWidget
+from utils import Figure
+from utils import  LabeledWidget
 
 
 class TabDex(ttk.Frame):

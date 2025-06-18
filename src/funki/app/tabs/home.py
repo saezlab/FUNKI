@@ -3,9 +3,7 @@ from tkinter import ttk
 
 from utils import read_text
 from utils import WrapLabel
-
-
-PATH_MSG = 'src/funki/app/assets/msg_home.txt'
+from utils import PATH_MSG
 
 
 class TabHome(ttk.Frame):

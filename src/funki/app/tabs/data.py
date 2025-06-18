@@ -4,7 +4,8 @@ import matplotlib.pyplot as plt
 
 from funki.plots import plot_obs
 
-from utils import Figure, LabeledWidget
+from utils import Figure
+from utils import LabeledWidget
 
 
 class TabData(ttk.Frame):

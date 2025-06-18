@@ -3,9 +3,12 @@ from tkinter import ttk
 import matplotlib.pyplot as plt
 
 from funki.pipelines import sc_quality_control
-from funki.preprocessing import sc_trans_filter, sc_trans_normalize_total
+from funki.preprocessing import sc_trans_filter
+from funki.preprocessing import sc_trans_normalize_total
 
-from utils import Figure, LabeledWidget
+from utils import Figure
+from utils import LabeledWidget
+
 
 class TabNorm(ttk.Frame):
 

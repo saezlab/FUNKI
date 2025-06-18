@@ -9,7 +9,9 @@ import pandas as pd
 from funki import __version__
 from funki.input import read
 
-from utils import PATH_LOGO, Table, check_num
+from utils import PATH_LOGO
+from utils import Table
+from utils import check_num
 from tabs import TABS
 from style import load_style
 from assets.help import Help, About
@@ -258,6 +260,7 @@ class FunkiApp(tk.Tk):
                 sep=',' if ext == '.csv' else '\t',
                 index_col=0
             )
+            # TODO: Handle samples not in data
             self.data.obs = self.data.obs.merge(
                 obs,
                 how='outer',

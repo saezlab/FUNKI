@@ -12,6 +12,7 @@ from funki.common import _colors
 
 
 PATH_LOGO = 'docs/source/_images/funki_logo.svg'
+PATH_MSG = 'src/funki/app/assets/msg_home.txt'
 
 
 def read_text(path):
