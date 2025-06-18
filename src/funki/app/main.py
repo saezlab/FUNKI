@@ -242,7 +242,7 @@ class FunkiApp(tk.Tk):
         path = fd.askopenfilename()
 
         # Loading of measurement data
-        if path and dtype == 'raw':
+        if path and dtype == 'raw': # TODO: Make a copy in raw layer?
 
             self.fname_raw = path
             self.data = read(path)

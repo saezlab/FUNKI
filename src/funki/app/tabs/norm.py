@@ -4,7 +4,7 @@ from tkinter import ttk
 import matplotlib.pyplot as plt
 
 from funki.pipelines import sc_quality_control
-from funki.preprocessing import sc_trans_filter
+from funki.preprocessing import sc_trans_filter, sc_trans_normalize_total
 
 from utils import Figure, LabeledWidget
 
@@ -98,13 +98,46 @@ class TabNorm(ttk.Frame):
         )
         title_norm.grid(row=0, column=1, sticky='NSWE')
 
+        self.size_factor = tk.IntVar()
+        self.size_factor.set(1000000)
+        entry_size_factor = LabeledWidget(
+            self,
+            ttk.Entry,
+            'Size factor: ',
+            lpos='w',
+            wget_kwargs={
+                'textvariable': self.size_factor,
+                'validate': 'key',
+                'validatecommand': self.controller.check_num,
+                'width': 10,
+            }
+        )
+        entry_size_factor.grid(row=1, column=1, sticky='W')
+
+        self.log_transform = tk.BooleanVar()
+        checkbutton_log = LabeledWidget(
+            self,
+            ttk.Checkbutton,
+            'Log-transform: ',
+            lpos='w',
+            wget_kwargs={'variable': self.log_transform}
+        )
+        checkbutton_log.grid(row=2, column=1, sticky='W')
+
+        self.button_apply_norm = ttk.Button(
+            self,
+            text='Apply normalization',
+            command=self.apply_norm
+        )
+        self.button_apply_norm.grid(row=4, column=1, sticky='W')
+
         # Figure
         self.fig_raw, self.ax_raw = plt.subplots(nrows=2, ncols=3)
 
         self.figframe_raw = Figure(self, self.fig_raw)
         self.figframe_raw.grid(row=5, columnspan=2, sticky='NSWE')
 
-    
+
     def _update(self, *ev):
 
         if self.controller.data:
@@ -126,6 +159,19 @@ class TabNorm(ttk.Frame):
                 min_genes=self.min_genes.get(),
                 max_genes=self.max_genes.get(),
                 mito_pct=self.mito_pct.get(),
+            )
+
+            self.controller._update()
+
+
+    def apply_norm(self, *ev):
+
+        if self.controller.data:
+
+            self.controller.data = sc_trans_normalize_total(
+                self.controller.data,
+                target_sum=self.size_factor.get(),
+                log_transform=self.log_transform.get()
             )
 
             self.controller._update()
