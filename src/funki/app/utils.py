@@ -61,18 +61,21 @@ class LabeledWidget(ttk.Frame):
                 'Label position invalid, must be one of N, S, W or E.'
             )
 
+        wwg = wget_grid_kwargs.pop('weight', 1)
+        wlabel = label_grid_kwargs.pop('weight', 0)
+
         if lpos in 'ns':
 
-            self.rowconfigure(0, weight=int(lpos == 's'))
-            self.rowconfigure(1, weight=int(lpos == 'n'))
+            self.rowconfigure(0, weight=wwg if lpos == 's' else wlabel)
+            self.rowconfigure(1, weight=wwg if lpos == 'n' else wlabel)
 
             self.wg.grid(column=0, row=int(lpos == 'n'), **wget_grid_kwargs)
             self.label.grid(column=0, row=int(lpos == 's'), **label_grid_kwargs)
 
         elif lpos in 'we':
 
-            self.columnconfigure(0, weight=int(lpos == 'e'))
-            self.columnconfigure(1, weight=int(lpos == 'w'))
+            self.columnconfigure(0, weight=wwg if lpos == 'e' else wlabel)
+            self.columnconfigure(1, weight=wwg if lpos == 'w' else wlabel)
 
             self.wg.grid(row=0, column=int(lpos == 'w'), **wget_grid_kwargs)
             self.label.grid(row=0, column=int(lpos == 'e'), **label_grid_kwargs)
