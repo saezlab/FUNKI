@@ -7,6 +7,7 @@ from pydeseq2.ds import DeseqStats
 
 from .input import DataSet
 
+
 def enrich(
     data,
     net,
@@ -83,15 +84,18 @@ def enrich(
     # Making copy as AnnData to bypass Decoupler type checks
     aux = ad.AnnData(data.copy())
 
-    dc.mt.decouple(aux,
-                   readynet,
-                   methods=methods,
-                   use_raw=False,
-                   **kwargs)
+    dc.mt.decouple(
+        aux,
+        readynet,
+        methods=methods,
+        use_raw=False,
+        **kwargs
+    )
 
     # Updating back the results to the original DataSet object
     data.obsm.update(aux.obsm)
  
+
 def sc_trans_qc_metrics(data, var_name='mito'):
     '''
     Takes a single-cell transcriptomics data set and computes several quality
@@ -114,13 +118,24 @@ def sc_trans_qc_metrics(data, var_name='mito'):
     }
 
     aux = data.copy()
-    sc.pp.calculate_qc_metrics(aux, qc_vars=[var_name], percent_top=None,
-                               log1p=False, inplace=True)
+    sc.pp.calculate_qc_metrics(
+        aux,
+        qc_vars=[var_name],
+        percent_top=None,
+        log1p=False,
+        inplace=True
+    )
 
     return DataSet(aux)
 
-def clustering(data, alg='leiden', resolution=1.0, neigh_kwargs={},
-                  alg_kwargs={}):
+
+def clustering(
+    data,
+    alg='leiden',
+    resolution=1.0,
+    neigh_kwargs={},
+    alg_kwargs={}
+):
     '''
     Computes the clustering of the cells/samples according to the selected
     algorithm and resolution parameter. You can plot the resulting clustering
@@ -165,16 +180,21 @@ def clustering(data, alg='leiden', resolution=1.0, neigh_kwargs={},
     }
 
     if not 'neighbors' in data.uns:
+
         sc.pp.neighbors(data, **neigh_kwargs)
 
     if alg == 'leiden':
+
         sc.tl.leiden(data, resolution=resolution, **alg_kwargs)
 
     elif alg == 'louvain':
+
         sc.tl.louvain(data, resolution=resolution, **alg_kwargs)
 
     else:
+
         print('Algorithm not recognized, please use "leiden" or "louvain".')
+
 
 def diff_exp(data, design_factor, contrast_var, ref_var, n_cpus=8):
     '''
@@ -212,6 +232,7 @@ def diff_exp(data, design_factor, contrast_var, ref_var, n_cpus=8):
     }
 
     if design_factor not in data.obs_keys():
+
         msg = f'Design factor {design_factor} not found in provided DataSet'
         raise KeyError(msg)
 
@@ -220,6 +241,7 @@ def diff_exp(data, design_factor, contrast_var, ref_var, n_cpus=8):
     contrast = contrast_var if type(contrast_var) is list else [contrast_var]
 
     if not all(x in data.obs[design_factor].values for x in ref + contrast):
+
         msg = 'Contrast and/or reference value(s) not found in design factor'
         raise ValueError(msg)
 
@@ -247,6 +269,7 @@ def diff_exp(data, design_factor, contrast_var, ref_var, n_cpus=8):
         left_index=True,
         right_index=True
     )
+
 
 def label_transfer(data, ref_data, transfer_label, **kwargs):
     '''
@@ -278,9 +301,11 @@ def label_transfer(data, ref_data, transfer_label, **kwargs):
     }
 
     if transfer_label not in ref_data.obs:
+
         raise KeyError(f'{transfer_label} could not be found in reference data')
 
     if 'neighbors' not in ref_data.uns:
+
         sc.pp.neighbors(ref_data)
 
     # Subsetting to common genes in both reference and target data sets
