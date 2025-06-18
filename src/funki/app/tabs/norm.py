@@ -77,7 +77,8 @@ class TabNorm(ttk.Frame):
                 'to': 100,
                 'orient': 'horizontal',
                 'variable': self.mito_pct,
-            }
+            },
+            wget_grid_kwargs={'sticky': 'WE'}
         )
         self.slider_mito.grid(row=3, column=0, sticky='W')
 

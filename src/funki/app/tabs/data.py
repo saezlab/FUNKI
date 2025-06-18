@@ -67,7 +67,8 @@ class TabData(ttk.Frame):
             ttk.Combobox,
             'Select variable to visualize: ',
             lpos='w',
-            wget_kwargs={'state': 'disabled'}
+            wget_kwargs={'state': 'disabled'},
+            wget_grid_kwargs={'sticky': 'w'},
         )
         self.combox.grid(row=1, column=1, sticky='NSWE')
         self.combox.wg.bind('<<ComboboxSelected>>', self._update)
