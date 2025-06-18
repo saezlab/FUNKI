@@ -3,7 +3,8 @@ from tkinter import ttk
 import matplotlib.pyplot as plt
 
 from utils import Figure
-from utils import  LabeledWidget
+from utils import LabeledWidget
+from utils import PATH_ICON_SWP
 
 
 class TabDex(ttk.Frame):
@@ -16,6 +17,7 @@ class TabDex(ttk.Frame):
 
         self.columnconfigure(0, weight=1)
         self.columnconfigure(1, weight=1)
+        self.columnconfigure(2, weight=1)
         self.rowconfigure(0, weight=0)
         self.rowconfigure(1, weight=0)
         self.rowconfigure(2, weight=0)
@@ -27,7 +29,7 @@ class TabDex(ttk.Frame):
             style='Title.TLabel',
             width=20
         )
-        title_dex.grid(row=0, columnspan=2, sticky='NSWE')
+        title_dex.grid(row=0, columnspan=3, sticky='NSWE')
 
         # Contrast variable selector
         self.combox_contrast_var = LabeledWidget(
@@ -39,7 +41,7 @@ class TabDex(ttk.Frame):
             wget_grid_kwargs={'sticky': 'EW', 'weight': 1},
             label_grid_kwargs={'sticky': 'EW', 'weight': 0},
         )
-        self.combox_contrast_var.grid(row=1, columnspan=2, sticky='NSEW')
+        self.combox_contrast_var.grid(row=1, columnspan=3, sticky='NSEW')
         self.combox_contrast_var.wg.bind('<<ComboboxSelected>>', self._update)
 
         # Contrast group A
@@ -65,8 +67,14 @@ class TabDex(ttk.Frame):
             wget_grid_kwargs={'sticky': 'EW', 'weight': 1},
             label_grid_kwargs={'sticky': 'EW', 'weight': 0},
         )
-        self.combox_B.grid(row=2, column=1, sticky='NSWE')
+        self.combox_B.grid(row=2, column=2, sticky='NSWE')
         self.combox_B.wg.bind('<<ComboboxSelected>>', self._update)
+
+        # Swap button
+        icon = tk.PhotoImage(file=PATH_ICON_SWP)
+        self.button_swap = ttk.Button(self, image=icon, command=self.swap_ab)
+        self.button_swap.image = icon
+        self.button_swap.grid(row=2, column=1, sticky='SW')
 
 
     def _update(self, *ev):
@@ -133,3 +141,24 @@ class TabDex(ttk.Frame):
                     self.combox_B.wg.configure(
                         values=[i for i in options if i != curA],
                     )
+
+
+    def swap_ab(self):
+
+        curA = self.combox_A.wg.get()
+        curB = self.combox_B.wg.get()
+
+        if curA and curB:
+
+            obs_key = self.combox_contrast_var.wg.get()
+
+            options = sorted(set(self.controller.data.obs[obs_key]))
+
+            self.combox_A.wg.configure(
+                values=[i for i in options if i != curA],
+            )
+            self.combox_A.wg.set(curB)
+            self.combox_B.wg.configure(
+                values=[i for i in options if i != curB],
+            )
+            self.combox_B.wg.set(curA)
