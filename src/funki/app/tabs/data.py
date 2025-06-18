@@ -42,6 +42,8 @@ class TabData(ttk.Frame):
             'No. of observations: ',
             lpos='n',
             wget_kwargs={'textvariable': self.nobs},
+            wget_grid_kwargs={'sticky': 'w', 'weight': 0},
+            label_grid_kwargs={'sticky': 'w', 'weight': 0},
         ).grid(row=0, sticky='W')
 
         LabeledWidget(
@@ -50,6 +52,8 @@ class TabData(ttk.Frame):
             'No. of variables: ',
             lpos='n',
             wget_kwargs={'textvariable': self.nvar},
+            wget_grid_kwargs={'sticky': 'w', 'weight': 0},
+            label_grid_kwargs={'sticky': 'w', 'weight': 0},
         ).grid(row=1, sticky='W')
 
         summary.grid(column=0, row=2, sticky='NSWE')
@@ -68,7 +72,8 @@ class TabData(ttk.Frame):
             'Select variable to visualize: ',
             lpos='w',
             wget_kwargs={'state': 'disabled'},
-            wget_grid_kwargs={'sticky': 'w'},
+            wget_grid_kwargs={'sticky': 'w', 'weight': 0},
+            label_grid_kwargs={'sticky': 'w', 'weight': 0},
         )
         self.combox.grid(row=1, column=1, sticky='NSWE')
         self.combox.wg.bind('<<ComboboxSelected>>', self._update)
