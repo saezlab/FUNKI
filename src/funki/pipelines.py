@@ -84,7 +84,7 @@ def differential_expression(
     ref_var,
     logfc_thr=1.0,
     fdr_thr=0.05,
-    n_cpus=8
+    ax=None,
 ):
     '''
     Computes differential expression analysis on the provided data based on a
@@ -112,19 +112,23 @@ def differential_expression(
     :param fdr_thr: Threshold for signifacnce based on the FDR value, defaults
         to ``0.05``
     :type fdr_thr: float, optional
-    :param n_cpus: Number of CPUs used for the calculation, defaults to ``8``
-    :type n_cpus: int, optional
+    :param ax: Matplotlib Axes instance where to draw the plot. Defaults to
+        ``None``, meaning a new figure and axes will be generated.
+    :type ax: `matplotlib.axes.Axes`_
 
-    :returns: The figure contataining the resulting scatter plot
-    :rtype: `plotly.graph_objs.Figure`_
+    :returns: The figure contataining the resulting scatter plot. If an axes is
+        passed, nothing is returned.
+    :rtype: `matplotlib.figure.Figure`_ | None
 
-    .. _plotly.graph_objs.Figure: https://plotly.com/python-api-reference/gener\
-        ated/plotly.graph_objects.Figure.html
+    .. _matplotlib.axes.Axes: https://matplotlib.org/stable/api/_as_gen/matplot\
+        lib.axes.Axes.html#matplotlib.axes.Axes
+    .. _matplotlib.figure.Figure: https://matplotlib.org/stable/api/_as_gen/mat\
+        plotlib.figure.Figure.html#matplotlib.figure.Figure
     '''
 
     diff_exp(data, design_factor, contrast_var, ref_var, n_cpus=n_cpus)
     
-    return plot_dex(data, logfc_thr=logfc_thr, fdr_thr=fdr_thr)
+    return plot_dex(data, logfc_thr=logfc_thr, fdr_thr=fdr_thr, ax=ax)
 
 
 def enrichment_analysis(
