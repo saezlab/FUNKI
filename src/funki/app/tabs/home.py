@@ -19,12 +19,11 @@ class TabHome(ttk.Frame):
         self.controller = controller
 
         # Welcome text
-        maintext = WrapLabel(
+        WrapLabel(
             self,
             text=read_text(PATH_MSG),
             anchor='nw',
-        )
-        maintext.grid(row=0, column=0, sticky='NSEW', columnspan=2)
+        ).grid(row=0, column=0, sticky='NSEW', columnspan=2)
 
         # Button frames
         lframe = ttk.Frame(self)

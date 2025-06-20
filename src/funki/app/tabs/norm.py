@@ -28,17 +28,16 @@ class TabNorm(ttk.Frame):
         self.rowconfigure(5, weight=1)
 
         # Filter panel
-        title_filter = ttk.Label(
+        ttk.Label(
             self,
             text='Filtering:',
             style='Title.TLabel',
             width=20
-        )
-        title_filter.grid(row=0, column=0, sticky='NSWE')
+        ).grid(row=0, column=0, sticky='NSWE')
 
         self.max_genes = tk.IntVar()
         self.max_genes.set(5000)
-        entry_max_genes = LabeledWidget(
+        LabeledWidget(
             self,
             ttk.Entry,
             'Max. genes per cell: ',
@@ -49,12 +48,11 @@ class TabNorm(ttk.Frame):
                 'validatecommand': self.controller.check_num,
                 'width': 10,
             }
-        )
-        entry_max_genes.grid(row=1, column=0, sticky='W')
+        ).grid(row=1, column=0, sticky='W')
 
         self.min_genes = tk.IntVar()
         self.min_genes.set(500)
-        entry_min_genes = LabeledWidget(
+        LabeledWidget(
             self,
             ttk.Entry,
             'Min. genes per cell: ',
@@ -65,12 +63,11 @@ class TabNorm(ttk.Frame):
                 'validatecommand': self.controller.check_num,
                 'width': 10,
             }
-        )
-        entry_min_genes.grid(row=2, column=0, sticky='W')
+        ).grid(row=2, column=0, sticky='W')
 
         self.mito_pct = tk.IntVar()
         self.mito_pct.set(5)
-        self.slider_mito = LabeledWidget(
+        LabeledWidget(
             self,
             tk.Scale,
             'Max. % mito. genes per cell: ',
@@ -82,28 +79,25 @@ class TabNorm(ttk.Frame):
                 'variable': self.mito_pct,
             },
             wget_grid_kwargs={'sticky': 'WE'}
-        )
-        self.slider_mito.grid(row=3, column=0, sticky='W')
+        ).grid(row=3, column=0, sticky='W')
 
-        self.button_apply_filter = ttk.Button(
+        ttk.Button(
             self,
             text='Apply filters',
             command=self.apply_filter
-        )
-        self.button_apply_filter.grid(row=4, column=0, sticky='W')
+        ).grid(row=4, column=0, sticky='W')
 
         # Normalization panel
-        title_norm = ttk.Label(
+        ttk.Label(
             self,
             text='Normalization:',
             style='Title.TLabel',
             width=20
-        )
-        title_norm.grid(row=0, column=1, sticky='NSWE')
+        ).grid(row=0, column=1, sticky='NSWE')
 
         self.size_factor = tk.IntVar()
         self.size_factor.set(1000000)
-        entry_size_factor = LabeledWidget(
+        LabeledWidget(
             self,
             ttk.Entry,
             'Size factor: ',
@@ -114,25 +108,22 @@ class TabNorm(ttk.Frame):
                 'validatecommand': self.controller.check_num,
                 'width': 10,
             }
-        )
-        entry_size_factor.grid(row=1, column=1, sticky='W')
+        ).grid(row=1, column=1, sticky='W')
 
         self.log_transform = tk.BooleanVar()
-        checkbutton_log = LabeledWidget(
+        LabeledWidget(
             self,
             ttk.Checkbutton,
             'Log-transform: ',
             lpos='w',
             wget_kwargs={'variable': self.log_transform}
-        )
-        checkbutton_log.grid(row=2, column=1, sticky='W')
+        ).grid(row=2, column=1, sticky='W')
 
-        self.button_apply_norm = ttk.Button(
+        ttk.Button(
             self,
             text='Apply normalization',
             command=self.apply_norm
-        )
-        self.button_apply_norm.grid(row=4, column=1, sticky='W')
+        ).grid(row=4, column=1, sticky='W')
 
         # Figure
         self.fig, self.ax = plt.subplots(nrows=2, ncols=3)

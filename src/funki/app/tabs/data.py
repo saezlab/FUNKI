@@ -23,13 +23,13 @@ class TabData(ttk.Frame):
         self.rowconfigure(2, weight=1)
 
         # Raw data panel
-        title_raw = ttk.Label(
+        ttk.Label(
             self,
             text='Raw data:',
             style='Title.TLabel',
             width=20
-        )
-        title_raw.grid(row=0, column=0, sticky='NSWE')
+        ).grid(row=0, column=0, sticky='NSWE')
+
         summary = ttk.Frame(self)
         summary.rowconfigure(0, weight=0)
         summary.rowconfigure(1, weight=0)
@@ -60,19 +60,20 @@ class TabData(ttk.Frame):
         summary.grid(column=0, row=2, sticky='NSWE')
 
         # Obs data panel
-        title_obs = ttk.Label(
+        ttk.Label(
             self,
             text='Metadata:',
             style='Title.TLabel',
             width=20
-        )
-        title_obs.grid(row=0, column=1, sticky='NSWE')
+        ).grid(row=0, column=1, sticky='NSWE')
+
+        self.obs_key = tk.StringVar()
         self.combox = LabeledWidget(
             self,
             ttk.Combobox,
             'Select variable to visualize: ',
             lpos='w',
-            wget_kwargs={'state': 'disabled'},
+            wget_kwargs={'state': 'disabled', 'textvariable': self.obs_key},
             wget_grid_kwargs={'sticky': 'w', 'weight': 0},
             label_grid_kwargs={'sticky': 'w', 'weight': 0},
         )
@@ -96,7 +97,7 @@ class TabData(ttk.Frame):
             if not self.controller.data.obs.empty:
 
                 # Set combobox
-                if not self.combox.wg.get():
+                if not self.obs_key.get():
 
                     obs_keys = sorted(self.controller.data.obs_keys())
 
@@ -104,13 +105,13 @@ class TabData(ttk.Frame):
                         state='readonly',
                         values=obs_keys,
                     )
-                    self.combox.wg.set(obs_keys[0])
+                    self.obs_key.set(obs_keys[0])
 
                 # Plot
                 self.ax.clear()
                 plot_obs(
                     self.controller.data,
-                    obs_var=self.combox.wg.get(),
+                    obs_var=self.obs_key.get(),
                     ax=self.ax
                 )
                 self.figframe._update()
