@@ -27,7 +27,7 @@ def read_text(path):
 
 def check_num(n):
 
-    return re.match('^[0-9]*$', n) is not None
+    return re.match('^[0-9.]*$', n) is not None
 
 
 class LabeledWidget(ttk.Frame):
