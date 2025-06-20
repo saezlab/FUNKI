@@ -312,7 +312,7 @@ def plot_highest_expr(data, top=10, ax=None):
         plotlib.figure.Figure.html#matplotlib.figure.Figure
     '''
 
-    mean = data.X.mean(axis=0)
+    mean = np.array(data.X.mean(axis=0)).flatten()
     inds = np.argpartition(mean, -top)[-top:]
     inds = inds[np.argsort(mean[inds])]
     
