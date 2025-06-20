@@ -2,7 +2,7 @@ import tkinter as tk
 from tkinter import ttk
 import matplotlib.pyplot as plt
 
-from funki.analysis import diff_exp
+from funki.pipelines import differential_expression
 
 from utils import Figure
 from utils import LabeledWidget
@@ -44,7 +44,7 @@ class TabDex(ttk.Frame):
             wget_grid_kwargs={'sticky': 'EW', 'weight': 1},
             label_grid_kwargs={'sticky': 'EW', 'weight': 0},
         )
-        self.combox_contrast_var.grid(row=1, columnspan=3, sticky='NSEW')
+        self.combox_contrast_var.grid(row=1, columnspan=2, sticky='NSEW')
         self.combox_contrast_var.wg.bind('<<ComboboxSelected>>', self._update)
 
         # TODO: Handle multiple groups?
@@ -86,6 +86,34 @@ class TabDex(ttk.Frame):
         self.button_swap.image = icon
         self.button_swap.grid(row=2, column=1, sticky='SW')
 
+        # DEX methods
+        method_frame = ttk.Frame(self, borderwidth=1, relief='groove')
+        method_frame.columnconfigure(0, weight=0)
+        method_frame.columnconfigure(1, weight=1)
+        method_frame.columnconfigure(2, weight=1)
+
+        ttk.Label(
+            method_frame,
+            text='Select method:'
+        ).grid(row=0, column=0, sticky='W')
+
+        self.method = tk.StringVar()
+        self.method.set('limma')
+        ttk.Radiobutton(
+            method_frame,
+            text='limma',
+            variable=self.method,
+            value='limma'
+        ).grid(row=0, column=1, sticky='E')
+        ttk.Radiobutton(
+            method_frame,
+            text='PyDESeq2',
+            variable=self.method,
+            value='pydeseq2'
+        ).grid(row=0, column=2, sticky='E')
+
+        method_frame.grid(row=3, columnspan=2, sticky='NSEW')
+
         # Compute button
         self.button_compute = ttk.Button(
             self,
@@ -93,7 +121,7 @@ class TabDex(ttk.Frame):
             command=self.compute,
             state='disabled',
         )
-        self.button_compute.grid(row=3, column=0, sticky='NW')
+        self.button_compute.grid(row=3, column=2, sticky='SE')
 
         # Figure
         self.fig, self.ax = plt.subplots()
@@ -193,10 +221,16 @@ class TabDex(ttk.Frame):
             )
             self.combox_B.wg.set(curA)
 
+
     def compute(self):
 
-        # Compute DEX here or run all pipeline below
-
         self.ax.clear()
-        # Run plot function with ax here (or whole DEX pipeline)
+        differential_expression(
+            self.controller.data,
+            self.combox_contrast_var.wg.get(),
+            self.combox_A.wg.get(),
+            self.combox_B.wg.get(),
+            method=self.method.get(),
+            ax=self.ax,
+        )
         self.figframe._update()
