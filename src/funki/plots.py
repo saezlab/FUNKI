@@ -628,7 +628,7 @@ def plot_counts_vs_n_genes(data, ax=None):
         return fig
 
 
-def plot_dex(data, logfc_thr=1.0, fdr_thr=0.05, top=15):
+def plot_dex(data, logfc_thr=1.0, fdr_thr=0.05, top=15, ax=None):
     '''
     Plots the results of the differential expression analisis as a volcano plot.
 
@@ -643,10 +643,16 @@ def plot_dex(data, logfc_thr=1.0, fdr_thr=0.05, top=15):
     :param top: Number of top genes for which to display their gene name,
         defaults to ``15``.
     :type top: int, optional
+    :param ax: Matplotlib Axes instance where to draw the plot. Defaults to
+        ``None``, meaning a new figure and axes will be generated.
+    :type ax: `matplotlib.axes.Axes`_
 
-    :returns: The figure contataining the resulting scatter plot
-    :rtype: `matplotlib.figure.Figure`_
+    :returns: The figure contataining the resulting scatter plot. If an axes is
+        passed, nothing is returned.
+    :rtype: `matplotlib.figure.Figure`_ | None
 
+    .. _matplotlib.axes.Axes: https://matplotlib.org/stable/api/_as_gen/matplot\
+        lib.axes.Axes.html#matplotlib.axes.Axes
     .. _matplotlib.figure.Figure: https://matplotlib.org/stable/api/_as_gen/mat\
         plotlib.figure.Figure.html#matplotlib.figure.Figure
     '''
@@ -658,20 +664,33 @@ def plot_dex(data, logfc_thr=1.0, fdr_thr=0.05, top=15):
             'provided, please run funki.analysis.diff_exp() first'
         )
     
-    fig = dc.pl.volcano(
+    if ax is None:
+
+        fig, ax = plt.subplots()
+        return_fig = True
+
+    else:
+
+        return_fig = False
+
+    dc.pl.volcano(
         data=data.var,
         x='log2FoldChange',
         y='padj',
         thr_stat=logfc_thr,
         thr_sign=fdr_thr,
         top=top,
-        return_fig=True,
         color_neg=_colors['red'],
         color_null=_colors['gray'],
         color_pos=_colors['blue'],
+        ax=ax
     )
 
-    return fig
+    if return_fig:
+
+        fig.tight_layout()
+
+        return fig
 
 
 def plot_enrich(
