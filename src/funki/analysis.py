@@ -277,6 +277,7 @@ def diff_exp(
     :param method: Which method to use for computing the differential
         expression. Available methods are ``'pydeseq2'`` or ``'limma'``,
         defaults to ``'pydeseq2'``.
+    :type method: str
 
     :returns: ``None``, results are stored inplace of the passed ``data`` object
     :rtype: NoneType

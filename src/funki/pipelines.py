@@ -84,6 +84,7 @@ def differential_expression(
     ref_var,
     logfc_thr=1.0,
     fdr_thr=0.05,
+    method='pydeseq2',
     ax=None,
 ):
     '''
@@ -112,6 +113,10 @@ def differential_expression(
     :param fdr_thr: Threshold for signifacnce based on the FDR value, defaults
         to ``0.05``
     :type fdr_thr: float, optional
+    :param method: Which method to use for computing the differential
+        expression. Available methods are ``'pydeseq2'`` or ``'limma'``,
+        defaults to ``'pydeseq2'``.
+    :type method: str
     :param ax: Matplotlib Axes instance where to draw the plot. Defaults to
         ``None``, meaning a new figure and axes will be generated.
     :type ax: `matplotlib.axes.Axes`_
@@ -126,7 +131,7 @@ def differential_expression(
         plotlib.figure.Figure.html#matplotlib.figure.Figure
     '''
 
-    diff_exp(data, design_factor, contrast_var, ref_var, n_cpus=n_cpus)
+    diff_exp(data, design_factor, contrast_var, ref_var, method=method)
     
     return plot_dex(data, logfc_thr=logfc_thr, fdr_thr=fdr_thr, ax=ax)
 
