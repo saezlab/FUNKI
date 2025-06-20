@@ -206,14 +206,14 @@ class FunkiApp(tk.Tk):
         Handles the activation of diverse options upon loading of raw/obs data.
         '''
 
-        if dtype == 'raw' and self.data:
+        if self.data:
 
             self.menu_open.entryconfig('Load metadata', state='normal')
             self.menu_view.entryconfig('Data', state='normal')
 
-        elif dtype == 'obs' and (self.data and not self.data.obs.empty):
+            if not self.data.obs.empty:
 
-            self.menu_view.entryconfig('Metadata', state='normal')
+                self.menu_view.entryconfig('Metadata', state='normal')
 
         for tab in self.tabs.values():
 
@@ -268,7 +268,7 @@ class FunkiApp(tk.Tk):
                 right_index=True,
             )
 
-        self._update(dtype=dtype)
+        self._update()
 
 
     def open_manual(self):
