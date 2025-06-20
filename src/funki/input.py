@@ -3,6 +3,7 @@ import pickle
 import json
 
 import anndata
+import numpy as np
 
 # TODO: Implement concat function returning DataSet
 # TODO: Re-implement __repr__
@@ -42,10 +43,17 @@ class DataSet(anndata.AnnData):
     '''
 
     def __init__(self, X=None, **kwargs):
+
         super().__init__(X, **kwargs)
+
+        if not isinstance(self.X, np.ndarray):
+
+            self.X = self.X.toarray()
         
         if 'funki' not in self.uns:
+
             self.uns['funki'] = dict()
+
 
     def __getitem__(self, index):
         '''
@@ -78,6 +86,7 @@ class DataSet(anndata.AnnData):
             varp=varp,
         )
 
+
     def __repr__(self):
         '''
         Prints object info, adapted from anndata.AnnData._gen_repr
@@ -89,12 +98,15 @@ class DataSet(anndata.AnnData):
         attrs = ['obs', 'var', 'uns', 'obsm', 'varm', 'layers', 'obsp', 'varp']
 
         for attr in attrs:
+
             keys = getattr(self, attr).keys()
 
             if len(keys) > 0:
+
                 descr += f'\n    {attr}: {str(list(keys))[1:-1]}'
 
         return descr
+
 
     def _del_meta(self, attrs):
         '''
@@ -109,15 +121,21 @@ class DataSet(anndata.AnnData):
         '''
 
         for attr, keys in attrs.items():
+
             if isinstance(keys, str):
+
                 keys = [keys]
 
             for key in keys:
+
                 try:
+
                     del(self.__dict__['_%s' % attr][key])
 
                 except KeyError:
+
                     continue
+
 
     def copy(self):
         '''
@@ -128,6 +146,7 @@ class DataSet(anndata.AnnData):
         '''
 
         return DataSet(self._mutated_copy())
+
 
     def sum_duplicated_gene_counts(self):
         '''
@@ -141,6 +160,7 @@ class DataSet(anndata.AnnData):
         aux = DataSet(self.to_df().groupby(self.var_names, axis=1).sum())
         self.__dict__.update(aux.__dict__)
     
+
     def save_params(self, path='funki_params.json'):
         '''
         Saves the analysis parameters into a JSON file.
@@ -151,7 +171,9 @@ class DataSet(anndata.AnnData):
         '''
 
         with open(path, 'w') as f:
+
             json.dump(self.uns['funki'], f)
+
 
     def load_params(self, path):
         '''
@@ -162,6 +184,7 @@ class DataSet(anndata.AnnData):
         '''
 
         with open(path, 'r') as f:
+
             self.uns['funki'] = json.load(f)
 
 
@@ -193,7 +216,9 @@ def read(path, *args, **kwargs):
     fname, ext = os.path.splitext(path)
 
     if ext in _read_ext.keys():
+
         return DataSet(_read_ext[ext](path, *args, **kwargs))
 
     else:
+
         return DataSet(_read_ext['.txt'](path, *args, **kwargs))
