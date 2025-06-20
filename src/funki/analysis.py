@@ -1,9 +1,13 @@
 import scanpy as sc
 import anndata as ad
+import pandas as pd
 import decoupler as dc
 from decoupler.mt import _methods
 from pydeseq2.dds import DeseqDataSet, DefaultInference
 from pydeseq2.ds import DeseqStats
+import rpy2.robjects as ro
+from rpy2.robjects.packages import importr
+from rpy2.robjects import pandas2ri
 
 from .input import DataSet
 
@@ -196,81 +200,6 @@ def clustering(
         print('Algorithm not recognized, please use "leiden" or "louvain".')
 
 
-def diff_exp(data, design_factor, contrast_var, ref_var, n_cpus=8):
-    '''
-    Computes differential expression analysis on the provided data based on a
-    given design factor and both the contrast and reference variables (e.g.
-    treatment and control).
-
-    :param data: The data from which to compute the differential expression
-    :type data: :class:`funki.input.DataSet`
-    :param design_factor: Name of the column containing the variables which the
-        contrasting samples are assigned. The column must be present in the
-        ``data.obs`` table
-    :type design_factor: str
-    :param contrast_var: The variable value(s) that defines the samples that are
-        to be contrasted against the reference (e.g. ``'treatment'``). The value
-        must be present in the specified ``design_factor`` column
-    :type contrast_var: any | list[any]
-    :param ref_var: The variable value(s) that defines the refence samples (e.g.
-        ``'control'``). The value must be present in the specified
-        ``design_factor`` column
-    :type ref_var: any | list[any]
-    :param n_cpus: Number of CPUs used for the calculation, defaults to ``8``
-    :type n_cpus: int, optional
-
-    :returns: ``None``, results are stored inplace of the passed ``data`` object
-    :rtype: NoneType
-    '''
-
-    # Storing parameters
-    data.uns['funki']['diff_exp'] = {
-        'design_factor': design_factor,
-        'contrast_var': contrast_var,
-        'ref_var': ref_var,
-        'n_cpus': n_cpus,
-    }
-
-    if design_factor not in data.obs_keys():
-
-        msg = f'Design factor {design_factor} not found in provided DataSet'
-        raise KeyError(msg)
-
-    # Converting to list if not already
-    ref = ref_var if type(ref_var) is list else [ref_var]
-    contrast = contrast_var if type(contrast_var) is list else [contrast_var]
-
-    if not all(x in data.obs[design_factor].values for x in ref + contrast):
-
-        msg = 'Contrast and/or reference value(s) not found in design factor'
-        raise ValueError(msg)
-
-    # Using PyDESeq2 to calculate differential expression
-    inference = DefaultInference(n_cpus=n_cpus)
-    dds = DeseqDataSet(
-        adata=data,
-        design_factors=design_factor,
-        ref_level=[design_factor] + ref,
-        refit_cooks=True,
-        inference=inference,
-    )
-    dds.deseq2()
-    result = DeseqStats(
-        dds,
-        contrast=[design_factor] + contrast + ref,
-        inference=inference
-    )
-    result.summary()
-
-    # Adding results to DataSet.var table
-    data.var = data.var.merge(
-        result.results_df,
-        how='outer',
-        left_index=True,
-        right_index=True
-    )
-
-
 def label_transfer(data, ref_data, transfer_label, **kwargs):
     '''
     Performs label transfer between the provided reference and target data sets.
@@ -317,3 +246,154 @@ def label_transfer(data, ref_data, transfer_label, **kwargs):
 
     # Updating back the results to the original DataSet object
     data.obs[transfer_label] = aux.obs[transfer_label]
+
+
+def diff_exp(
+    data,
+    design_factor,
+    contrast_var,
+    ref_var,
+    method='pydeseq2',
+):
+    '''
+    Computes differential expression analysis on the provided data based on a
+    given design factor and both the contrast and reference variables (e.g.
+    treatment and control).
+
+    :param data: The data from which to compute the differential expression
+    :type data: :class:`funki.input.DataSet`
+    :param design_factor: Name of the column containing the variables which the
+        contrasting samples are assigned. The column must be present in the
+        ``data.obs`` table
+    :type design_factor: str
+    :param contrast_var: The variable value(s) that defines the samples that are
+        to be contrasted against the reference (e.g. ``'treatment'``). The value
+        must be present in the specified ``design_factor`` column
+    :type contrast_var: any | list[any]
+    :param ref_var: The variable value(s) that defines the refence samples (e.g.
+        ``'control'``). The value must be present in the specified
+        ``design_factor`` column
+    :type ref_var: any | list[any]
+    :param method: Which method to use for computing the differential
+        expression. Available methods are ``'pydeseq2'`` or ``'limma'``,
+        defaults to ``'pydeseq2'``.
+
+    :returns: ``None``, results are stored inplace of the passed ``data`` object
+    :rtype: NoneType
+    '''
+
+    # Storing parameters
+    data.uns['funki']['diff_exp'] = {
+        'method': method,
+        'design_factor': design_factor,
+        'contrast_var': contrast_var,
+        'ref_var': ref_var,
+    }
+
+    if design_factor not in data.obs_keys():
+
+        msg = f'Design factor {design_factor} not found in provided DataSet'
+        raise KeyError(msg)
+
+    if method == 'pydeseq2':
+
+        result = _dex_pydeseq2(data, design_factor, contrast_var, ref_var)
+
+    elif method == 'limma':
+
+        result = _dex_limma(data, design_factor, contrast_var, ref_var)
+
+    # Adding results to DataSet.var table
+    data.var = data.var.merge(
+        result,
+        how='outer',
+        left_index=True,
+        right_index=True
+    )
+
+
+def _dex_pydeseq2(data, design_factor, contrast_var, ref_var, n_cpus=8):
+
+    # Converting to list if not already
+    ref = ref_var if type(ref_var) is list else [ref_var]
+    contrast = contrast_var if type(contrast_var) is list else [contrast_var]
+
+    if not all(x in data.obs[design_factor].values for x in ref + contrast):
+
+        msg = 'Contrast and/or reference value(s) not found in design factor'
+        raise ValueError(msg)
+
+    # Using PyDESeq2 to calculate differential expression
+    inference = DefaultInference(n_cpus=n_cpus)
+    dds = DeseqDataSet(
+        adata=data,
+        design_factors=design_factor,
+        ref_level=[design_factor] + ref,
+        refit_cooks=True,
+        inference=inference,
+    )
+    dds.deseq2()
+    result = DeseqStats(
+        dds,
+        contrast=[design_factor] + contrast + ref,
+        inference=inference
+    )
+    result.summary()
+
+    res = result.results_df[[
+        'baseMean',
+        'log2FoldChange',
+        'stat',
+        'pvalue',
+        'padj'
+    ]]
+
+    return res
+
+def _dex_limma(data, design_factor, contrast_var, ref_var):
+
+    def convert(df):
+
+        with (ro.default_converter + pandas2ri.converter).context():
+
+            conv = getattr(
+                ro.conversion.get_conversion(),
+                'rpy2py' if isinstance(df, ro.vectors.DataFrame) else 'py2rpy'
+            )
+
+            return conv(df)
+
+    # Creating design matrix
+    groups = sorted(set(data.obs[design_factor]))
+
+    design = pd.DataFrame(0, index=data.obs_names, columns=groups)
+
+    for g in groups:
+
+        design.loc[data.obs[design_factor] == g, g] = 1
+
+    # Creating contrast matrix
+    contrast = pd.DataFrame(
+        [1, -1],
+        index=[contrast_var, ref_var],
+        columns=[f'{contrast_var}_vs_{ref_var}']
+    )
+
+    # Running limma
+    base = importr('base')
+    limma = importr('limma')
+
+    rdata = convert(data.to_df().T)
+    rdesign = convert(design)
+    rcontrast = base.sapply(convert(contrast), base.as_numeric)
+
+    fit = limma.lmFit(rdata, rdesign)
+    fit = limma.contrasts_fit(fit, rcontrast)
+    fit = limma.eBayes(fit)
+
+    result = limma.topTable(fit, coef=1, adjust='BH', number=data.n_vars)
+    res = convert(result)[['AveExpr', 'logFC', 't', 'P.Value', 'adj.P.Val']]
+    # Making columns consistent with PyDESeq2
+    res.columns = ['baseMean', 'log2FoldChange', 'stat', 'pvalue', 'padj']
+
+    return res
