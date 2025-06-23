@@ -3,7 +3,7 @@ from tkinter import ttk
 import pandas as pd
 import decoupler as dc
 
-from funki.analysis import enrich
+from funki.pipelines import enrichment_analysis
 
 from utils import LabeledWidget
 
@@ -77,6 +77,35 @@ class TabEnrich(ttk.Frame):
             width=20
         ).grid(row=0, column=1, sticky='NSWE')
 
+        # - Method selector
+        self.method = tk.StringVar()
+        self.method.set('ULM (Univariate Linear Model)')
+        combox_org = LabeledWidget(
+            self,
+            ttk.Combobox,
+            'Method:',
+            lpos='W',
+            wget_kwargs={
+                'textvariable': self.method,
+                'values': [
+                    'AUCell (Area Under the Curve for set enrichment within \
+                        single cells)',
+                    'GSEA (Gene Set Enrichment Analysis)',
+                    'GSVA (Gene Set Variation Analysis)',
+                    'MDT (Multivariate Decision Trees)',
+                    'MLM (Multivariate Linear Model)',
+                    'ORA (Over Representation Analysis)',
+                    'UDT (Univariate Decision Tree)',
+                    'ULM (Univariate Linear Model)',
+                    'VIPER (Virtual Inference of Protein-activity by Enriched \
+                        Regulon analysis)',
+                    'WAGGR (Weighted Aggregate)',
+                    'Z-score',
+                ]
+            }
+        )
+        combox_org.grid(row=1, column=1, sticky='NSWE')
+
 
     def _update(self, *ev):
 
@@ -98,3 +127,8 @@ class TabEnrich(ttk.Frame):
         else:
 
             self.net = dc.op.resource(res, organism=org)
+
+
+    def compute(self, *ev):
+
+        method = self.method.get().split(' (')[0].replace('-', '').lower()
