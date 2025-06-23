@@ -349,7 +349,7 @@ class TabClust(ttk.Frame):
             alg=self.clustering_method.get(),
             resolution=self.resoultion.get(),
         )
-        self._update()
+        self.controller._update()
 
 
     def plot(self):
