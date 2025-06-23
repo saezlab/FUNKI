@@ -3,6 +3,7 @@ from tkinter import ttk
 import matplotlib.pyplot as plt
 
 from funki import plots
+from funki.analysis import clustering
 
 from utils import Figure
 from utils import LabeledWidget
@@ -115,13 +116,13 @@ class TabClust(ttk.Frame):
         self.combox_color_var.wg.bind('<<ComboboxSelected>>', self._update)
 
         # - Plot button
-        self.button_compute = ttk.Button(
+        self.button_plot = ttk.Button(
             self,
-            text='Compute',
+            text='Plot embedding',
             command=self.plot,
             state='disabled',
         )
-        self.button_compute.grid(row=5, column=0, sticky='W')
+        self.button_plot.grid(row=5, column=0, sticky='W')
 
         # Clustering panel
         ttk.Label(
@@ -130,6 +131,50 @@ class TabClust(ttk.Frame):
             style='Title.TLabel',
             width=20
         ).grid(row=0, column=1, sticky='NSWE')
+
+        # - Choice algorythm
+        ttk.Label(
+            self,
+            text='Select clustering method:'
+        ).grid(row=1, column=1, sticky='W')
+
+        self.clustering_method = tk.StringVar(value='leiden')
+        ttk.Radiobutton(
+                self,
+                text='Leiden',
+                variable=self.clustering_method,
+                value='leiden'
+        ).grid(row=2, column=1, sticky='W')
+        ttk.Radiobutton(
+                self,
+                text='Louvain',
+                variable=self.clustering_method,
+                value='louvain'
+        ).grid(row=3, column=1, sticky='W')
+
+        # - Resoulution
+        self.resoultion = tk.DoubleVar(value=1.0)
+        LabeledWidget(
+            self,
+            ttk.Entry,
+            'Resoulution: ',
+            lpos='w',
+            wget_kwargs={
+                'textvariable': self.resoultion,
+                'validate': 'key',
+                'validatecommand': self.controller.check_num,
+                'width': 5,
+            }
+        ).grid(row=4, column=1, sticky='NSWE')
+
+        # - Compute button
+        self.button_compute = ttk.Button(
+            self,
+            text='Compute',
+            command=self.cluster,
+            state='disabled',
+        )
+        self.button_compute.grid(row=5, column=1, sticky='W')
 
         # Plot
         self.fig, self.ax = plt.subplots()
@@ -140,30 +185,30 @@ class TabClust(ttk.Frame):
 
     def _update(self, *ev):
 
+        obs_key = self.color_var.get()
+
         if self.controller.data and not self.controller.data.obs.empty:
 
-            obs_key = self.color_var.get()
-
-            if not obs_key:
-
-                obs_keys = sorted([
-                    c for c in self.controller.data.obs_keys()
-                    if all([
-                        isinstance(i, str)
-                        for i in self.controller.data.obs[c]
-                    ])
+            obs_keys = sorted([
+                c for c in self.controller.data.obs_keys()
+                if all([
+                    isinstance(i, str)
+                    for i in self.controller.data.obs[c]
                 ])
+            ])
 
-                if obs_keys:
+            if obs_keys:
 
-                    obs_key = obs_keys[0]
-                    self.combox_color_var.wg.configure(
-                        state='readonly',
-                        values=obs_keys,
-                    )
-                    self.color_var.set(obs_key)
+                obs_key = obs_key or obs_keys[0]
+                self.combox_color_var.wg.configure(
+                    state='readonly',
+                    values=obs_keys,
+                )
 
-                self.button_compute.configure(state='normal')
+                self.color_var.set(obs_key)
+
+            self.button_plot.configure(state='normal')
+            self.button_compute.configure(state='normal')
 
 
     def set_embed_param(self, *ev):
@@ -260,15 +305,40 @@ class TabClust(ttk.Frame):
             ).grid(row=2, column=1, sticky='W')
 
 
+    def cluster(self, *ev):
+
+        clustering(
+            self.controller.data,
+            alg=self.clustering_method.get(),
+            resolution=self.resoultion.get(),
+        )
+        self._update()
+
+
     def plot(self):
 
-        # TODO: apply Harmony?
-        # TODO: plot_{embedding} should accept ax
+        # TODO: apply Harmony
+
+        method = self.embedding_method.get()
+
+        kwargs = {}
+
+        if method == 'tsne':
+
+            kwargs['perplexity'] = self.perplexity.get()
+
+        elif method == 'umap':
+
+            kwargs['min_dist'] = self.min_dist.get()
+            kwargs['spread'] = self.spread.get()
+            kwargs['alpha'] = self.alpha.get()
+            kwargs['gamma'] = self.gamma.get()
 
         self.ax.clear()
-        getattr(plots, f'plot_{self.embedding_method.get()}')(
+        getattr(plots, f'plot_{method}')(
             self.controller.data,
             color=self.color_var.get(),
             ax=self.ax,
+            **kwargs
         )
         self.figframe._update()
