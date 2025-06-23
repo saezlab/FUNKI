@@ -99,7 +99,7 @@ def plot_pca(
     ax.set_xlabel('PC 1')
     ax.set_ylabel('PC 2')
 
-    if color_vals.dtype is np.dtype(object):
+    if pd.api.types.is_string_dtype(color_vals):
 
         ax.legend(loc=0, handles=[
             Line2D([0], [0], label=k, marker='.', ms=10, mfc=v, mec=v, ls='')
@@ -197,7 +197,7 @@ def plot_tsne(
     ax.set_xlabel('tSNE 1')
     ax.set_ylabel('tSNE 2')
 
-    if color_vals.dtype is np.dtype(object):
+    if pd.api.types.is_string_dtype(color_vals):
 
         ax.legend(loc=0, handles=[
             Line2D([0], [0], label=k, marker='.', ms=10, mfc=v, mec=v, ls='')
@@ -306,7 +306,7 @@ def plot_umap(
 
         return_fig = False
 
-    df = data.obsm.to_df()[['X_uamp1', 'X_umap2']]
+    df = data.obsm.to_df()[['X_umap1', 'X_umap2']]
 
     im = ax.scatter(
         x=df.X_umap1.values,
@@ -317,7 +317,7 @@ def plot_umap(
     ax.set_xlabel('UMAP 1')
     ax.set_ylabel('UMAP 2')
 
-    if color_vals.dtype is np.dtype(object):
+    if pd.api.types.is_string_dtype(color_vals):
 
         ax.legend(loc=0, handles=[
             Line2D([0], [0], label=k, marker='.', ms=10, mfc=v, mec=v, ls='')
