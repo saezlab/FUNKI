@@ -101,7 +101,7 @@ class TabData(ttk.Frame):
                 # Set combobox
                 if obs_keys:
 
-                    obs_key = self.obs_key.get() or obs_key[0]
+                    obs_key = self.obs_key.get() or obs_keys[0]
 
                     self.combox.wg.configure(
                         state='readonly',
