@@ -60,6 +60,7 @@ class FunkiApp(tk.Tk):
 
         self.menu_file = tk.Menu(self.menubar)
         self.menu_open = tk.Menu(self.menu_file)
+        self.menu_save = tk.Menu(self.menu_file)
         self.menu_view = tk.Menu(self.menubar)
         self.menu_help = tk.Menu(self.menubar)
 
@@ -81,6 +82,7 @@ class FunkiApp(tk.Tk):
                     self.new_project
                 ),
                 ('Open...', None, self.menu_open),
+                ('Save...', None, self.menu_save),
                 '---',
                 (
                     'Exit',
@@ -90,14 +92,26 @@ class FunkiApp(tk.Tk):
             ],
             self.menu_open: [
                 (
-                    'Load data',
+                    'Data',
                     'normal',
                     lambda: self.open_file(dtype='raw')
                 ),
                 (
-                    'Load metadata',
+                    'Metadata',
                     'disabled',
                     lambda: self.open_file(dtype='obs')
+                ),
+            ],
+            self.menu_save: [
+                (
+                    'Data',
+                    'disabled',
+                    lambda: self.save_file(dtype='raw')
+                ),
+                (
+                    'Metadata',
+                    'disabled',
+                    lambda: self.save_file(dtype='obs')
                 ),
             ],
             self.menu_view: [
@@ -213,12 +227,14 @@ class FunkiApp(tk.Tk):
 
         if self.data:
 
-            self.menu_open.entryconfig('Load metadata', state='normal')
+            self.menu_open.entryconfig('Metadata', state='normal')
             self.menu_view.entryconfig('Data', state='normal')
+            self.menu_save.entryconfig('Data', state='normal')
 
             if not self.data.obs.empty:
 
                 self.menu_view.entryconfig('Metadata', state='normal')
+                self.menu_save.entryconfig('Metadata', state='normal')
 
         for tab in self.tabs.values():
 
@@ -248,14 +264,18 @@ class FunkiApp(tk.Tk):
 
         path = fd.askopenfilename()
 
+        if not path:
+
+            return
+
         # Loading of measurement data
-        if path and dtype == 'raw': # TODO: Make a copy in raw layer?
+        elif dtype == 'raw': # TODO: Make a copy in raw layer?
 
             self.fname_raw = path
             self.data = read(path)
 
         # Loading of metadata
-        elif path and dtype == 'obs' and self.data:
+        elif dtype == 'obs' and self.data:
 
             fname, ext = os.path.splitext(path)
 
@@ -274,6 +294,36 @@ class FunkiApp(tk.Tk):
             )
 
         self._update()
+
+
+    def save_file(self, dtype=None):
+        '''
+        Pops up a save file dialog and saves the corresponding file in the path.
+        '''
+
+        path = fd.asksaveasfilename(defaultextension='.csv', filetypes=[
+            ('CSV files', '*.csv'),
+            ('TSV files', '*.tsv'),
+            ('TXT files', '*.txt'),
+            ('All files', '*.*'),
+        ])
+
+        if not path:
+
+            return
+
+        fname, ext = os.path.splitext(path)
+        sep = ',' if ext == '.csv' else '\t'
+
+        if dtype == 'raw':
+
+            df = self.data.to_df()
+
+        elif dtype == 'obs':
+
+            df = self.data.obs
+
+        df.to_csv(path, sep=sep)
 
 
     def open_manual(self):
