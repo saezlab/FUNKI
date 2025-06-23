@@ -44,6 +44,20 @@ class TabClust(ttk.Frame):
             wget_kwargs={'variable': self.harmony}
         ).grid(row=1, column=0, sticky='W')
 
+        self.harmony_var = tk.StringVar()
+        self.combox_harmony = LabeledWidget(
+            self,
+            ttk.Combobox,
+            'Select variable to harmonize:',
+            lpos='N',
+            wget_kwargs={
+                'state': 'disabled',
+                'textvariable': self.harmony_var,
+            },
+        )
+        self.combox_harmony.grid(row=2, column=0, sticky='NSEW')
+        self.combox_harmony.wg.bind('<<ComboboxSelected>>', self._update)
+
         # - Embedding methods
         embedding_frame = ttk.Frame(
             self,
@@ -78,7 +92,7 @@ class TabClust(ttk.Frame):
 
             wg.grid(row=1, column=i, sticky='W')
 
-        embedding_frame.grid(row=2, column=0, sticky='NSEW')
+        embedding_frame.grid(row=3, column=0, sticky='NSEW')
 
         # - Embedding parameters frame (contents set by set_embed_param)
         self.perplexity = tk.DoubleVar(value=30)
@@ -112,7 +126,7 @@ class TabClust(ttk.Frame):
             wget_grid_kwargs={'sticky': 'EW', 'weight': 1},
             label_grid_kwargs={'sticky': 'EW', 'weight': 0},
         )
-        self.combox_color_var.grid(row=4, column=0, sticky='NSEW')
+        self.combox_color_var.grid(row=5, column=0, sticky='NSEW')
         self.combox_color_var.wg.bind('<<ComboboxSelected>>', self._update)
 
         # - Plot button
@@ -122,7 +136,7 @@ class TabClust(ttk.Frame):
             command=self.plot,
             state='disabled',
         )
-        self.button_plot.grid(row=5, column=0, sticky='W')
+        self.button_plot.grid(row=6, column=0, sticky='W')
 
         # Clustering panel
         ttk.Label(
@@ -132,32 +146,39 @@ class TabClust(ttk.Frame):
             width=20
         ).grid(row=0, column=1, sticky='NSWE')
 
-        # - Choice algorythm
+        # - Choice algorithm
+        clustering_frame = ttk.Frame(self, borderwidth=1, relief='groove')
+        clustering_frame.columnconfigure(0, weight=1)
+        clustering_frame.columnconfigure(1, weight=1)
+        clustering_frame.rowconfigure(0, weight=0)
+        clustering_frame.rowconfigure(1, weight=1)
+        clustering_frame.grid(row=1, column=1, sticky='NSWE')
+
         ttk.Label(
-            self,
+            clustering_frame,
             text='Select clustering method:'
-        ).grid(row=1, column=1, sticky='W')
+        ).grid(row=0, columnspan=2, sticky='W')
 
         self.clustering_method = tk.StringVar(value='leiden')
         ttk.Radiobutton(
-                self,
+                clustering_frame,
                 text='Leiden',
                 variable=self.clustering_method,
                 value='leiden'
-        ).grid(row=2, column=1, sticky='W')
+        ).grid(row=1, column=0, sticky='W')
         ttk.Radiobutton(
-                self,
+                clustering_frame,
                 text='Louvain',
                 variable=self.clustering_method,
                 value='louvain'
-        ).grid(row=3, column=1, sticky='W')
+        ).grid(row=1, column=1, sticky='W')
 
         # - Resoulution
         self.resoultion = tk.DoubleVar(value=1.0)
         LabeledWidget(
             self,
             ttk.Entry,
-            'Resoulution: ',
+            'Resolution: ',
             lpos='w',
             wget_kwargs={
                 'textvariable': self.resoultion,
@@ -165,7 +186,7 @@ class TabClust(ttk.Frame):
                 'validatecommand': self.controller.check_num,
                 'width': 5,
             }
-        ).grid(row=4, column=1, sticky='NSWE')
+        ).grid(row=2, column=1, sticky='NSWE')
 
         # - Compute button
         self.button_compute = ttk.Button(
@@ -174,7 +195,7 @@ class TabClust(ttk.Frame):
             command=self.cluster,
             state='disabled',
         )
-        self.button_compute.grid(row=5, column=1, sticky='W')
+        self.button_compute.grid(row=3, column=1, sticky='E')
 
         # Plot
         self.fig, self.ax = plt.subplots()
@@ -225,7 +246,7 @@ class TabClust(ttk.Frame):
         if method != 'pca':
 
             self.embedding_params_frame.grid(
-                row=3,
+                row=4,
                 column=0,
                 sticky='NSWE',
                 padx=(10, 10)
