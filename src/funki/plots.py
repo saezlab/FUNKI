@@ -58,9 +58,7 @@ def plot_pca(
 
         sc.pp.highly_variable_genes(data, inplace=True)
 
-    if 'X_pca' not in data.obsm:
-
-        sc.pp.pca(data, use_highly_variable=use_highly_variable, **kwargs)
+    sc.pp.pca(data, use_highly_variable=use_highly_variable, **kwargs)
 
     color_vals = data.obs[color].values if color in data.obs_keys() else None
     
@@ -69,7 +67,7 @@ def plot_pca(
         colors = _colors['blue']
 
     # Categorical variable
-    elif not is_numeric(color_vals):
+    elif pd.api.types.is_string_dtype(color_vals):
 
         cmap = {v: f'C{i % 10}' for i, v in enumerate(sorted(set(color_vals)))}
         colors = [cmap[c] for c in color_vals]
@@ -153,11 +151,9 @@ def plot_tsne(
 
     if recalculate:
 
-        data._del_meta({'obsm': ['X_pca', 'X_tsne'], 'uns': 'tsne'})
+        data._del_meta({'obsm': 'X_tsne', 'uns': 'tsne'})
 
-    if 'X_tsne' not in data.obsm:
-
-        sc.tl.tsne(data, perplexity=perplexity)
+    sc.tl.tsne(data, perplexity=perplexity)
 
     # TODO: Could probably move this to an external function?
     color_vals = data.obs[color].values if color in data.obs_keys() else None
@@ -167,7 +163,7 @@ def plot_tsne(
         colors = _colors['blue']
 
     # Categorical variable
-    elif not is_numeric(color_vals):
+    elif pd.api.types.is_string_dtype(color_vals):
 
         cmap = {v: f'C{i % 10}' for i, v in enumerate(sorted(set(color_vals)))}
         colors = [cmap[c] for c in color_vals]
@@ -266,7 +262,7 @@ def plot_umap(
     if recalculate:
 
         data._del_meta({
-            'obsm': ['X_pca', 'X_umap'],
+            'obsm': 'X_umap',
             'obsp': ['distances', 'connectivities'],
             'uns': ['umap', 'neighbors']
         })
@@ -275,9 +271,7 @@ def plot_umap(
 
         sc.pp.neighbors(data)
 
-    if 'X_umap' not in data.obsm:
-
-        sc.tl.umap(data, min_dist=min_dist, spread=spread, alpha=alpha,
+    sc.tl.umap(data, min_dist=min_dist, spread=spread, alpha=alpha,
                    gamma=gamma, **kwargs)
 
     color_vals = data.obs[color].values if color in data.obs_keys() else None
@@ -287,7 +281,7 @@ def plot_umap(
         colors = _colors['blue']
 
     # Categorical variable
-    elif not is_numeric(color_vals):
+    elif pd.api.types.is_string_dtype(color_vals):
 
         cmap = {v: f'C{i % 10}' for i, v in enumerate(sorted(set(color_vals)))}
         colors = [cmap[c] for c in color_vals]
