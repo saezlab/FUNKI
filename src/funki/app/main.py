@@ -111,6 +111,11 @@ class FunkiApp(tk.Tk):
                     'disabled',
                     lambda: self.view_data(dtype='obs')
                 ),
+                (
+                    'Differential expression',
+                    'disabled',
+                    lambda: self.view_data(dtype='dex')
+                ),
             ],
             self.menu_help: [
                 (
@@ -281,20 +286,33 @@ class FunkiApp(tk.Tk):
         About()
 
 
-    def view_data(self, dtype=None): # NOTE: Could move to new class?
+    def view_data(self, dtype=None):
 
         df = pd.DataFrame()
         title = ''
 
         if dtype == 'raw' and self.data:
 
-            title = 'Data - %s' % self.fname_raw
+            title = f'Data - {self.fname_raw}'
             df = self.data.to_df()
 
         elif dtype == 'obs' and (self.data and not self.data.obs.empty):
 
-            title = 'Metadata - %s' % self.fname_obs
+            title = f'Metadata - {self.fname_obs}'
             df = self.data.obs
+
+        elif dtype == 'dex' and 'diff_exp' in self.data.uns['funki']:
+
+            a = self.data.uns['funki']['diff_exp']['contrast_var']
+            b = self.data.uns['funki']['diff_exp']['ref_var']
+            title = f'DEX - {a} vs. {b}'
+            df = self.data.var[[
+                'baseMean',
+                'log2FoldChange',
+                'stat',
+                'pvalue',
+                'padj'
+            ]]
 
         win = tk.Toplevel()
 
