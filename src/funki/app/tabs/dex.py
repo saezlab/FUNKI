@@ -202,7 +202,7 @@ class TabDex(ttk.Frame):
 
                 # A/B are empty or new obs_key
                 if (
-                    (not self.groupA.get() or not self.groupB.wg.get())
+                    (not self.groupA.get() or not self.groupB.get())
                     or (
                         self.groupA.get() not in options
                         or self.groupB.get() not in options
