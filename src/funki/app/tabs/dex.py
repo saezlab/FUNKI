@@ -166,69 +166,53 @@ class TabDex(ttk.Frame):
 
     def _update(self, *ev): # TODO: Could probably split to simplify
 
+        obs_key = self.contrast_var.get()
+
         if self.controller.data and not self.controller.data.obs.empty:
 
-            obs_key = self.contrast_var.get()
-
-            # Main combobox is empty
-            if not obs_key:
-
-                obs_keys = sorted([
-                    c for c in self.controller.data.obs_keys()
-                    if all([
-                        isinstance(i, str)
-                        for i in self.controller.data.obs[c]
-                    ])
+            # Handling available obs_keys
+            obs_keys = sorted([
+                c for c in self.controller.data.obs_keys()
+                if all([
+                    isinstance(i, str)
+                    for i in self.controller.data.obs[c]
                 ])
+            ])
 
-                if obs_keys:
+            if obs_keys:
 
-                    obs_key = obs_keys[0]
-                    self.combox_contrast_var.wg.configure(
+                obs_key = obs_key or obs_keys[0]
+                self.combox_contrast_var.wg.configure(
                         state='readonly',
                         values=obs_keys,
                     )
-                    self.contrast_var.set(obs_key)
+                self.contrast_var.set(obs_key)
 
-            # Main combobox not empty
-            if obs_key:
-
+                # Handling available options in obs_key
                 options = sorted(set(self.controller.data.obs[obs_key]))
+                curA = self.groupA.get()
+                curB = self.groupB.get()
 
                 # A/B are empty or new obs_key
                 if (
-                    (not self.groupA.get() or not self.groupB.get())
-                    or (
-                        self.groupA.get() not in options
-                        or self.groupB.get() not in options
-                    )
+                    (not curA or not curB)
+                    or (curA not in options or curB not in options)
                 ):
 
-                    self.combox_A.wg.configure(
-                        state='readonly',
-                        values=[n for i, n in enumerate(options) if i != 1],
-                    )
-                    self.groupA.set(options[0])
+                    curA = options[0]
+                    curB = options[1]
 
-                    self.combox_B.wg.configure(
-                        state='readonly',
-                        values=[n for i, n in enumerate(options) if i != 0],
-                    )
-                    self.groupB.set(options[1])
+                self.combox_A.wg.configure(
+                    state='readonly',
+                    values=[n for n in options if n != curB],
+                )
+                self.groupA.set(curA)
 
-                # A/B not empty -> ensure mutual exclusivity
-                else:
-
-                    curA = self.groupA.get()
-                    curB = self.groupB.get()
-
-                    self.combox_A.wg.configure(
-                        values=[i for i in options if i != curB],
-                    )
-
-                    self.combox_B.wg.configure(
-                        values=[i for i in options if i != curA],
-                    )
+                self.combox_B.wg.configure(
+                    state='readonly',
+                    values=[n for n in options if n!= curA],
+                )
+                self.groupB.set(curB)
 
                 # Reactivating buttons
                 self.button_compute.configure(state='normal')
