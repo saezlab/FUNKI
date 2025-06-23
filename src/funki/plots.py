@@ -614,6 +614,7 @@ def plot_enrich(
     data,
     top=10,
     method=None,
+    ax=None,
 ):
     '''
     Generates a dotplot displaying the top results of an enrichment analysis
@@ -626,10 +627,15 @@ def plot_enrich(
         score, defaults to ``10``.
     :type top: int, optional
     :param method: Name of the enrichment method to plot the results from.
+    :param ax: Matplotlib Axes instance where to draw the plot. Defaults to
+        ``None``, meaning a new figure and axes will be generated.
+    :type ax: `matplotlib.axes.Axes`_
 
     :returns: The figure contataining the resulting bar plot
     :rtype: `matplotlib.figure.Figure`_
 
+    .. _matplotlib.axes.Axes: https://matplotlib.org/stable/api/_as_gen/matplot\
+        lib.axes.Axes.html#matplotlib.axes.Axes
     .. _matplotlib.figure.Figure: https://matplotlib.org/stable/api/_as_gen/mat\
         plotlib.figure.Figure.html#matplotlib.figure.Figure
     '''
@@ -662,7 +668,14 @@ def plot_enrich(
         )
     )
 
-    fig, ax = plt.subplots()
+    if ax is None:
+
+        fig, ax = plt.subplots()
+        return_fig = True
+
+    else:
+
+        return_fig = False
 
     dc.pl.dotplot(
         df=res,
@@ -675,10 +688,12 @@ def plot_enrich(
         ax=ax
     )
     ax.set_title(f'Enrichment results from method {method}')
-    
-    fig.tight_layout()
 
-    return fig
+    if return_fig:
+
+        fig.tight_layout()
+
+        return fig
 
 
 def plot_obs(data, obs_var, ax=None):
