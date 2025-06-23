@@ -80,17 +80,19 @@ class TabEnrich(ttk.Frame):
 
     def _update(self, *ev):
 
-        self._get_resource()
+        if self.net.empty:
+
+            self._get_resource()
 
 
     def _get_resource(self, *ev):
 
         res = self.gset.get()
         org = self.org.get().lower()
-        
+
         # Decoupler has specific method for resource
         if hasattr(dc.op, res.lower()):
-            
+
             self.net = getattr(dc.op, res.lower())(organism=org)
 
         else:

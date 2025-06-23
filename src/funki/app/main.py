@@ -260,7 +260,6 @@ class FunkiApp(tk.Tk):
         self._setup_root()
         self._setup_menu()
         self._setup_mainframe()
-        self._update()
 
 
     def open_file(self, dtype=None):
