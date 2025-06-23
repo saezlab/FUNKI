@@ -255,8 +255,12 @@ class TabDex(ttk.Frame):
         )
         self.figframe._update()
 
-        # Activating view menu
+        # Activating save/view menus
         self.controller.menu_view.entryconfig(
+            'Differential expression',
+            state='normal',
+        )
+        self.controller.menu_save.entryconfig(
             'Differential expression',
             state='normal',
         )

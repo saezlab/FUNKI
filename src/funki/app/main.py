@@ -113,6 +113,11 @@ class FunkiApp(tk.Tk):
                     'disabled',
                     lambda: self.save_file(dtype='obs')
                 ),
+                (
+                    'Differential expression',
+                    'disabled',
+                    lambda: self.save_file(dtype='dex')
+                ),
             ],
             self.menu_view: [
                 (
@@ -322,6 +327,16 @@ class FunkiApp(tk.Tk):
         elif dtype == 'obs':
 
             df = self.data.obs
+
+        elif dtype == 'dex':
+
+            df = self.data.var[[
+                'baseMean',
+                'log2FoldChange',
+                'stat',
+                'pvalue',
+                'padj'
+            ]]
 
         df.to_csv(path, sep=sep)
 
