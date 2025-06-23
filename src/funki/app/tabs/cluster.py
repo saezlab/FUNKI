@@ -25,7 +25,8 @@ class TabClust(ttk.Frame):
         self.rowconfigure(3, weight=0)
         self.rowconfigure(4, weight=0)
         self.rowconfigure(5, weight=0)
-        self.rowconfigure(6, weight=1)
+        self.rowconfigure(6, weight=0)
+        self.rowconfigure(7, weight=1)
 
         # Embedding panel
         ttk.Label(
@@ -35,13 +36,17 @@ class TabClust(ttk.Frame):
             width=20
         ).grid(row=0, column=0, sticky='NSWE')
 
+        # - Harmony
         self.harmony = tk.BooleanVar()
         LabeledWidget(
             self,
             ttk.Checkbutton,
             'Apply Harmony: ',
             lpos='w',
-            wget_kwargs={'variable': self.harmony}
+            wget_kwargs={
+                'variable': self.harmony,
+                'command': self._enable_harmony
+            }
         ).grid(row=1, column=0, sticky='W')
 
         self.harmony_var = tk.StringVar()
@@ -54,17 +59,14 @@ class TabClust(ttk.Frame):
                 'state': 'disabled',
                 'textvariable': self.harmony_var,
             },
+            wget_grid_kwargs={'sticky': 'EW', 'weight': 1},
+            label_grid_kwargs={'sticky': 'EW', 'weight': 0},
         )
         self.combox_harmony.grid(row=2, column=0, sticky='NSEW')
         self.combox_harmony.wg.bind('<<ComboboxSelected>>', self._update)
 
         # - Embedding methods
-        embedding_frame = ttk.Frame(
-            self,
-            borderwidth=1,
-            relief='groove',
-            padding=(5, 5, 5, 5),
-        )
+        embedding_frame = ttk.Frame(self)
         embedding_frame.rowconfigure(0, weight=0)
         embedding_frame.rowconfigure(1, weight=1)
         embedding_frame.columnconfigure(0, weight=1)
@@ -146,13 +148,28 @@ class TabClust(ttk.Frame):
             width=20
         ).grid(row=0, column=1, sticky='NSWE')
 
+        # - Resoulution
+        self.resoultion = tk.DoubleVar(value=1.0)
+        LabeledWidget(
+            self,
+            ttk.Entry,
+            'Resolution: ',
+            lpos='w',
+            wget_kwargs={
+                'textvariable': self.resoultion,
+                'validate': 'key',
+                'validatecommand': self.controller.check_num,
+                'width': 5,
+            }
+        ).grid(row=1, column=1, sticky='NSWE')
+
         # - Choice algorithm
-        clustering_frame = ttk.Frame(self, borderwidth=1, relief='groove')
+        clustering_frame = ttk.Frame(self)
         clustering_frame.columnconfigure(0, weight=1)
         clustering_frame.columnconfigure(1, weight=1)
         clustering_frame.rowconfigure(0, weight=0)
         clustering_frame.rowconfigure(1, weight=1)
-        clustering_frame.grid(row=1, column=1, sticky='NSWE')
+        clustering_frame.grid(row=2, column=1, sticky='NSWE')
 
         ttk.Label(
             clustering_frame,
@@ -173,21 +190,6 @@ class TabClust(ttk.Frame):
                 value='louvain'
         ).grid(row=1, column=1, sticky='W')
 
-        # - Resoulution
-        self.resoultion = tk.DoubleVar(value=1.0)
-        LabeledWidget(
-            self,
-            ttk.Entry,
-            'Resolution: ',
-            lpos='w',
-            wget_kwargs={
-                'textvariable': self.resoultion,
-                'validate': 'key',
-                'validatecommand': self.controller.check_num,
-                'width': 5,
-            }
-        ).grid(row=2, column=1, sticky='NSWE')
-
         # - Compute button
         self.button_compute = ttk.Button(
             self,
@@ -195,41 +197,54 @@ class TabClust(ttk.Frame):
             command=self.cluster,
             state='disabled',
         )
-        self.button_compute.grid(row=3, column=1, sticky='E')
+        self.button_compute.grid(row=6, column=1, sticky='W')
 
         # Plot
         self.fig, self.ax = plt.subplots()
 
         self.figframe = Figure(self, self.fig)
-        self.figframe.grid(row=6, columnspan=2, sticky='NSWE')
+        self.figframe.grid(row=7, columnspan=2, sticky='NSWE')
 
 
     def _update(self, *ev):
 
-        obs_key = self.color_var.get()
+        obs_key_color = self.color_var.get()
+        obs_key_harmony = self.harmony_var.get()
 
         if self.controller.data and not self.controller.data.obs.empty:
 
-            obs_keys = sorted([
-                c for c in self.controller.data.obs_keys()
-                if all([
-                    isinstance(i, str)
-                    for i in self.controller.data.obs[c]
-                ])
-            ])
+            obs_keys = sorted(self.controller.data.obs_keys())
 
             if obs_keys:
 
-                obs_key = obs_key or obs_keys[0]
+                obs_key_color = obs_key_color or obs_keys[0]
+                obs_key_harmony = obs_key_harmony or obs_keys[0]
+
                 self.combox_color_var.wg.configure(
                     state='readonly',
                     values=obs_keys,
                 )
+                self.combox_harmony.wg.configure(
+                    state='readonly' if self.harmony.get() else 'disabled',
+                    values=obs_keys,
+                )
 
-                self.color_var.set(obs_key)
+                self.color_var.set(obs_key_color)
+                self.harmony_var.set(obs_key_harmony)
 
             self.button_plot.configure(state='normal')
             self.button_compute.configure(state='normal')
+
+
+    def _enable_harmony(self, *ev):
+
+        state = (
+            'readonly'
+            if (self.harmony.get() and self.harmony_var.get())
+            else 'disabled'
+        )
+
+        self.combox_harmony.wg.configure(state=state)
 
 
     def set_embed_param(self, *ev):
@@ -248,8 +263,8 @@ class TabClust(ttk.Frame):
             self.embedding_params_frame.grid(
                 row=4,
                 column=0,
-                sticky='NSWE',
-                padx=(10, 10)
+                sticky='NWE',
+                padx=(10, 10),
             )
 
             mlabel = self.embedding_method_buttons[method].cget('text')
