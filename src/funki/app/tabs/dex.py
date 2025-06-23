@@ -93,8 +93,7 @@ class TabDex(ttk.Frame):
         self.button_swap.grid(row=2, column=1, sticky='SW')
 
         # Thresholds
-        self.thr_logfc = tk.DoubleVar()
-        self.thr_logfc.set(1.0)
+        self.thr_logfc = tk.DoubleVar(value=1.0)
         LabeledWidget(
             self,
             ttk.Entry,
@@ -108,8 +107,7 @@ class TabDex(ttk.Frame):
             }
         ).grid(column=0, row=3, sticky='W')
 
-        self.thr_pval = tk.DoubleVar()
-        self.thr_pval.set(0.05)
+        self.thr_pval = tk.DoubleVar(value=0.05)
         LabeledWidget(
             self,
             ttk.Entry,
@@ -139,8 +137,7 @@ class TabDex(ttk.Frame):
             text='Select method:'
         ).grid(row=0, column=0, sticky='W')
 
-        self.method = tk.StringVar()
-        self.method.set('limma')
+        self.method = tk.StringVar(value='limma')
         ttk.Radiobutton(
             method_frame,
             text='limma',

@@ -61,8 +61,7 @@ class TabClust(ttk.Frame):
             text='Select embedding method:'
         ).grid(row=0, columnspan=3, sticky='W')
 
-        self.embedding_method = tk.StringVar()
-        self.embedding_method.set('pca')
+        self.embedding_method = tk.StringVar(value='pca')
         self.embedding_method_buttons = {
             v: ttk.Radiobutton(
                 embedding_frame,
@@ -81,11 +80,11 @@ class TabClust(ttk.Frame):
         embedding_frame.grid(row=2, column=0, sticky='NSEW')
 
         # - Embedding parameters frame (contents set by set_embed_param)
-        self.perplexity = tk.DoubleVar()
-        self.min_dist = tk.DoubleVar()
-        self.spread = tk.DoubleVar()
-        self.alpha = tk.DoubleVar()
-        self.gamma = tk.DoubleVar()
+        self.perplexity = tk.DoubleVar(value=30)
+        self.min_dist = tk.DoubleVar(value=0.5)
+        self.spread = tk.DoubleVar(value=1.0)
+        self.alpha = tk.DoubleVar(value=1.0)
+        self.gamma = tk.DoubleVar(value=1.0)
         self.embedding_params_frame = ttk.Frame(
             self,
             borderwidth=1,
@@ -186,7 +185,7 @@ class TabClust(ttk.Frame):
                 sticky='NSWE',
                 padx=(10, 10)
             )
-            
+
             mlabel = self.embedding_method_buttons[method].cget('text')
             ttk.Label(
                 self.embedding_params_frame,
@@ -210,7 +209,7 @@ class TabClust(ttk.Frame):
             ).grid(row=1, columnspan=2, sticky='W')
 
         elif method == 'umap':
-            
+
             LabeledWidget(
                 self.embedding_params_frame,
                 ttk.Entry,

@@ -35,8 +35,7 @@ class TabNorm(ttk.Frame):
             width=20
         ).grid(row=0, column=0, sticky='NSWE')
 
-        self.max_genes = tk.IntVar()
-        self.max_genes.set(5000)
+        self.max_genes = tk.IntVar(value=5000)
         LabeledWidget(
             self,
             ttk.Entry,
@@ -50,8 +49,7 @@ class TabNorm(ttk.Frame):
             }
         ).grid(row=1, column=0, sticky='W')
 
-        self.min_genes = tk.IntVar()
-        self.min_genes.set(500)
+        self.min_genes = tk.IntVar(value=500)
         LabeledWidget(
             self,
             ttk.Entry,
@@ -65,8 +63,7 @@ class TabNorm(ttk.Frame):
             }
         ).grid(row=2, column=0, sticky='W')
 
-        self.mito_pct = tk.IntVar()
-        self.mito_pct.set(5)
+        self.mito_pct = tk.IntVar(value=5)
         LabeledWidget(
             self,
             tk.Scale,
@@ -95,8 +92,7 @@ class TabNorm(ttk.Frame):
             width=20
         ).grid(row=0, column=1, sticky='NSWE')
 
-        self.size_factor = tk.IntVar()
-        self.size_factor.set(1000000)
+        self.size_factor = tk.IntVar(value=1000000)
         LabeledWidget(
             self,
             ttk.Entry,
