@@ -44,7 +44,12 @@ class TabClust(ttk.Frame):
         ).grid(row=1, column=0, sticky='W')
 
         # - Embedding methods
-        embedding_frame = ttk.Frame(self, borderwidth=1, relief='groove')
+        embedding_frame = ttk.Frame(
+            self,
+            borderwidth=1,
+            relief='groove',
+            padding=(5, 5, 5, 5),
+        )
         embedding_frame.rowconfigure(0, weight=0)
         embedding_frame.rowconfigure(1, weight=1)
         embedding_frame.columnconfigure(0, weight=1)
@@ -58,26 +63,40 @@ class TabClust(ttk.Frame):
 
         self.embedding_method = tk.StringVar()
         self.embedding_method.set('pca')
-        ttk.Radiobutton(
-            embedding_frame,
-            text='PCA',
-            variable=self.embedding_method,
-            value='pca'
-        ).grid(row=1, column=0, sticky='W')
-        ttk.Radiobutton(
-            embedding_frame,
-            text='t-SNE',
-            variable=self.embedding_method,
-            value='tsne'
-        ).grid(row=1, column=1, sticky='W')
-        ttk.Radiobutton(
-            embedding_frame,
-            text='UMAP',
-            variable=self.embedding_method,
-            value='umap'
-        ).grid(row=1, column=2, sticky='W')
+        self.embedding_method_buttons = {
+            v: ttk.Radiobutton(
+                embedding_frame,
+                text=t,
+                variable=self.embedding_method,
+                command=self.set_embed_param,
+                value=v,
+            )
+            for t, v in [('PCA', 'pca'), ('t-SNE', 'tsne'), ('UMAP', 'umap')]
+        }
+
+        for i, wg in enumerate(self.embedding_method_buttons.values()):
+
+            wg.grid(row=1, column=i, sticky='W')
 
         embedding_frame.grid(row=2, column=0, sticky='NSEW')
+
+        # - Embedding parameters frame (contents set by set_embed_param)
+        self.perplexity = tk.DoubleVar()
+        self.min_dist = tk.DoubleVar()
+        self.spread = tk.DoubleVar()
+        self.alpha = tk.DoubleVar()
+        self.gamma = tk.DoubleVar()
+        self.embedding_params_frame = ttk.Frame(
+            self,
+            borderwidth=1,
+            relief='groove',
+            padding=(5, 5, 5, 5),
+        )
+        self.embedding_params_frame.columnconfigure(0, weight=1)
+        self.embedding_params_frame.columnconfigure(1, weight=1)
+        self.embedding_params_frame.rowconfigure(0, weight=0)
+        self.embedding_params_frame.rowconfigure(1, weight=1)
+        self.embedding_params_frame.rowconfigure(2, weight=1)
 
         # - Color variable selector
         self.color_var = tk.StringVar()
@@ -93,10 +112,8 @@ class TabClust(ttk.Frame):
             wget_grid_kwargs={'sticky': 'EW', 'weight': 1},
             label_grid_kwargs={'sticky': 'EW', 'weight': 0},
         )
-        self.combox_color_var.grid(row=3, column=0, sticky='NSEW')
+        self.combox_color_var.grid(row=4, column=0, sticky='NSEW')
         self.combox_color_var.wg.bind('<<ComboboxSelected>>', self._update)
-
-        ## PARAMS
 
         # - Plot button
         self.button_compute = ttk.Button(
@@ -148,6 +165,100 @@ class TabClust(ttk.Frame):
                     self.color_var.set(obs_key)
 
                 self.button_compute.configure(state='normal')
+
+
+    def set_embed_param(self, *ev):
+
+        # Clearing frame
+        for child in self.embedding_params_frame.winfo_children():
+
+            child.grid_forget()
+
+        self.embedding_params_frame.grid_forget()
+
+        method = self.embedding_method.get()
+
+        if method != 'pca':
+
+            self.embedding_params_frame.grid(
+                row=3,
+                column=0,
+                sticky='NSWE',
+                padx=(10, 10)
+            )
+            
+            mlabel = self.embedding_method_buttons[method].cget('text')
+            ttk.Label(
+                self.embedding_params_frame,
+                text=f'{mlabel} parameters:',
+            ).grid(row=0, columnspan=2, sticky='W')
+
+
+        if method == 'tsne':
+
+            LabeledWidget(
+                self.embedding_params_frame,
+                ttk.Entry,
+                'Perplexity: ',
+                lpos='w',
+                wget_kwargs={
+                    'textvariable': self.perplexity,
+                    'validate': 'key',
+                    'validatecommand': self.controller.check_num,
+                    'width': 5,
+                }
+            ).grid(row=1, columnspan=2, sticky='W')
+
+        elif method == 'umap':
+            
+            LabeledWidget(
+                self.embedding_params_frame,
+                ttk.Entry,
+                'Min. distance: ',
+                lpos='w',
+                wget_kwargs={
+                    'textvariable': self.min_dist,
+                    'validate': 'key',
+                    'validatecommand': self.controller.check_num,
+                    'width': 5,
+                }
+            ).grid(row=1, column=0, sticky='W')
+            LabeledWidget(
+                self.embedding_params_frame,
+                ttk.Entry,
+                'Spread: ',
+                lpos='w',
+                wget_kwargs={
+                    'textvariable': self.spread,
+                    'validate': 'key',
+                    'validatecommand': self.controller.check_num,
+                    'width': 5,
+                }
+            ).grid(row=1, column=1, sticky='W')
+            LabeledWidget(
+                self.embedding_params_frame,
+                ttk.Entry,
+                'Alpha: ',
+                lpos='w',
+                wget_kwargs={
+                    'textvariable': self.alpha,
+                    'validate': 'key',
+                    'validatecommand': self.controller.check_num,
+                    'width': 5,
+                }
+            ).grid(row=2, column=0, sticky='W')
+            LabeledWidget(
+                self.embedding_params_frame,
+                ttk.Entry,
+                'Gamma: ',
+                lpos='w',
+                wget_kwargs={
+                    'textvariable': self.gamma,
+                    'validate': 'key',
+                    'validatecommand': self.controller.check_num,
+                    'width': 5,
+                }
+            ).grid(row=2, column=1, sticky='W')
 
 
     def plot(self):
