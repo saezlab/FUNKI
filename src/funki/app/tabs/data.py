@@ -96,22 +96,24 @@ class TabData(ttk.Frame):
 
             if not self.controller.data.obs.empty:
 
-                # Set combobox
-                if not self.obs_key.get():
+                obs_keys = sorted(self.controller.data.obs_keys())
 
-                    obs_keys = sorted(self.controller.data.obs_keys())
+                # Set combobox
+                if obs_keys:
+
+                    obs_key = self.obs_key.get() or obs_key[0]
 
                     self.combox.wg.configure(
                         state='readonly',
                         values=obs_keys,
                     )
-                    self.obs_key.set(obs_keys[0])
+                    self.obs_key.set(obs_key)
 
                 # Plot
                 self.ax.clear()
                 plot_obs(
                     self.controller.data,
-                    obs_var=self.obs_key.get(),
+                    obs_var=obs_key,
                     ax=self.ax
                 )
                 self.figframe._update()
