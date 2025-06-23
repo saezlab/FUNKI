@@ -50,32 +50,13 @@ def plot_pca(
         py.pp.pca.html
     '''
 
-    if recalculate:
+    if recalculate or 'X_pca' not in data.obsm:
 
-        data._del_meta({'obsm': 'X_pca'})
+        if use_highly_variable:
 
-    if use_highly_variable:
+            sc.pp.highly_variable_genes(data, inplace=True)
 
-        sc.pp.highly_variable_genes(data, inplace=True)
-
-    sc.pp.pca(data, use_highly_variable=use_highly_variable, **kwargs)
-
-    color_vals = data.obs[color].values if color in data.obs_keys() else None
-    
-    if color_vals is None:
-
-        colors = _colors['blue']
-
-    # Categorical variable
-    elif pd.api.types.is_string_dtype(color_vals):
-
-        cmap = {v: f'C{i % 10}' for i, v in enumerate(sorted(set(color_vals)))}
-        colors = [cmap[c] for c in color_vals]
-
-    # Numerical variable
-    else:
-
-        colors = color_vals
+        sc.pp.pca(data, use_highly_variable=use_highly_variable, **kwargs)
 
     if ax is None:
 
@@ -86,27 +67,7 @@ def plot_pca(
 
         return_fig = False
 
-    df = data.obsm.to_df()[['X_pca1', 'X_pca2']]
-
-    im = ax.scatter(
-        x=df.X_pca1.values,
-        y=df.X_pca2.values,
-        c=colors,
-    )
-
-    ax.set_xlabel('PC 1')
-    ax.set_ylabel('PC 2')
-
-    if pd.api.types.is_string_dtype(color_vals):
-
-        ax.legend(loc=0, handles=[
-            Line2D([0], [0], label=k, marker='.', ms=10, mfc=v, mec=v, ls='')
-            for k, v in cmap.items()
-        ])
-
-    else:
-
-        ax.get_figure().colorbar(im)
+    sc.pl.pca(data, color=color, ax=ax, return_fig=False, show=False)
 
     if return_fig:
 
@@ -149,29 +110,9 @@ def plot_tsne(
         plotlib.figure.Figure.html#matplotlib.figure.Figure
     '''
 
-    if recalculate:
+    if recalculate or 'X_tsne' not in data.obsm:
 
-        data._del_meta({'obsm': 'X_tsne', 'uns': 'tsne'})
-
-    sc.tl.tsne(data, perplexity=perplexity)
-
-    # TODO: Could probably move this to an external function?
-    color_vals = data.obs[color].values if color in data.obs_keys() else None
-    
-    if color_vals is None:
-
-        colors = _colors['blue']
-
-    # Categorical variable
-    elif pd.api.types.is_string_dtype(color_vals):
-
-        cmap = {v: f'C{i % 10}' for i, v in enumerate(sorted(set(color_vals)))}
-        colors = [cmap[c] for c in color_vals]
-
-    # Numerical variable
-    else:
-
-        colors = color_vals
+        sc.tl.tsne(data, perplexity=perplexity)
 
     if ax is None:
 
@@ -182,27 +123,7 @@ def plot_tsne(
 
         return_fig = False
 
-    df = data.obsm.to_df()[['X_tsne1', 'X_tsne2']]
-
-    im = ax.scatter(
-        x=df.X_tsne1.values,
-        y=df.X_tsne2.values,
-        c=colors,
-    )
-
-    ax.set_xlabel('tSNE 1')
-    ax.set_ylabel('tSNE 2')
-
-    if pd.api.types.is_string_dtype(color_vals):
-
-        ax.legend(loc=0, handles=[
-            Line2D([0], [0], label=k, marker='.', ms=10, mfc=v, mec=v, ls='')
-            for k, v in cmap.items()
-        ])
-
-    else:
-
-        ax.get_figure().colorbar(im)
+    sc.pl.tsne(data, color=color, ax=ax, return_fig=False, show=False)
 
     if return_fig:
 
@@ -259,37 +180,14 @@ def plot_umap(
         py.tl.umap.html
     '''
 
-    if recalculate:
+    if recalculate or 'X_umap' not in data.obsm:
 
-        data._del_meta({
-            'obsm': 'X_umap',
-            'obsp': ['distances', 'connectivities'],
-            'uns': ['umap', 'neighbors']
-        })
-    
-    if not 'neighbors' in data.uns:
+        if not 'neighbors' in data.uns:
 
-        sc.pp.neighbors(data)
+            sc.pp.neighbors(data)
 
-    sc.tl.umap(data, min_dist=min_dist, spread=spread, alpha=alpha,
+        sc.tl.umap(data, min_dist=min_dist, spread=spread, alpha=alpha,
                    gamma=gamma, **kwargs)
-
-    color_vals = data.obs[color].values if color in data.obs_keys() else None
-    
-    if color_vals is None:
-
-        colors = _colors['blue']
-
-    # Categorical variable
-    elif pd.api.types.is_string_dtype(color_vals):
-
-        cmap = {v: f'C{i % 10}' for i, v in enumerate(sorted(set(color_vals)))}
-        colors = [cmap[c] for c in color_vals]
-
-    # Numerical variable
-    else:
-
-        colors = color_vals
 
     if ax is None:
 
@@ -300,27 +198,7 @@ def plot_umap(
 
         return_fig = False
 
-    df = data.obsm.to_df()[['X_umap1', 'X_umap2']]
-
-    im = ax.scatter(
-        x=df.X_umap1.values,
-        y=df.X_umap2.values,
-        c=colors,
-    )
-
-    ax.set_xlabel('UMAP 1')
-    ax.set_ylabel('UMAP 2')
-
-    if pd.api.types.is_string_dtype(color_vals):
-
-        ax.legend(loc=0, handles=[
-            Line2D([0], [0], label=k, marker='.', ms=10, mfc=v, mec=v, ls='')
-            for k, v in cmap.items()
-        ])
-
-    else:
-
-        ax.get_figure().colorbar(im)
+    sc.pl.umap(data, color=color, ax=ax, return_fig=False, show=False)
 
     if return_fig:
 
