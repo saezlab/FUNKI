@@ -144,6 +144,7 @@ def enrichment_analysis(
     target='target',
     weight=None,
     top=10,
+    ax=None,
     **kwargs
 ):
     '''
@@ -176,6 +177,9 @@ def enrichment_analysis(
         consensus score. If a negative number is provided, the bottom ones will
         be displayed instead.
     :type top: int
+    :param ax: Matplotlib Axes instance where to draw the plot. Defaults to
+        ``None``, meaning a new figure and axes will be generated.
+    :type ax: `matplotlib.axes.Axes`_
     :param \*\*kwargs: Other keyword arguments that passed to
         `decoupler.decouple()`_ function
     :type \*\*kwargs: optional
@@ -187,6 +191,8 @@ def enrichment_analysis(
 
     :rtype: NoneType
 
+    .. _matplotlib.axes.Axes: https://matplotlib.org/stable/api/_as_gen/matplot\
+        lib.axes.Axes.html#matplotlib.axes.Axes
     .. _Decoupler: https://decoupler-py.readthedocs.io/en/latest/index.html
     .. _pandas.DataFrame: https://pandas.pydata.org/docs/reference/api/pandas.D\
         ataFrame.html
@@ -205,4 +211,4 @@ def enrichment_analysis(
         weight=weight,
         **kwargs
     )
-    return plot_enrich(data, top=top)
+    return plot_enrich(data, top=top, ax=ax)
