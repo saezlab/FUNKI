@@ -124,7 +124,12 @@ class TabDex(ttk.Frame):
         ).grid(column=2, row=3, sticky='W')
 
         # DEX methods
-        method_frame = ttk.Frame(self, borderwidth=1, relief='groove')
+        method_frame = ttk.Frame(
+            self,
+            borderwidth=1,
+            relief='groove',
+            padding=(5, 5, 5, 5),
+        )
         method_frame.columnconfigure(0, weight=0)
         method_frame.columnconfigure(1, weight=1)
         method_frame.columnconfigure(2, weight=1)
