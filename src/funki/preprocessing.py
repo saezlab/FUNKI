@@ -4,6 +4,7 @@ import harmonypy as hm
 from .analysis import sc_trans_qc_metrics
 from .input import DataSet
 
+
 def sc_trans_filter(data, min_genes=None, max_genes=None, mito_pct=None):
     '''
     Applies quality control filters to a given single-cell transcriptomic data
@@ -37,17 +38,21 @@ def sc_trans_filter(data, min_genes=None, max_genes=None, mito_pct=None):
     aux = data.copy()
 
     if min_genes:
+
         sc.pp.filter_cells(aux, min_genes=min_genes, inplace=True)
 
     if max_genes:
+
         sc.pp.filter_cells(aux, max_genes=max_genes, inplace=True)
 
     if mito_pct:
+
         aux.var['mito'] = aux.var_names.str.upper().str.startswith('MT-')
         aux = sc_trans_qc_metrics(aux, var_name='mito')
         aux = aux[aux.obs['pct_counts_mito'] < mito_pct, :]
 
     return DataSet(aux)
+
 
 def sc_trans_normalize_total(data, target_sum=None, log_transform=False):
     '''
@@ -79,15 +84,23 @@ def sc_trans_normalize_total(data, target_sum=None, log_transform=False):
     aux = data.copy()
     
     if target_sum:
+
         sc.pp.normalize_total(aux, target_sum=target_sum, inplace=True)
 
     if log_transform:
+
         sc.pp.log1p(aux)
 
     return DataSet(aux)
 
-def harmonize(data, vars_use, use_highly_variable=True, recalculate=False,
-              **kwargs):
+
+def harmonize(
+    data,
+    vars_use,
+    use_highly_variable=True,
+    recalculate=False,
+    **kwargs
+):
     '''
     Executes `Harmony`_ batch correction on the data set PCA embedding. NOTE:
     this method will overwrite the :attr:`DataSet.obsm['X_pca']` matrix.
@@ -120,12 +133,15 @@ def harmonize(data, vars_use, use_highly_variable=True, recalculate=False,
     }
 
     if recalculate:
+
         data._del_meta({'obsm': 'X_pca'})
 
     if use_highly_variable:
+
         sc.pp.highly_variable_genes(data, inplace=True)
 
     if 'X_pca' not in data.obsm:
+
         sc.pp.pca(data, use_highly_variable=use_highly_variable)
 
     ho = hm.run_harmony(data.obsm['X_pca'], data.obs, vars_use, **kwargs)
