@@ -16,6 +16,7 @@ def plot_pca(
         color=None,
         use_highly_variable=True,
         recalculate=False,
+        ax=None,
         **kwargs,
 ):
     '''
@@ -31,6 +32,9 @@ def plot_pca(
     :param recalculate: Whether to recalculate the dimensionality reduction,
         defaults to ``False``
     :type recalculate: bool, optional
+    :param ax: Matplotlib Axes instance where to draw the plot. Defaults to
+        ``None``, meaning a new figure and axes will be generated.
+    :type ax: `matplotlib.axes.Axes`_
     :param \*\*kwargs: Other keyword arguments that can be passed to
         `scanpy.pp.pca()`_
     :type \*\*kwargs: optional
@@ -38,6 +42,8 @@ def plot_pca(
     :returns: The figure contataining the scatter plot showing the PCA embedding
     :rtype: `matplotlib.figure.Figure`_
 
+    .. _matplotlib.axes.Axes: https://matplotlib.org/stable/api/_as_gen/matplot\
+        lib.axes.Axes.html#matplotlib.axes.Axes
     .. _matplotlib.figure.Figure: https://matplotlib.org/stable/api/_as_gen/mat\
         plotlib.figure.Figure.html#matplotlib.figure.Figure
     .. _scanpy.pp.pca(): https://scanpy.readthedocs.io/en/latest/generated/scan\
@@ -73,7 +79,14 @@ def plot_pca(
 
         colors = color_vals
 
-    fig, ax = plt.subplots()
+    if ax is None:
+
+        fig, ax = plt.subplots()
+        return_fig = True
+
+    else:
+
+        return_fig = False
 
     df = data.obsm.to_df()[['X_pca1', 'X_pca2']]
 
@@ -95,18 +108,21 @@ def plot_pca(
 
     else:
 
-        fig.colorbar(im)
+        ax.get_figure().colorbar(im)
 
-    fig.tight_layout()
+    if return_fig:
 
-    return fig
+        fig.tight_layout()
+
+        return fig
 
 
 def plot_tsne(
     data,
     color=None,
     perplexity=30,
-    recalculate=False
+    recalculate=False,
+    ax=None,
 ):
     '''
     Plots the dimensionality reduction t-SNE results of a data set.
@@ -121,11 +137,16 @@ def plot_tsne(
     :param recalculate: Whether to recalculate the dimensionality reduction,
         defaults to ``False``
     :type recalculate: bool, optional
+    :param ax: Matplotlib Axes instance where to draw the plot. Defaults to
+        ``None``, meaning a new figure and axes will be generated.
+    :type ax: `matplotlib.axes.Axes`_
 
     :returns: The figure contataining the scatter plot showing the tSNE
         embedding
     :rtype: `matplotlib.figure.Figure`_
 
+    .. _matplotlib.axes.Axes: https://matplotlib.org/stable/api/_as_gen/matplot\
+        lib.axes.Axes.html#matplotlib.axes.Axes
     .. _matplotlib.figure.Figure: https://matplotlib.org/stable/api/_as_gen/mat\
         plotlib.figure.Figure.html#matplotlib.figure.Figure
     '''
@@ -156,7 +177,14 @@ def plot_tsne(
 
         colors = color_vals
 
-    fig, ax = plt.subplots()
+    if ax is None:
+
+        fig, ax = plt.subplots()
+        return_fig = True
+
+    else:
+
+        return_fig = False
 
     df = data.obsm.to_df()[['X_tsne1', 'X_tsne2']]
 
@@ -178,11 +206,13 @@ def plot_tsne(
 
     else:
 
-        fig.colorbar(im)
+        ax.get_figure().colorbar(im)
 
-    fig.tight_layout()
+    if return_fig:
 
-    return fig
+        fig.tight_layout()
+
+        return fig
 
 
 def plot_umap(
@@ -193,6 +223,7 @@ def plot_umap(
     alpha=1.0,
     gamma=1.0,
     recalculate=False,
+    ax=None,
     **kwargs
 ):
     '''
@@ -213,6 +244,9 @@ def plot_umap(
     :param recalculate: Whether to recalculate the dimensionality reduction,
         defaults to ``False``
     :type recalculate: bool, optional
+    :param ax: Matplotlib Axes instance where to draw the plot. Defaults to
+        ``None``, meaning a new figure and axes will be generated.
+    :type ax: `matplotlib.axes.Axes`_
     :param \*\*kwargs: Other keyword arguments that can be passed to
         `scanpy.tl.umap()`_
     :type \*\*kwargs: optional
@@ -221,6 +255,8 @@ def plot_umap(
         embedding
     :rtype: `matplotlib.figure.Figure`_
 
+    .. _matplotlib.axes.Axes: https://matplotlib.org/stable/api/_as_gen/matplot\
+        lib.axes.Axes.html#matplotlib.axes.Axes
     .. _matplotlib.figure.Figure: https://matplotlib.org/stable/api/_as_gen/mat\
         plotlib.figure.Figure.html#matplotlib.figure.Figure
     .. _scanpy.tl.umap(): https://scanpy.readthedocs.io/en/latest/generated/scan\
@@ -261,7 +297,14 @@ def plot_umap(
 
         colors = color_vals
 
-    fig, ax = plt.subplots()
+    if ax is None:
+
+        fig, ax = plt.subplots()
+        return_fig = True
+
+    else:
+
+        return_fig = False
 
     df = data.obsm.to_df()[['X_uamp1', 'X_umap2']]
 
@@ -283,11 +326,13 @@ def plot_umap(
 
     else:
 
-        fig.colorbar(im)
+        ax.get_figure().colorbar(im)
 
-    fig.tight_layout()
+    if return_fig:
 
-    return fig
+        fig.tight_layout()
+
+        return fig
 
 
 def plot_highest_expr(data, top=10, ax=None):
