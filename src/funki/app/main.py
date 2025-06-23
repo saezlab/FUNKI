@@ -201,7 +201,7 @@ class FunkiApp(tk.Tk):
             self.tab_manager.add(self.tabs[n], text=name, sticky='NSEW')
 
 
-    def _update(self, dtype=None):
+    def _update(self):
         '''
         Handles the activation of diverse options upon loading of raw/obs data.
         '''
