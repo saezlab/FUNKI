@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 
 from funki import plots
 from funki.analysis import clustering
+from funki.preprocessing import harmonize
 
 from utils import Figure
 from utils import LabeledWidget
@@ -353,7 +354,14 @@ class TabClust(ttk.Frame):
 
     def plot(self):
 
-        # TODO: apply Harmony
+        # Apply Harmony?
+        if self.harmony.get() and self.harmony_var.get():
+
+            harmonize(
+                self.controller.data,
+                [self.harmony_var.get()],
+                recalculate=True
+            )
 
         method = self.embedding_method.get()
 
