@@ -267,7 +267,22 @@ class FunkiApp(tk.Tk):
         Pops up a open file dialog and passes the path to FUNKI's read method.
         '''
 
-        path = fd.askopenfilename()
+        filetypes = [
+            ('All files', '*.*'),
+            ('CSV files', '*.csv'),
+            ('TSV files', '*.tsv'),
+            ('TXT files', '*.txt'),
+        ]
+        filetypes += [
+            ('H5AD files', '*.h5ad'),
+            ('H5 files', '*.h5'),
+            ('Excel files', '*.xlsx'),
+            ('Loom files', '*.loom'),
+            ('MTX files', '*.mtx'),
+            ('UMI files', '*.gz'),
+        ] if dtype == 'raw' else []
+
+        path = fd.askopenfilename(defaultextension='.*', filetypes=filetypes)
 
         if not path:
 
