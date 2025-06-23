@@ -386,3 +386,4 @@ class TabClust(ttk.Frame):
             **kwargs
         )
         self.figframe._update()
+        self.fig.tight_layout()
