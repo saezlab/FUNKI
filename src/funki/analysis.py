@@ -305,12 +305,7 @@ def diff_exp(
         result = _dex_limma(data, design_factor, contrast_var, ref_var)
 
     # Adding results to DataSet.var table
-    data.var = data.var.merge(
-        result,
-        how='outer',
-        left_index=True,
-        right_index=True
-    )
+    data.var[result.columns] = result.values
 
 
 def _dex_pydeseq2(data, design_factor, contrast_var, ref_var, n_cpus=8):
@@ -365,7 +360,7 @@ def _dex_limma(data, design_factor, contrast_var, ref_var):
             return conv(df)
 
     # Creating design matrix
-    groups = sorted(set(data.obs[design_factor]))
+    groups = [contrast_var, ref_var]#sorted(set(data.obs[design_factor]))
 
     design = pd.DataFrame(0, index=data.obs_names, columns=groups)
 
