@@ -209,3 +209,4 @@ class TabEnrich(ttk.Frame):
             ax=self.ax
         )
         self.figframe._update()
+        self.fig.tight_layout()

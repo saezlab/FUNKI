@@ -138,6 +138,7 @@ class TabNorm(ttk.Frame):
 
             sc_quality_control(self.controller.data, ax=self.ax)
             self.figframe._update()
+            self.fig.tight_layout()
 
 
     def apply_filter(self, *ev):

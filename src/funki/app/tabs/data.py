@@ -182,6 +182,7 @@ class TabData(ttk.Frame):
                         ax=self.ax
                     )
                     self.figframe._update()
+                    self.fig.tight_layout()
 
 
     def compute(self, *ev):

@@ -254,6 +254,7 @@ class TabDex(ttk.Frame):
             ax=self.ax,
         )
         self.figframe._update()
+        self.fig.tight_layout()
 
         # Activating save/view menus
         self.controller.menu_view.entryconfig(
