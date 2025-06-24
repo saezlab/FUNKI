@@ -128,15 +128,15 @@ class TabEnrich(ttk.Frame):
         combox_org.grid(row=1, column=1, sticky='NSWE')
 
         # - Enrichment variable selector
-        self.obs_key = tk.StringVar()
+        self.contrast = tk.StringVar()
         self.combox_obs = LabeledWidget(
             self,
             ttk.Combobox,
-            'Enrichment variable: ',
+            'Choose contrast to enrich from: ',
             lpos='w',
             wget_kwargs={
                 'state': 'disabled',
-                'textvariable': self.obs_key,
+                'textvariable': self.contrast,
             },
             wget_grid_kwargs={'sticky': 'EW', 'weight': 1},
             label_grid_kwargs={'sticky': 'EW', 'weight': 0},
@@ -167,26 +167,21 @@ class TabEnrich(ttk.Frame):
             self._get_resource()
 
         # Enrichment variable
-        obs_key = self.obs_key.get()
+        if self.controller:
 
-        if self.controller.data and not self.controller.data.obs.empty:
+            contrasts = sorted(
+                self.controller.data.uns['funki']['diff_exp'].keys()
+            )
 
-            obs_keys = sorted([
-                c for c in self.controller.data.obs_keys()
-                if all([
-                    isinstance(i, str)
-                    for i in self.controller.data.obs[c]
-                ])
-            ])
+            if contrasts:
 
-            if obs_keys:
+                contrast = self.contrast.get() or contrasts[0]
 
-                obs_key = obs_key or obs_keys[0]
                 self.combox_obs.wg.configure(
                         state='readonly',
-                        values=obs_keys,
+                        values=contrasts,
                     )
-                self.obs_key.set(obs_key)
+                self.contrast.set(contrast)
 
                 # Activate compute button
                 self.button_compute.configure(state='normal')
@@ -215,7 +210,8 @@ class TabEnrich(ttk.Frame):
         enrichment_analysis(
             self.controller.data,
             self.net,
-            methods=[method],
+            contrast=self.contrast.get(),
+            method=method,
             ax=self.ax
         )
         self.figframe._update()
