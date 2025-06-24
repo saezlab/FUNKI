@@ -92,7 +92,7 @@ def enrich(
         aux,
         readynet,
         methods=methods,
-        use_raw=False,
+        raw=False,
         **kwargs
     )
 
