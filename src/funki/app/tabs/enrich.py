@@ -8,6 +8,7 @@ from funki.pipelines import enrichment_analysis
 
 from utils import LabeledWidget
 from utils import Figure
+from utils import PopUpTable
 
 
 class TabEnrich(ttk.Frame):
@@ -76,6 +77,15 @@ class TabEnrich(ttk.Frame):
         )
         combox_org.grid(row=2, column=0, sticky='NSWE')
         combox_org.wg.bind('<<ComboboxSelected>>', self._get_resource)
+
+        # - View button
+        self.button_compute = ttk.Button(
+            self,
+            text='View',
+            command=lambda: self.controller.view_data(dtype='gsc'),
+        )
+        self.button_compute.grid(row=3, column=0, sticky='W')
+
 
         # Enrichment panel
         ttk.Label(

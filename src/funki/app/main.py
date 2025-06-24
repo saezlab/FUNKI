@@ -136,6 +136,11 @@ class FunkiApp(tk.Tk):
                     'disabled',
                     lambda: self.view_data(dtype='dex')
                 ),
+                (
+                    'Gene Set collection',
+                    'normal',
+                    lambda: self.view_data(dtype='gsc')
+                ),
             ],
             self.menu_help: [
                 (
@@ -395,11 +400,25 @@ class FunkiApp(tk.Tk):
                 'padj'
             ]]
 
-        PopUpTable(
-            df,
-            title=title,
-            save_command=lambda: self.save_file(dtype=dtype)
+        elif dtype == 'gsc':
+
+            if self.tabs['enrich'].net.empty:
+
+                self.tabs['enrich']._get_resource()
+
+            res = self.tabs['enrich'].gset.get()
+            org = self.tabs['enrich'].org.get()
+
+            df = self.tabs['enrich'].net
+            title = f'{res} ({org})'
+
+        command = (
+            (lambda: self.save_file(dtype=dtype))
+            if dtype in {'raw', 'obs', 'dex'}
+            else None
         )
+
+        PopUpTable(df, title=title, save_command=command)
 
 
 if __name__ == '__main__':
