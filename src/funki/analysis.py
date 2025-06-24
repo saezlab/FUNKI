@@ -283,8 +283,10 @@ def diff_exp(
     :rtype: NoneType
     '''
 
+    contrast_name = f'{contrast_var}_vs_{ref_var}'
+
     # Storing parameters
-    data.uns['funki']['diff_exp'] = {
+    data.uns['funki']['diff_exp'][contrast_name] = {
         'method': method,
         'design_factor': design_factor,
         'contrast_var': contrast_var,
@@ -304,8 +306,8 @@ def diff_exp(
 
         result = _dex_limma(data, design_factor, contrast_var, ref_var)
 
-    # Adding results to DataSet.var table
-    data.var[result.columns] = result.values
+    # Adding results to DataSet.varm table
+    data.varm[contrast_name][result.columns] = result.values
 
 
 def _dex_pydeseq2(data, design_factor, contrast_var, ref_var, n_cpus=8):
