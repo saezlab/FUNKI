@@ -30,34 +30,28 @@ class TabData(ttk.Frame):
             width=20
         ).grid(row=0, column=0, sticky='NSWE')
 
-        summary = ttk.Frame(self)
-        summary.rowconfigure(0, weight=0)
-        summary.rowconfigure(1, weight=0)
-
         self.nobs = tk.StringVar()
         self.nvar = tk.StringVar()
 
         LabeledWidget(
-            summary,
+            self,
             ttk.Label,
             'No. of observations: ',
-            lpos='n',
+            lpos='w',
             wget_kwargs={'textvariable': self.nobs},
             wget_grid_kwargs={'sticky': 'w', 'weight': 0},
             label_grid_kwargs={'sticky': 'w', 'weight': 0},
-        ).grid(row=0, sticky='W')
+        ).grid(row=1, column=0, sticky='NW')
 
         LabeledWidget(
-            summary,
+            self,
             ttk.Label,
             'No. of variables: ',
-            lpos='n',
+            lpos='w',
             wget_kwargs={'textvariable': self.nvar},
             wget_grid_kwargs={'sticky': 'w', 'weight': 0},
             label_grid_kwargs={'sticky': 'w', 'weight': 0},
-        ).grid(row=1, sticky='W')
-
-        summary.grid(column=0, row=2, sticky='NSWE')
+        ).grid(row=2, column=0, sticky='NW')
 
         # Obs data panel
         ttk.Label(
