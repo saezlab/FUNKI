@@ -15,7 +15,8 @@ from .input import DataSet
 def enrich(
     data,
     net,
-    methods=None,
+    contrast=None,
+    method=None,
     source='source',
     target='target',
     weight=None,
@@ -30,12 +31,15 @@ def enrich(
     :param net: The network linking the features of the data to the attributes
         (e.g. pathways, gene sets, transcription factors, etc.)
     :type net: `pandas.DataFrame`_
-    :param methods: Which statistical method(s) to use in order to compute the
-        enrichment, defaults to ``None``. If none is provided, uses ``'mlm'``,
-        ``'ulm'`` and ``'wsum'``. The option ``'all'`` performs all methods. To
-        see all the available methods, you can run `decoupler.mt.show()`_
-        function
-    :type methods: NoneType | str | list[str]
+    :param contrast: Which result of the differential expression to use for the
+        enrichment. Must be present in ``data.varm_keys`` named with the format
+        ``'{contrast_var}_vs_{ref_var}'``. Defaults to ``None``.
+    :type contrast: str
+    :param method: Which statistical method to use in order to compute the
+        enrichment, defaults to ``None``. If none is provided, uses ``'ulm'``.
+        To see all the available methods, you can run `decoupler.mt.show()`_
+        function.
+    :type method: NoneType | str
     :param source: Column name from the provided ``net`` containing the gene
         sets to enrich for. Defaults to ``'source'``.
     :type source: str
@@ -66,38 +70,58 @@ def enrich(
         api/generated/decoupler.mt.decouple.html#decoupler.mt.decouple
     '''
 
-    # Using methods parser from Decoupler before storing config
-    # This prevents e.g. storing `None` when running with default methods
-    methods = [m for m in methods if m in {mt.name for mt in _methods}]
-    methods = methods or ['consensus']
+    # Checking data
+    if contrast not in data.varm_keys():
+
+        raise KeyError(
+            f'Results of the contrast {contrast} not found in the DataSet '
+            'provided, please run funki.analysis.diff_exp() first or make sure '
+            'it is properly written.'
+        )
+
+    # Checking method
+    method = method if method in {mt.name for mt in _methods} else 'ulm'
+
+    if not hasattr(dc.mt, method.lower()):
+
+        raise KeyError(
+            'Method not implemented in Decoupler, see `decoupler.mt.show()` '
+            'for a list of available methods.'
+        )
 
     # Storing parameters
-    data.uns['funki']['enrich'] = {
-        'methods': methods,
+    if 'enrich' not in data.uns['funki']:
+
+        data.uns['funki']['enrich'] = dict()
+
+    data.uns['funki']['enrich'][contrast] = {
+        'method': method,
         'weight': weight,
+        'source': source,
+        'target': target,
         **kwargs,
     }
 
     # Preparing network matrix
-    readynet = net.rename(columns={
+    net = net.rename(columns={
         source: 'source',
         target: 'target',
         weight: 'weight'
     })
 
     # Making copy as AnnData to bypass Decoupler type checks
-    aux = ad.AnnData(data.copy())
+    stat = data.varm[contrast][['stat']].T.rename(index={'stat': contrast})
 
-    dc.mt.decouple(
-        aux,
-        readynet,
-        methods=methods,
+    score, padj = getattr(dc.mt, method.lower())(
+        stat,
+        net,
         raw=False,
         **kwargs
     )
 
     # Updating back the results to the original DataSet object
-    data.obsm.update(aux.obsm)
+    data.uns['funki']['enrich'][contrast]['score'] = score
+    data.uns['funki']['enrich'][contrast]['padj'] = padj
  
 
 def sc_trans_qc_metrics(data, var_name='mito'):
@@ -286,6 +310,10 @@ def diff_exp(
     contrast_name = f'{contrast_var}_vs_{ref_var}'
 
     # Storing parameters
+    if not 'diff_exp' in data.uns['funki']:
+
+        data.uns['funki']['diff_exp'] = dict()
+
     data.uns['funki']['diff_exp'][contrast_name] = {
         'method': method,
         'design_factor': design_factor,
@@ -296,6 +324,7 @@ def diff_exp(
     if design_factor not in data.obs_keys():
 
         msg = f'Design factor {design_factor} not found in provided DataSet'
+
         raise KeyError(msg)
 
     if method == 'pydeseq2':
@@ -307,7 +336,7 @@ def diff_exp(
         result = _dex_limma(data, design_factor, contrast_var, ref_var)
 
     # Adding results to DataSet.varm table
-    data.varm[contrast_name][result.columns] = result.values
+    data.varm[contrast_name] = result.loc[data.var_names, :]
 
 
 def _dex_pydeseq2(data, design_factor, contrast_var, ref_var, n_cpus=8):
@@ -324,7 +353,7 @@ def _dex_pydeseq2(data, design_factor, contrast_var, ref_var, n_cpus=8):
     # Using PyDESeq2 to calculate differential expression
     inference = DefaultInference(n_cpus=n_cpus)
     dds = DeseqDataSet(
-        adata=data,
+        adata=data.copy(),
         design_factors=design_factor,
         ref_level=[design_factor] + ref,
         refit_cooks=True,

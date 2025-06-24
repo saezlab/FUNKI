@@ -545,12 +545,16 @@ def plot_counts_vs_n_genes(data, ax=None):
         return fig
 
 
-def plot_dex(data, logfc_thr=1.0, fdr_thr=0.05, top=15, ax=None):
+def plot_dex(data, contrast=None, logfc_thr=1.0, fdr_thr=0.05, top=15, ax=None):
     '''
     Plots the results of the differential expression analisis as a volcano plot.
 
     :param data: The data set from which to generate the figure
     :type data: :class:`funki.input.DataSet`
+    :param contrast: Which result of the differential expression to use for the
+        enrichment. Must be present in ``data.varm_keys`` named with the format
+        ``'{contrast_var}_vs_{ref_var}'``. Defaults to ``None``.
+    :type contrast: str
     :param logfc_thr: Threshold for signifacnce based on the log2(FC) value,
         defaults to ``1.0``
     :type logfc_thr: float, optional
@@ -574,11 +578,12 @@ def plot_dex(data, logfc_thr=1.0, fdr_thr=0.05, top=15, ax=None):
         plotlib.figure.Figure.html#matplotlib.figure.Figure
     '''
 
-    if any(x not in data.var_keys() for x in ['log2FoldChange', 'padj']):
+    if contrast not in data.varm.keys():
 
         raise KeyError(
-            'Results of differential expression not found in the DataSet '
-            'provided, please run funki.analysis.diff_exp() first'
+            f'Results of the contrast {contrast} not found in the DataSet '
+            'provided, please run funki.analysis.diff_exp() first or make sure '
+            'it is properly written.'
         )
     
     if ax is None:
@@ -591,7 +596,7 @@ def plot_dex(data, logfc_thr=1.0, fdr_thr=0.05, top=15, ax=None):
         return_fig = False
 
     dc.pl.volcano(
-        data=data.var,
+        data=data.varm[contrast],
         x='log2FoldChange',
         y='padj',
         thr_stat=logfc_thr,
@@ -612,6 +617,7 @@ def plot_dex(data, logfc_thr=1.0, fdr_thr=0.05, top=15, ax=None):
 
 def plot_enrich(
     data,
+    contrast=None,
     top=10,
     method=None,
     ax=None,
@@ -623,10 +629,18 @@ def plot_enrich(
     :param data: The data set from which to generate the figure (it is assumed
         that ``funki.analysis.enrich()`` as been performed beforehand).
     :type data: :class:`funki.input.DataSet`
+    :param contrast: Which result of the differential expression to use for the
+        enrichment. Must be present in ``data.varm_keys`` named with the format
+        ``'{contrast_var}_vs_{ref_var}'``. Defaults to ``None``.
+    :type contrast: str
     :param top: Number of top enriched gene sets to display based on their
         score, defaults to ``10``.
     :type top: int, optional
-    :param method: Name of the enrichment method to plot the results from.
+    :param method: Which statistical method to use in order to compute the
+        enrichment, defaults to ``None``. If none is provided, uses ``'ulm'``.
+        To see all the available methods, you can run `decoupler.mt.show()`_
+        function.
+    :type method: NoneType | str
     :param ax: Matplotlib Axes instance where to draw the plot. Defaults to
         ``None``, meaning a new figure and axes will be generated.
     :type ax: `matplotlib.axes.Axes`_
@@ -638,24 +652,20 @@ def plot_enrich(
         lib.axes.Axes.html#matplotlib.axes.Axes
     .. _matplotlib.figure.Figure: https://matplotlib.org/stable/api/_as_gen/mat\
         plotlib.figure.Figure.html#matplotlib.figure.Figure
+    .. _decoupler.mt.decouple(): https://decoupler-py.readthedocs.io/en/latest/\
+        api/generated/decoupler.mt.decouple.html#decoupler.mt.decouple
+
     '''
 
-    try:
+    if contrast not in data.uns['funki']['enrich']:
 
-        # Raise error if method not present or no enrichment has ben run at all
-        if method not in data.uns['funki']['enrich']['methods']:
+        raise KeyError(
+            f'Results of the enrichment for the contrast {contrast} with the '
+            f'method {method} not found in the DataSet provided.'
+        )
 
-            raise KeyError(
-                'Enrichment results for method not found in DataSet, please run'
-                '`funki.analysis.enrich()` beforehand.'
-            )
-
-    except KeyError as ke:
-
-        raise ke
-
-    score = data.obsm[f'score_{method}']
-    pval = data.obsm[f'padj_{method}']
+    score = data.uns['funki']['enrich'][contrast]['score']
+    pval = data.uns['funki']['enrich'][contrast]['padj']
 
     res = (
         score
@@ -687,7 +697,7 @@ def plot_enrich(
         top=top,
         ax=ax
     )
-    ax.set_title(f'Enrichment results from method {method}')
+    ax.set_title(f'Enrichment for {contrast} with {method}')
 
     if return_fig:
 

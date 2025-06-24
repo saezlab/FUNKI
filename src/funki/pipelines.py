@@ -133,13 +133,20 @@ def differential_expression(
 
     diff_exp(data, design_factor, contrast_var, ref_var, method=method)
     
-    return plot_dex(data, logfc_thr=logfc_thr, fdr_thr=fdr_thr, ax=ax)
+    return plot_dex(
+        data,
+        contrast=f'{contrast_var}_vs_{ref_var}',
+        logfc_thr=logfc_thr,
+        fdr_thr=fdr_thr,
+        ax=ax
+    )
 
 
 def enrichment_analysis(
     data,
     net,
-    methods=None,
+    contrast=None,
+    method=None,
     source='source',
     target='target',
     weight=None,
@@ -157,12 +164,15 @@ def enrichment_analysis(
     :param net: The network linking the features of the data to the attributes
         (e.g. pathways, gene sets, transcription factors, etc.)
     :type net: `pandas.DataFrame`_
-    :param methods: Which statistical method(s) to use in order to compute the
-        enrichment, defaults to ``None``. If none is provided, uses ``'mlm'``,
-        ``'ulm'`` and ``'wsum'``. The option ``'all'`` performs all methods. To
-        see all the available methods, you can run `decoupler.show_methods()`_
-        function
-    :type methods: NoneType | str | list[str]
+    :param contrast: Which result of the differential expression to use for the
+        enrichment. Must be present in ``data.varm_keys`` named with the format
+        ``'{contrast_var}_vs_{ref_var}'``. Defaults to ``None``.
+    :type contrast: str
+    :param method: Which statistical method to use in order to compute the
+        enrichment, defaults to ``None``. If none is provided, uses ``'ulm'``.
+        To see all the available methods, you can run `decoupler.mt.show()`_
+        function.
+    :type method: NoneType | str
     :param source: Column name from the provided ``net`` containing the gene
         sets to enrich for. Defaults to ``'source'``.
     :type source: str
@@ -200,15 +210,20 @@ def enrichment_analysis(
         /generated/decoupler.show_methods.html#decoupler.show_methods
     .. _decoupler.decouple(): https://decoupler-py.readthedocs.io/en/latest/gen\
         erated/decoupler.decouple.html#decoupler.decouple
+    .. _decoupler.mt.decouple(): https://decoupler-py.readthedocs.io/en/latest/\
+        api/generated/decoupler.mt.decouple.html#decoupler.mt.decouple
+
     '''
         
     enrich(
         data,
         net,
-        methods=methods,
+        contrast=contrast,
+        method=method,
         source=source,
         target=target,
         weight=weight,
         **kwargs
     )
-    return plot_enrich(data, top=top, ax=ax, method=methods[0])
+
+    return plot_enrich(data, contrast=contrast, top=top, ax=ax, method=method)
