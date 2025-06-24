@@ -2,7 +2,9 @@ import tkinter as tk
 from tkinter import ttk
 import matplotlib.pyplot as plt
 
+from funki.input import DataSet
 from funki.plots import plot_obs
+from funki.preprocessing import sc_pseudobulk
 
 from utils import Figure
 from utils import LabeledWidget
@@ -16,14 +18,15 @@ class TabData(ttk.Frame):
 
         self.controller = controller
 
-        self.columnconfigure(0, weight=1)
+        self.columnconfigure(0, weight=0)
         self.columnconfigure(1, weight=1)
         self.rowconfigure(0, weight=0)
         self.rowconfigure(1, weight=0)
-        self.rowconfigure(2, weight=1)
-        self.rowconfigure(3, weight=1)
-        self.rowconfigure(4, weight=1)
-        self.rowconfigure(5, weight=1)
+        self.rowconfigure(2, weight=0)
+        self.rowconfigure(3, weight=0)
+        self.rowconfigure(4, weight=0)
+        self.rowconfigure(5, weight=0)
+        self.rowconfigure(6, weight=1)
 
         # Raw data panel
         ttk.Label(
@@ -72,9 +75,9 @@ class TabData(ttk.Frame):
             lpos='n',
             wget_kwargs={'state': 'disabled', 'textvariable': self.sample},
             wget_grid_kwargs={'sticky': 'WE', 'weight': 1},
-            label_grid_kwargs={'sticky': 'W', 'weight': 0},
+            label_grid_kwargs={'sticky': 'W', 'weight': 1},
         )
-        self.combox_pb_sample.grid(row=4, column=0, sticky='NWE')
+        self.combox_pb_sample.grid(row=4, column=0, sticky='NW')
         self.combox_pb_sample.wg.bind('<<ComboboxSelected>>', self._update)
 
         self.group = tk.StringVar()
@@ -85,10 +88,19 @@ class TabData(ttk.Frame):
             lpos='n',
             wget_kwargs={'state': 'disabled', 'textvariable': self.group},
             wget_grid_kwargs={'sticky': 'WE', 'weight': 1},
-            label_grid_kwargs={'sticky': 'W', 'weight': 0},
+            label_grid_kwargs={'sticky': 'W', 'weight': 1},
         )
-        self.combox_pb_group.grid(row=5, column=0, sticky='NWE')
+        self.combox_pb_group.grid(row=5, column=0, sticky='NW')
         self.combox_pb_group.wg.bind('<<ComboboxSelected>>', self._update)
+
+        # Compute button
+        self.button_compute = ttk.Button(
+            self,
+            text='Apply',
+            command=self.compute,
+            state='disabled',
+        )
+        self.button_compute.grid(row=6, column=0, sticky='NW')
 
         # Obs data panel
         ttk.Label(
@@ -114,7 +126,7 @@ class TabData(ttk.Frame):
         self.fig, self.ax = plt.subplots()
 
         self.figframe = Figure(self, self.fig)
-        self.figframe.grid(row=2, column=1, rowspan=4, sticky='NSWE')
+        self.figframe.grid(row=2, column=1, rowspan=5, sticky='NSWE')
 
 
     def _update(self, *ev):
@@ -149,6 +161,8 @@ class TabData(ttk.Frame):
                     )
                     self.group.set(self.group.get() or obs_keys_str[0])
 
+                    self.button_compute.configure(state='normal')
+
                 # Set combobox for viz
                 obs_keys = sorted(self.controller.data.obs_keys())
 
@@ -168,3 +182,20 @@ class TabData(ttk.Frame):
                         ax=self.ax
                     )
                     self.figframe._update()
+
+
+    def compute(self, *ev):
+
+        aux = self.controller.data.copy()
+        sc_pseudobulk(
+            self.controller.data,
+            self.sample.get(),
+            groups_col=self.group.get()
+        )
+        # TODO: Should make this a standard function
+        self.controller.data = DataSet(
+            self.controller.data.uns['pseudobulk'].copy()
+        )
+        self.controller.data.uns['nonpseudo_original'] = aux.copy()
+
+        self.controller._update()
