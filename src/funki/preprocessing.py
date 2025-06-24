@@ -1,5 +1,6 @@
 import scanpy as sc
 import harmonypy as hm
+import decoupler as dc
 
 from .analysis import sc_trans_qc_metrics
 from .input import DataSet
@@ -92,6 +93,39 @@ def sc_trans_normalize_total(data, target_sum=None, log_transform=False):
         sc.pp.log1p(aux)
 
     return DataSet(aux)
+
+
+def sc_pseudobulk(data, sample_col, groups_col=None, mode='sum', **kwargs):
+    '''
+    Wrapper over `decoupler.pp.pseudobulk`_
+
+    :param data: A single-cell transcriptomic data set containing raw counts
+    :type data: :class:`funki.input.DataSet`
+    :param sample_col: Column name in ``data.obs`` where to extract the sample
+        names.
+    :type sample_col: str
+    :param groups: Column name in ``data.obs`` where to extract the groups
+        names, defaults to ``None``
+    :type groups_col: str, optional
+    :param mode: What method to use for aggregating the counts. Available
+        options are ``'sum'``, ``'mean'`` or ``'median'``, defaults to
+        ``'sum'``.
+    :mode type: str, optional
+    :param \*\*kwargs: Other keyword arguments that can be passed to
+        `decoupler.pp.pseudobulk`_
+    :type \*\*kwargs: optional
+
+    .. _decoupler.pp.pseudobulk: https://decoupler.readthedocs.io/en/latest/api\
+        /generated/decoupler.pp.pseudobulk.html#decoupler.pp.pseudobulk
+    '''
+
+    data.uns['pseudobulk'] = dc.pp.pseudobulk(
+        data,
+        sample_col=sample_col,
+        groups_col=groups_col or sample_col,
+        mode=mode,
+        **kwargs
+    )
 
 
 def harmonize(
