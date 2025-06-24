@@ -266,8 +266,8 @@ class TabDex(ttk.Frame):
             method=self.method.get(),
             ax=self.ax,
         )
-        self.figframe._update()
         self.fig.tight_layout()
+        self.figframe._update()
 
         # Activating save/view menus and button
         self.button_view.configure(state='normal')

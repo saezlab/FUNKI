@@ -181,8 +181,8 @@ class TabData(ttk.Frame):
                         obs_var=self.obs_key.get(),
                         ax=self.ax
                     )
-                    self.figframe._update()
                     self.fig.tight_layout()
+                    self.figframe._update()
 
 
     def compute(self, *ev):
