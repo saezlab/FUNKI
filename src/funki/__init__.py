@@ -5,4 +5,4 @@ from . import plots
 from . import preprocessing
 from . import pipelines
 
-__version__ = '0.1.7'
+__version__ = '0.1.8'
