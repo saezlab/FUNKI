@@ -83,7 +83,6 @@ class LabeledWidget(ttk.Frame):
             self.label.grid(row=0, column=int(lpos == 'e'), **label_grid_kwargs)
 
 
-
 class Figure(ttk.Frame):
     '''
     Container for a matplotlib figure with corresponding toolbar.
