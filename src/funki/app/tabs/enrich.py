@@ -49,7 +49,9 @@ class TabEnrich(ttk.Frame):
                     ['Hallmark', 'CollecTRI', 'DoRothEA', 'PROGENy']
                     + dc.op.show_resources()['name'].to_list()
                 )
-            }
+            },
+            wget_grid_kwargs={'sticky': 'EW', 'weight': 1},
+            label_grid_kwargs={'sticky': 'EW', 'weight': 0},
         )
         combox_gset.grid(row=1, column=0, sticky='NSWE')
         combox_gset.wg.bind('<<ComboboxSelected>>', self._get_resource)
@@ -68,7 +70,9 @@ class TabEnrich(ttk.Frame):
                     ['Human']
                     + [i.capitalize() for i in dc.op.show_organisms()]
                 )
-            }
+            },
+            wget_grid_kwargs={'sticky': 'EW', 'weight': 1},
+            label_grid_kwargs={'sticky': 'EW', 'weight': 0},
         )
         combox_org.grid(row=2, column=0, sticky='NSWE')
         combox_org.wg.bind('<<ComboboxSelected>>', self._get_resource)
@@ -107,7 +111,9 @@ class TabEnrich(ttk.Frame):
                     'WAGGR (Weighted Aggregate)',
                     'Z-score',
                 ]
-            }
+            },
+            wget_grid_kwargs={'sticky': 'EW', 'weight': 1},
+            label_grid_kwargs={'sticky': 'EW', 'weight': 0},
         )
         combox_org.grid(row=1, column=1, sticky='NSWE')
 
