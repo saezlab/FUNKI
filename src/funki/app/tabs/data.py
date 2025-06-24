@@ -68,7 +68,7 @@ class TabData(ttk.Frame):
         self.combox_pb_sample = LabeledWidget(
             self,
             ttk.Combobox,
-            'Select sample variable to pseudobulk:',
+            'Sample variable to pseudobulk:',
             lpos='n',
             wget_kwargs={'state': 'disabled', 'textvariable': self.sample},
             wget_grid_kwargs={'sticky': 'WE', 'weight': 1},
@@ -81,7 +81,7 @@ class TabData(ttk.Frame):
         self.combox_pb_group = LabeledWidget(
             self,
             ttk.Combobox,
-            'Select grouping variable for pseudobulk:',
+            'Grouping variable for pseudobulk:',
             lpos='n',
             wget_kwargs={'state': 'disabled', 'textvariable': self.group},
             wget_grid_kwargs={'sticky': 'WE', 'weight': 1},
@@ -136,18 +136,18 @@ class TabData(ttk.Frame):
                     ])
                 ])
 
-                self.combox_pb_sample.wg.configure(
-                        state='readonly',
-                        values=obs_keys_str,
-                )
-                self.sample.set(self.sample.get() or obs_keys_str[0])
-                self.combox_pb_group.wg.configure(
-                        state='readonly',
-                        values=obs_keys_str,
-                )
-                self.group.set(self.group.get() or obs_keys_str[0])
+                if obs_keys_str:
 
-
+                    self.combox_pb_sample.wg.configure(
+                            state='readonly',
+                            values=obs_keys_str,
+                    )
+                    self.sample.set(self.sample.get() or obs_keys_str[0])
+                    self.combox_pb_group.wg.configure(
+                            state='readonly',
+                            values=obs_keys_str,
+                    )
+                    self.group.set(self.group.get() or obs_keys_str[0])
 
                 # Set combobox for viz
                 obs_keys = sorted(self.controller.data.obs_keys())
@@ -160,11 +160,11 @@ class TabData(ttk.Frame):
                     )
                     self.obs_key.set(self.obs_key.get() or obs_keys[0])
 
-                # Plot
-                self.ax.clear()
-                plot_obs(
-                    self.controller.data,
-                    obs_var=self.obs_key.get(),
-                    ax=self.ax
-                )
-                self.figframe._update()
+                    # Plot
+                    self.ax.clear()
+                    plot_obs(
+                        self.controller.data,
+                        obs_var=self.obs_key.get(),
+                        ax=self.ax
+                    )
+                    self.figframe._update()
