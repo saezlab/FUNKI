@@ -246,6 +246,55 @@ class Table(ttk.Frame):
         return val
 
 
+class PopUpTable(tk.Toplevel):
+    '''
+    Pops up a new window displaying a given table.
+    '''
+
+    def __init__(self, df, title=None, save_command=None):
+
+        super().__init__()
+
+        self.title(title if title else '')
+        self.columnconfigure(0, weight=1)
+        self.rowconfigure(0, weight=1)
+
+        frame = ttk.Frame(self, padding=(5, 5, 5, 5))
+        frame.columnconfigure(0, weight=1)
+        frame.columnconfigure(1, weight=1)
+        frame.rowconfigure(0, weight=1)
+        frame.rowconfigure(1, weight=0)
+        frame.grid(sticky='NSWE')
+
+        if save_command:
+
+            button_save = ttk.Button(
+                frame,
+                text='Save',
+                command=save_command,
+                padding=(5, 5, 5, 5),
+                state='disabled',
+            )
+            button_save.grid(row=1, column=0, sticky='W')
+
+        button_close = ttk.Button(
+            frame,
+            text='Close',
+            command=self.destroy,
+            padding=(5, 5, 5, 5),
+        )
+        button_close.grid(row=1, column=1, sticky='E')
+
+        if not df.empty:
+
+            table = Table(frame, df, padding=(5, 5, 5, 5))
+            table.grid(row=0, columnspan=2, sticky='NSWE')
+
+            if save_command:
+
+                button_save.configure(state='normal')
+
+
 # TODO: Should probably replace with Text widget, so we can add scrollbar and
 #       also current solution does not wrap text very well
 # Adapted from thegamecracks' gist

@@ -10,11 +10,12 @@ from funki import __version__
 from funki.input import read
 
 from utils import PATH_LOGO
-from utils import Table
+from utils import PopUpTable
 from utils import check_num
 from tabs import TABS
 from style import load_style
-from assets.help import Help, About
+from assets.help import Help
+from assets.help import About
 
 
 class FunkiApp(tk.Tk):
@@ -394,41 +395,11 @@ class FunkiApp(tk.Tk):
                 'padj'
             ]]
 
-        win = tk.Toplevel()
-
-        win.title(title)
-        win.columnconfigure(0, weight=1)
-        win.rowconfigure(0, weight=1)
-
-        frame = ttk.Frame(win, padding=(5, 5, 5, 5))
-        frame.columnconfigure(0, weight=1)
-        frame.columnconfigure(1, weight=1)
-        frame.rowconfigure(0, weight=1)
-        frame.rowconfigure(1, weight=0)
-        frame.grid(sticky='NSWE')
-
-        button_save = ttk.Button(
-            frame,
-            text='Save',
-            command=lambda: self.save_file(dtype=dtype),
-            padding=(5, 5, 5, 5),
-            state='disabled',
+        PopUpTable(
+            df,
+            title=title,
+            save_command=lambda: self.save_file(dtype=dtype)
         )
-        button_save.grid(row=1, column=0, sticky='W')
-
-        button_close = ttk.Button(
-            frame,
-            text='Close',
-            command=win.destroy,
-            padding=(5, 5, 5, 5),
-        )
-        button_close.grid(row=1, column=1, sticky='E')
-
-        if not df.empty:
-
-            table = Table(frame, df, padding=(5, 5, 5, 5))
-            table.grid(row=0, columnspan=2, sticky='NSWE')
-            button_save.configure(state='normal')
 
 
 if __name__ == '__main__':
