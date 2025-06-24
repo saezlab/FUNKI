@@ -389,16 +389,11 @@ class FunkiApp(tk.Tk):
 
         elif dtype == 'dex' and 'diff_exp' in self.data.uns['funki']:
 
-            a = self.data.uns['funki']['diff_exp']['contrast_var']
-            b = self.data.uns['funki']['diff_exp']['ref_var']
+            a = self.tabs['dex'].groupA.get()
+            b = self.tabs['dex'].groupB.get()
+
             title = f'DEX - {a} vs. {b}'
-            df = self.data.var[[
-                'baseMean',
-                'log2FoldChange',
-                'stat',
-                'pvalue',
-                'padj'
-            ]]
+            df = self.data.varm[f'{a}_vs_{b}'] # TODO: add contingency measures
 
         elif dtype == 'gsc':
 
