@@ -211,4 +211,4 @@ def enrichment_analysis(
         weight=weight,
         **kwargs
     )
-    return plot_enrich(data, top=top, ax=ax)
+    return plot_enrich(data, top=top, ax=ax, method=methods[0])

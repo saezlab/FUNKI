@@ -643,16 +643,16 @@ def plot_enrich(
     try:
 
         # Raise error if method not present or no enrichment has ben run at all
-        if not method in data.uns['funki']['enrich']['methods']:
+        if method not in data.uns['funki']['enrich']['methods']:
 
-            raise KeyError
+            raise KeyError(
+                'Enrichment results for method not found in DataSet, please run'
+                '`funki.analysis.enrich()` beforehand.'
+            )
 
     except KeyError as ke:
 
-        raise ke(
-            'Enrichment results for method not found in DataSet, please run ,'
-            '`funki.analysis.enrich()` beforehand.'
-        )
+        raise ke
 
     score = data.obsm[f'score_{method}']
     pval = data.obsm[f'padj_{method}']
