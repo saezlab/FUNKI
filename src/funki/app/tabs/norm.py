@@ -80,7 +80,7 @@ class TabNorm(ttk.Frame):
 
         ttk.Button(
             self,
-            text='Apply filters',
+            text='Filter',
             command=self.apply_filter
         ).grid(row=4, column=0, sticky='W')
 
@@ -117,7 +117,7 @@ class TabNorm(ttk.Frame):
 
         ttk.Button(
             self,
-            text='Apply normalization',
+            text='Normalize',
             command=self.apply_norm
         ).grid(row=4, column=1, sticky='W')
 

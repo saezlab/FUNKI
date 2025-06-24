@@ -146,7 +146,7 @@ class TabEnrich(ttk.Frame):
         # - Compute button
         self.button_compute = ttk.Button(
             self,
-            text='Compute',
+            text='Enrich',
             command=self.compute,
             state='disabled',
         )

@@ -135,7 +135,7 @@ class TabClust(ttk.Frame):
         # - Plot button
         self.button_plot = ttk.Button(
             self,
-            text='Plot embedding',
+            text='Embed',
             command=self.plot,
             state='disabled',
         )
@@ -194,7 +194,7 @@ class TabClust(ttk.Frame):
         # - Compute button
         self.button_compute = ttk.Button(
             self,
-            text='Compute',
+            text='Cluster',
             command=self.cluster,
             state='disabled',
         )

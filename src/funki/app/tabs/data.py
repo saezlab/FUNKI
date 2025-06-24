@@ -96,7 +96,7 @@ class TabData(ttk.Frame):
         # Compute button
         self.button_compute = ttk.Button(
             self,
-            text='Apply',
+            text='Aggregate',
             command=self.compute,
             state='disabled',
         )
