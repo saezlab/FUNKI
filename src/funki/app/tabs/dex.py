@@ -148,14 +148,27 @@ class TabDex(ttk.Frame):
 
         method_frame.grid(row=4, columnspan=2, sticky='NSEW')
 
-        # Compute button
+        # Compute/view button
+        frame_buttons = ttk.Frame(self)
+        frame_buttons.columnconfigure(0, weight=1)
+        frame_buttons.columnconfigure(1, weight=1)
+
         self.button_compute = ttk.Button(
-            self,
+            frame_buttons,
             text='Compute',
             command=self.compute,
             state='disabled',
         )
-        self.button_compute.grid(row=4, column=2, sticky='SE')
+        self.button_compute.grid(row=0, column=0, sticky='E')
+        self.button_view = ttk.Button(
+            frame_buttons,
+            text='View',
+            command=lambda: self.controller.view_data(dtype='dex'),
+            state='disabled',
+        )
+        self.button_view.grid(row=0, column=1, sticky='E')
+
+        frame_buttons.grid(row=4, column=2, sticky='NSWE')
 
         # Figure
         self.fig, self.ax = plt.subplots()
@@ -256,7 +269,8 @@ class TabDex(ttk.Frame):
         self.figframe._update()
         self.fig.tight_layout()
 
-        # Activating save/view menus
+        # Activating save/view menus and button
+        self.button_view.configure(state='normal')
         self.controller.menu_view.entryconfig(
             'Differential expression',
             state='normal',
