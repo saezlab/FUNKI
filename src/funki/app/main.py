@@ -119,6 +119,12 @@ class FunkiApp(tk.Tk):
                     'disabled',
                     lambda: self.save_file(dtype='dex')
                 ),
+                '---',
+                (
+                    'Configuration',
+                    'disabled',
+                    lambda: self.save_file(dtype='config')
+                ),
             ],
             self.menu_view: [
                 (
@@ -223,11 +229,11 @@ class FunkiApp(tk.Tk):
         for name, (n, tab) in TABS.items():
 
             self.tabs[n] = tab(self.tab_manager, self)
-            
+
             for child in self.tabs[n].winfo_children():
-            
+
                 child.grid_configure(padx=10, pady=10)
-            
+
             self.tab_manager.add(self.tabs[n], text=name, sticky='NSEW')
 
 
@@ -241,6 +247,7 @@ class FunkiApp(tk.Tk):
             self.menu_open.entryconfig('Metadata', state='normal')
             self.menu_view.entryconfig('Data', state='normal')
             self.menu_save.entryconfig('Data', state='normal')
+            self.menu_save.entryconfig('Configuration', state='normal')
 
             if not self.data.obs.empty:
 
@@ -327,12 +334,19 @@ class FunkiApp(tk.Tk):
         Pops up a save file dialog and saves the corresponding file in the path.
         '''
 
-        path = fd.asksaveasfilename(defaultextension='.csv', filetypes=[
+        defaultextension = '.json' if dtype == 'config' else '.csv'
+        filetypes = [
+            ('JSON files', '*.json'),
+        ] if dtype == 'config' else [
             ('CSV files', '*.csv'),
             ('TSV files', '*.tsv'),
             ('TXT files', '*.txt'),
-            ('All files', '*.*'),
-        ])
+        ]
+
+        path = fd.asksaveasfilename(
+            defaultextension=defaultextension,
+            filetypes=filetypes + [('All files', '*.*')]
+        )
 
         if not path:
 
@@ -359,7 +373,14 @@ class FunkiApp(tk.Tk):
                 'padj'
             ]]
 
-        df.to_csv(path, sep=sep)
+        # Storing file
+        if dtype == 'config':
+
+            self.data.save_params(path)
+
+        else:
+
+            df.to_csv(path, sep=sep)
 
 
     def open_manual(self):
