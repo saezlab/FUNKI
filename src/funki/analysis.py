@@ -120,8 +120,21 @@ def enrich(
     )
 
     # Updating back the results to the original DataSet object
-    data.uns['funki']['enrich'][contrast]['score'] = score
-    data.uns['funki']['enrich'][contrast]['padj'] = padj
+    res = pd.merge(
+        score.T,
+        padj.T,
+        how='outer',
+        left_index=True,
+        right_index=True
+    )
+    res.columns = ['score', 'pval']
+
+    if 'enrich' not in data.uns:
+
+        data.uns['enrich'] = dict()
+
+    data.uns['enrich'][contrast] = res.copy()
+
 
 
 def sc_trans_qc_metrics(data, var_name='mito'):

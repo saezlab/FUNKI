@@ -664,17 +664,7 @@ def plot_enrich(
             f'method {method} not found in the DataSet provided.'
         )
 
-    score = data.uns['funki']['enrich'][contrast]['score']
-    pval = data.uns['funki']['enrich'][contrast]['padj']
-
-    res = pd.merge(
-        score.T,
-        pval.T,
-        how='outer',
-        left_index=True,
-        right_index=True
-    )
-    res.columns = ['score', 'pval']
+    res = data.uns['enrich'][contrast]
     res['logpval'] = np.log10(res['pval'])
     res.reset_index(inplace=True)
 
