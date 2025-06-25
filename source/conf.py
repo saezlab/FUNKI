@@ -2,7 +2,7 @@ import os
 import sys
 
 from funki import __version__
-from funki import _colors
+from funki.common import _colors
 
 sys.path.insert(0, os.path.abspath('../../src/'))
 

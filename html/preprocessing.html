@@ -9,7 +9,7 @@
     <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
     <link rel="stylesheet" type="text/css" href="_static/classic.css?v=d54626cc" />
     
-    <script src="_static/documentation_options.js?v=59fadc99"></script>
+    <script src="_static/documentation_options.js?v=22607128"></script>
     <script src="_static/doctools.js?v=9bcbadda"></script>
     <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -66,6 +66,31 @@ defaults to <code class="docutils literal notranslate"><span class="pre">False</
 <li><p><strong>**kwargs</strong> (<em>optional</em>) – Other keyword arguments that can be passed to
 <code class="docutils literal notranslate"><span class="pre">harmonypy.run_harmony()</span></code></p></li>
 </ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="funki.preprocessing.sc_pseudobulk">
+<span class="sig-prename descclassname"><span class="pre">funki.preprocessing.</span></span><span class="sig-name descname"><span class="pre">sc_pseudobulk</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sample_col</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">groups_col</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'sum'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#funki.preprocessing.sc_pseudobulk" title="Link to this definition">¶</a></dt>
+<dd><p>Wrapper over <a class="reference external" href="https://decoupler.readthedocs.io/en/latest/api/generated/decoupler.pp.pseudobulk.html#decoupler.pp.pseudobulk">decoupler.pp.pseudobulk</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<a class="reference internal" href="input.html#funki.input.DataSet" title="funki.input.DataSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">funki.input.DataSet</span></code></a>) – A single-cell transcriptomic data set containing raw counts</p></li>
+<li><p><strong>sample_col</strong> (<em>str</em>) – Column name in <code class="docutils literal notranslate"><span class="pre">data.obs</span></code> where to extract the sample
+names.</p></li>
+<li><p><strong>groups</strong> – Column name in <code class="docutils literal notranslate"><span class="pre">data.obs</span></code> where to extract the groups
+names, defaults to <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
+<li><p><strong>mode</strong> – What method to use for aggregating the counts. Available
+options are <code class="docutils literal notranslate"><span class="pre">'sum'</span></code>, <code class="docutils literal notranslate"><span class="pre">'mean'</span></code> or <code class="docutils literal notranslate"><span class="pre">'median'</span></code>, defaults to
+<code class="docutils literal notranslate"><span class="pre">'sum'</span></code>.</p></li>
+<li><p><strong>**kwargs</strong> (<em>optional</em>) – Other keyword arguments that can be passed to
+<a class="reference external" href="https://decoupler.readthedocs.io/en/latest/api/generated/decoupler.pp.pseudobulk.html#decoupler.pp.pseudobulk">decoupler.pp.pseudobulk</a></p></li>
+</ul>
+</dd>
+<dt class="field-even">Mode type<span class="colon">:</span></dt>
+<dd class="field-even"><p>str, optional</p>
 </dd>
 </dl>
 </dd></dl>
@@ -141,6 +166,7 @@ data set</p>
     <ul>
 <li><a class="reference internal" href="#">funki.preprocessing</a><ul>
 <li><a class="reference internal" href="#funki.preprocessing.harmonize"><code class="docutils literal notranslate"><span class="pre">harmonize()</span></code></a></li>
+<li><a class="reference internal" href="#funki.preprocessing.sc_pseudobulk"><code class="docutils literal notranslate"><span class="pre">sc_pseudobulk()</span></code></a></li>
 <li><a class="reference internal" href="#funki.preprocessing.sc_trans_filter"><code class="docutils literal notranslate"><span class="pre">sc_trans_filter()</span></code></a></li>
 <li><a class="reference internal" href="#funki.preprocessing.sc_trans_normalize_total"><code class="docutils literal notranslate"><span class="pre">sc_trans_normalize_total()</span></code></a></li>
 </ul>
