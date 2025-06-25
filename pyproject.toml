@@ -22,7 +22,6 @@ dependencies = [
     'pandas',
     'anndata',
     'matplotlib',
-    'tk',
     'loompy',
     'scanpy',
     'leidenalg',
