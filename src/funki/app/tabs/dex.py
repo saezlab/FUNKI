@@ -279,3 +279,5 @@ class TabDex(ttk.Frame):
             'Differential expression',
             state='normal',
         )
+
+        self.controller._update()
