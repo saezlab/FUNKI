@@ -19,7 +19,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         sudo apt-get install cmake build-essential tcl-dev tk-dev python3-tk
-        sudo apt-get install r-base
+        sudo apt-get install r-base-dev
         pip install scikit-build
         pip install .
         pip install sphinx
