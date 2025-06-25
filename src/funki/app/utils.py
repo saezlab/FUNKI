@@ -101,13 +101,23 @@ class Figure(ttk.Frame):
         toolbar = NavigationToolbar2Tk(self.canvas, self, pack_toolbar=False)
         toolbar.update()
         toolbar.grid(column=0, row=1, sticky='NSWE')
-        
+
         self.canvas.get_tk_widget().grid(column=0, row=0, sticky='NSWE')
 
     
     def _update(self):
 
         self.canvas.draw()
+
+    def newfig(self, fig):
+
+        self.canvas = FigureCanvasTkAgg(fig, master=self)
+
+        toolbar = NavigationToolbar2Tk(self.canvas, self, pack_toolbar=False)
+        toolbar.update()
+        toolbar.grid(column=0, row=1, sticky='NSWE')
+
+        self.canvas.get_tk_widget().grid(column=0, row=0, sticky='NSWE')
 
 
 class Table(ttk.Frame):
