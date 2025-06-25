@@ -102,6 +102,12 @@ class FunkiApp(tk.Tk):
                     'disabled',
                     lambda: self.open_file(dtype='obs')
                 ),
+                '---',
+                (
+                    'Configuration',
+                    'disabled',
+                    lambda: self.open_file(dtype='config')
+                ),
             ],
             self.menu_save: [
                 (
@@ -245,6 +251,7 @@ class FunkiApp(tk.Tk):
         if self.data:
 
             self.menu_open.entryconfig('Metadata', state='normal')
+            self.menu_open.entryconfig('Configuration', state='normal')
             self.menu_view.entryconfig('Data', state='normal')
             self.menu_save.entryconfig('Data', state='normal')
             self.menu_save.entryconfig('Configuration', state='normal')
@@ -280,12 +287,13 @@ class FunkiApp(tk.Tk):
         Pops up a open file dialog and passes the path to FUNKI's read method.
         '''
 
-        filetypes = [
-            ('All files', '*.*'),
+        filetypes = [('JSON files', '*.json')] if dtype == 'config' else []
+        filetypes += [('All files', '*.*')]
+        filetypes += [
             ('CSV files', '*.csv'),
             ('TSV files', '*.tsv'),
             ('TXT files', '*.txt'),
-        ]
+        ] if dtype in {'raw', 'obs'} else []
         filetypes += [
             ('H5AD files', '*.h5ad'),
             ('H5 files', '*.h5'),
@@ -295,14 +303,19 @@ class FunkiApp(tk.Tk):
             ('UMI files', '*.gz'),
         ] if dtype == 'raw' else []
 
-        path = fd.askopenfilename(defaultextension='.*', filetypes=filetypes)
+        defaultextension = '.json' if dtype == 'config' else '.*'
+
+        path = fd.askopenfilename(
+            defaultextension=defaultextension,
+            filetypes=filetypes
+        )
 
         if not path:
 
             return
 
         # Loading of measurement data
-        elif dtype == 'raw': # TODO: Make a copy in raw layer?
+        if dtype == 'raw': # TODO: Make a copy in raw layer?
 
             self.fname_raw = path
             self.data = read(path)
@@ -325,6 +338,11 @@ class FunkiApp(tk.Tk):
                 left_index=True,
                 right_index=True,
             )
+
+        # Loading configuration
+        elif dtype == 'config' and self.data:
+
+            self.data.load_params(path)
 
         self._update()
 
