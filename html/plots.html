@@ -125,7 +125,7 @@ passed, nothing is returned.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="funki.plots.plot_enrich">
-<span class="sig-prename descclassname"><span class="pre">funki.plots.</span></span><span class="sig-name descname"><span class="pre">plot_enrich</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">contrast</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#funki.plots.plot_enrich" title="Link to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">funki.plots.</span></span><span class="sig-name descname"><span class="pre">plot_enrich</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#funki.plots.plot_enrich" title="Link to this definition">¶</a></dt>
 <dd><p>Generates a dotplot displaying the top results of an enrichment analysis
 based on the provided methods.</p>
 <dl class="field-list simple">
@@ -133,14 +133,11 @@ based on the provided methods.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>data</strong> (<a class="reference internal" href="input.html#funki.input.DataSet" title="funki.input.DataSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">funki.input.DataSet</span></code></a>) – The data set from which to generate the figure (it is assumed
 that <code class="docutils literal notranslate"><span class="pre">funki.analysis.enrich()</span></code> as been performed beforehand).</p></li>
-<li><p><strong>contrast</strong> (<em>str</em>) – Which result of the differential expression to use for the
-enrichment. Must be present in <code class="docutils literal notranslate"><span class="pre">data.varm_keys</span></code> named with the format
-<code class="docutils literal notranslate"><span class="pre">'{contrast_var}_vs_{ref_var}'</span></code>. Defaults to <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
 <li><p><strong>top</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of top enriched gene sets to display based on their
 score, defaults to <code class="docutils literal notranslate"><span class="pre">10</span></code>.</p></li>
 <li><p><strong>method</strong> (<em>NoneType</em><em> | </em><em>str</em>) – Which statistical method to use in order to compute the
 enrichment, defaults to <code class="docutils literal notranslate"><span class="pre">None</span></code>. If none is provided, uses <code class="docutils literal notranslate"><span class="pre">'ulm'</span></code>.
-To see all the available methods, you can run <a href="#id23"><span class="problematic" id="id24">`decoupler.mt.show()`_</span></a>
+To see all the available methods, you can run <code class="docutils literal notranslate"><span class="pre">decoupler.mt.show()</span></code>
 function.</p></li>
 <li><p><strong>ax</strong> (<a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes">matplotlib.axes.Axes</a>) – Matplotlib Axes instance where to draw the plot. Defaults to
 <code class="docutils literal notranslate"><span class="pre">None</span></code>, meaning a new figure and axes will be generated.</p></li>

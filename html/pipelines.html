@@ -104,7 +104,7 @@ enrichment. Must be present in <code class="docutils literal notranslate"><span 
 <code class="docutils literal notranslate"><span class="pre">'{contrast_var}_vs_{ref_var}'</span></code>. Defaults to <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
 <li><p><strong>method</strong> (<em>NoneType</em><em> | </em><em>str</em>) – Which statistical method to use in order to compute the
 enrichment, defaults to <code class="docutils literal notranslate"><span class="pre">None</span></code>. If none is provided, uses <code class="docutils literal notranslate"><span class="pre">'ulm'</span></code>.
-To see all the available methods, you can run <a href="#id4"><span class="problematic" id="id5">`decoupler.mt.show()`_</span></a>
+To see all the available methods, you can run <code class="docutils literal notranslate"><span class="pre">decoupler.mt.show()</span></code>
 function.</p></li>
 <li><p><strong>source</strong> (<em>str</em>) – Column name from the provided <code class="docutils literal notranslate"><span class="pre">net</span></code> containing the gene
 sets to enrich for. Defaults to <code class="docutils literal notranslate"><span class="pre">'source'</span></code>.</p></li>
@@ -118,8 +118,8 @@ consensus score. If a negative number is provided, the bottom ones will
 be displayed instead.</p></li>
 <li><p><strong>ax</strong> (<a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes">matplotlib.axes.Axes</a>) – Matplotlib Axes instance where to draw the plot. Defaults to
 <code class="docutils literal notranslate"><span class="pre">None</span></code>, meaning a new figure and axes will be generated.</p></li>
-<li><p><strong>**kwargs</strong> (<em>optional</em>) – Other keyword arguments that passed to
-<a class="reference external" href="https://decoupler-py.readthedocs.io/en/latest/generated/decoupler.decouple.html#decoupler.decouple">decoupler.decouple()</a> function</p></li>
+<li><p><strong>**kwargs</strong> (<em>optional</em>) – Other keyword arguments that are passed to the specific
+method call from <a class="reference external" href="https://decoupler.readthedocs.io/en/latest/api/mt.html">decoupler.mt</a> methods</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
