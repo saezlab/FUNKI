@@ -118,6 +118,13 @@ def sc_pseudobulk(data, sample_col, groups_col=None, mode='sum', **kwargs):
     .. _decoupler.pp.pseudobulk: https://decoupler.readthedocs.io/en/latest/api\
         /generated/decoupler.pp.pseudobulk.html#decoupler.pp.pseudobulk
     '''
+    # Storing parameters
+    data.uns['funki']['sc_pseudobulk'] = {
+        'sample_col': sample_col,
+        'groups_col': groups_col,
+        'mode': mode,
+        **kwargs
+    }
 
     data.uns['pseudobulk'] = dc.pp.pseudobulk(
         data,
