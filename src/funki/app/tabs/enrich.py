@@ -208,7 +208,9 @@ class TabEnrich(ttk.Frame):
 
         method = self.method.get().split(' (')[0].replace('-', '').lower()
 
-        self.ax.clear()
+        self.fig, self.ax = plt.subplots()
+        self.figframe.newfig(self.fig)
+
         enrichment_analysis(
             self.controller.data,
             self.net,
