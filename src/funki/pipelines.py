@@ -220,4 +220,4 @@ def enrichment_analysis(
         **kwargs
     )
 
-    return plot_enrich(data, contrast=contrast, top=top, ax=ax, method=method)
+    return plot_enrich(data, top=top, ax=ax, method=method)
