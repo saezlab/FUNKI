@@ -617,7 +617,6 @@ def plot_dex(data, contrast=None, logfc_thr=1.0, fdr_thr=0.05, top=15, ax=None):
 
 def plot_enrich(
     data,
-    contrast=None,
     top=10,
     method=None,
     ax=None,
@@ -629,10 +628,6 @@ def plot_enrich(
     :param data: The data set from which to generate the figure (it is assumed
         that ``funki.analysis.enrich()`` as been performed beforehand).
     :type data: :class:`funki.input.DataSet`
-    :param contrast: Which result of the differential expression to use for the
-        enrichment. Must be present in ``data.varm_keys`` named with the format
-        ``'{contrast_var}_vs_{ref_var}'``. Defaults to ``None``.
-    :type contrast: str
     :param top: Number of top enriched gene sets to display based on their
         score, defaults to ``10``.
     :type top: int, optional
@@ -657,14 +652,7 @@ def plot_enrich(
 
     '''
 
-    if contrast not in data.uns['funki']['enrich']:
-
-        raise KeyError(
-            f'Results of the enrichment for the contrast {contrast} with the '
-            f'method {method} not found in the DataSet provided.'
-        )
-
-    res = data.uns['enrich'][contrast]
+    res = data.uns['enrich']
     res['logpval'] = np.log10(res['pval'])
     res.reset_index(inplace=True)
 
@@ -688,7 +676,7 @@ def plot_enrich(
         ax=ax,
         return_fig=False,
     )
-    ax.set_title(f'Enrichment for {contrast} with {method}')
+    ax.set_title(f'Enrichment method: {method}')
 
     if return_fig:
 

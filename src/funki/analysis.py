@@ -90,12 +90,9 @@ def enrich(
         )
 
     # Storing parameters
-    if 'enrich' not in data.uns['funki']:
-
-        data.uns['funki']['enrich'] = dict()
-
-    data.uns['funki']['enrich'][contrast] = {
+    data.uns['funki']['enrich'] = {
         'method': method,
+        'contrast': contrast,
         'weight': weight,
         'source': source,
         'target': target,
@@ -129,11 +126,7 @@ def enrich(
     )
     res.columns = ['score', 'pval']
 
-    if 'enrich' not in data.uns:
-
-        data.uns['enrich'] = dict()
-
-    data.uns['enrich'][contrast] = res.copy()
+    data.uns['enrich'] = res.copy()
 
 
 
