@@ -167,24 +167,26 @@ class TabEnrich(ttk.Frame):
             self._get_resource()
 
         # Enrichment variable
-        if self.controller:
+        if self.controller.data:
 
-            contrasts = sorted(
-                self.controller.data.uns['funki']['diff_exp'].keys()
-            )
+            if 'diff_exp' in self.controller.data.uns['funki']:
 
-            if contrasts:
+                contrasts = sorted(
+                    self.controller.data.uns['funki']['diff_exp'].keys()
+                )
 
-                contrast = self.contrast.get() or contrasts[0]
+                if contrasts:
 
-                self.combox_obs.wg.configure(
-                        state='readonly',
-                        values=contrasts,
-                    )
-                self.contrast.set(contrast)
+                    contrast = self.contrast.get() or contrasts[0]
 
-                # Activate compute button
-                self.button_compute.configure(state='normal')
+                    self.combox_obs.wg.configure(
+                            state='readonly',
+                            values=contrasts,
+                        )
+                    self.contrast.set(contrast)
+
+                    # Activate compute button
+                    self.button_compute.configure(state='normal')
 
 
     def _get_resource(self, *ev):
