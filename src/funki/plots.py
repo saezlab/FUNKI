@@ -638,7 +638,7 @@ def plot_enrich(
     :type top: int, optional
     :param method: Which statistical method to use in order to compute the
         enrichment, defaults to ``None``. If none is provided, uses ``'ulm'``.
-        To see all the available methods, you can run `decoupler.mt.show()`_
+        To see all the available methods, you can run ``decoupler.mt.show()``
         function.
     :type method: NoneType | str
     :param ax: Matplotlib Axes instance where to draw the plot. Defaults to

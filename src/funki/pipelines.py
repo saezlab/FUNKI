@@ -170,7 +170,7 @@ def enrichment_analysis(
     :type contrast: str
     :param method: Which statistical method to use in order to compute the
         enrichment, defaults to ``None``. If none is provided, uses ``'ulm'``.
-        To see all the available methods, you can run `decoupler.mt.show()`_
+        To see all the available methods, you can run ``decoupler.mt.show()``
         function.
     :type method: NoneType | str
     :param source: Column name from the provided ``net`` containing the gene
@@ -190,8 +190,8 @@ def enrichment_analysis(
     :param ax: Matplotlib Axes instance where to draw the plot. Defaults to
         ``None``, meaning a new figure and axes will be generated.
     :type ax: `matplotlib.axes.Axes`_
-    :param \*\*kwargs: Other keyword arguments that passed to
-        `decoupler.decouple()`_ function
+    :param \*\*kwargs: Other keyword arguments that are passed to the specific
+        method call from `decoupler.mt`_ methods
     :type \*\*kwargs: optional
 
     :returns: ``None``, results are stored inplace of the passed ``data``
@@ -204,14 +204,9 @@ def enrichment_analysis(
     .. _matplotlib.axes.Axes: https://matplotlib.org/stable/api/_as_gen/matplot\
         lib.axes.Axes.html#matplotlib.axes.Axes
     .. _Decoupler: https://decoupler-py.readthedocs.io/en/latest/index.html
+    .. _decoupler.mt: https://decoupler.readthedocs.io/en/latest/api/mt.html
     .. _pandas.DataFrame: https://pandas.pydata.org/docs/reference/api/pandas.D\
         ataFrame.html
-    .. _decoupler.show_methods(): https://decoupler-py.readthedocs.io/en/latest\
-        /generated/decoupler.show_methods.html#decoupler.show_methods
-    .. _decoupler.decouple(): https://decoupler-py.readthedocs.io/en/latest/gen\
-        erated/decoupler.decouple.html#decoupler.decouple
-    .. _decoupler.mt.decouple(): https://decoupler-py.readthedocs.io/en/latest/\
-        api/generated/decoupler.mt.decouple.html#decoupler.mt.decouple
     '''
 
     enrich(
