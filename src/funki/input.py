@@ -48,7 +48,7 @@ class DataSet(anndata.AnnData):
 
         super().__init__(X, **kwargs)
 
-        if not isinstance(self.X, np.ndarray):
+        if self.X is not None and not isinstance(self.X, np.ndarray):
 
             self.X = self.X.toarray()
 
@@ -174,7 +174,7 @@ class DataSet(anndata.AnnData):
 
         with open(path, 'w') as f:
 
-            json.dump(self.uns['funki'], f)
+            json.dump(self.uns['funki'], f, indent=4)
 
 
     def load_params(self, path):
