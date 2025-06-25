@@ -122,7 +122,7 @@ def enrich(
     # Updating back the results to the original DataSet object
     data.uns['funki']['enrich'][contrast]['score'] = score
     data.uns['funki']['enrich'][contrast]['padj'] = padj
- 
+
 
 def sc_trans_qc_metrics(data, var_name='mito'):
     '''
@@ -376,6 +376,7 @@ def _dex_pydeseq2(data, design_factor, contrast_var, ref_var, n_cpus=8):
     ]]
 
     return res
+
 
 def _dex_limma(data, design_factor, contrast_var, ref_var):
 

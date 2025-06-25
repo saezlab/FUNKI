@@ -10,9 +10,11 @@ import numpy as np
 
 # Handling new I/O for anndata 0.11.0
 try:
+
     io = anndata.io
 
 except AttributeError:
+
     io = anndata
 
 _read_ext = {
@@ -49,7 +51,7 @@ class DataSet(anndata.AnnData):
         if not isinstance(self.X, np.ndarray):
 
             self.X = self.X.toarray()
-        
+
         if 'funki' not in self.uns:
 
             self.uns['funki'] = dict()
@@ -159,7 +161,7 @@ class DataSet(anndata.AnnData):
 
         aux = DataSet(self.to_df().groupby(self.var_names, axis=1).sum())
         self.__dict__.update(aux.__dict__)
-    
+
 
     def save_params(self, path='funki_params.json'):
         '''

@@ -232,7 +232,7 @@ def plot_highest_expr(data, top=10, ax=None):
     mean = np.array(data.X.mean(axis=0)).flatten()
     inds = np.argpartition(mean, -top)[-top:]
     inds = inds[np.argsort(mean[inds])]
-    
+
     usegenes = data.var_names[inds].values[::-1]
 
     df = data.to_df().loc[:, usegenes]
@@ -585,7 +585,7 @@ def plot_dex(data, contrast=None, logfc_thr=1.0, fdr_thr=0.05, top=15, ax=None):
             'provided, please run funki.analysis.diff_exp() first or make sure '
             'it is properly written.'
         )
-    
+
     if ax is None:
 
         fig, ax = plt.subplots()

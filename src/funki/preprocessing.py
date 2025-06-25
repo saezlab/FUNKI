@@ -83,7 +83,7 @@ def sc_trans_normalize_total(data, target_sum=None, log_transform=False):
     }
 
     aux = data.copy()
-    
+
     if target_sum:
 
         sc.pp.normalize_total(aux, target_sum=target_sum, inplace=True)

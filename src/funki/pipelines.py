@@ -132,7 +132,7 @@ def differential_expression(
     '''
 
     diff_exp(data, design_factor, contrast_var, ref_var, method=method)
-    
+
     return plot_dex(
         data,
         contrast=f'{contrast_var}_vs_{ref_var}',
@@ -212,9 +212,8 @@ def enrichment_analysis(
         erated/decoupler.decouple.html#decoupler.decouple
     .. _decoupler.mt.decouple(): https://decoupler-py.readthedocs.io/en/latest/\
         api/generated/decoupler.mt.decouple.html#decoupler.mt.decouple
-
     '''
-        
+
     enrich(
         data,
         net,
