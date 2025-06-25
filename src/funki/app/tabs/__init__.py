@@ -10,7 +10,7 @@ TABS = {
     'Home': ('home', TabHome),
     'Data': ('data', TabData),
     'Normalization': ('norm', TabNorm),
-    'Diff. Expr.': ('dex', TabDex),
     'Clustering': ('clust', TabClust),
+    'Diff. Expr.': ('dex', TabDex),
     'Enrichment': ('enrich', TabEnrich),
 }
