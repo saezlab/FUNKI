@@ -1,3 +1,5 @@
+from functools import reduce
+
 _colors = {
     'red': '#eb3f1b',
     'yellow': '#f6c510',
@@ -29,3 +31,16 @@ def is_numeric(var):
     except ValueError:
 
         return False
+
+
+def rget(dct, keys):
+    '''
+    Retrieves a value from nested dictionaries by diving recursively through a
+    given list of keys. Returns the value if found, None otherwise
+    '''
+
+    def get(d, k):
+
+        return d.get(k, {})
+
+    return reduce(get, [dct] + keys) or None
