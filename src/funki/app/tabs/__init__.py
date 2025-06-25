@@ -14,3 +14,39 @@ TABS = {
     'Diff. Expr.': ('dex', TabDex),
     'Enrichment': ('enrich', TabEnrich),
 }
+
+# Stores the corresponding parameter matching between the different attribtues
+# of the application tabs and the keys of the DataSet's funki parameters
+# dictionary.
+# Format is:
+# (<tab_name>, <attribute_name>, [sequence of DataSet.uns['funki'] keys])
+PARAMS = [ # TODO: Handle missing parameters
+    ('data', 'sample', ['sc_pseudobulk', 'sample_col']),
+    ('data', 'group', ['sc_pseudobulk', 'groups_col']),
+    ('norm', 'max_genes', ['sc_trans_filter', 'max_genes']),
+    ('norm', 'min_genes', ['sc_trans_filter', 'min_genes']),
+    ('norm', 'mito_pct', ['sc_trans_filter', 'mito_pct']),
+    ('norm', 'size_factor', ['sc_trans_normalize_total', 'target_sum']),
+    ('norm', 'log_transform', ['sc_trans_normalize_total', 'log_transform']),
+    ('clust', 'harmony', ['harmonize']),
+    ('clust', 'harmony_var', ['harmonize', 'vars_use']),
+    #('clust', 'embedding_method', []),
+    #('clust', 'perplexity', []),
+    #('clust', 'min_dist', []),
+    #('clust', 'spread', []),
+    #('clust', 'alpha', []),
+    #('clust', 'gamma', []),
+    #('clust', 'color_var', []),
+    ('clust', 'resoultion', ['clustering', 'resolution']),
+    ('clust', 'clustering_method', ['clustering', 'alg']),
+    #('dex', 'contrast_var', ['diff_exp', 'design_factor']),
+    #('dex', 'groupA', ['diff_exp', 'contrast_var']),
+    #('dex', 'groupB', ['diff_exp', 'ref_var']),
+    #('dex', 'thr_logfc', []),
+    #('dex', 'thr_pval', []),
+    ('dex', 'method', ['diff_exp', 'method']),
+    #('enrich', 'gset', []),
+    #('enrich', 'org', []),
+    ('enrich', 'method', ['enrich', 'method']),
+    ('enrich', 'contrast', ['enrich', 'contrast']),
+]

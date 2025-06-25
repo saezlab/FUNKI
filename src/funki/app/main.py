@@ -8,11 +8,13 @@ import pandas as pd
 
 from funki import __version__
 from funki.input import read
+from funki.common import rget
 
 from utils import PATH_LOGO
 from utils import PopUpTable
 from utils import check_num
 from tabs import TABS
+from tabs import PARAMS
 from style import load_style
 from assets.help import Help
 from assets.help import About
@@ -343,6 +345,7 @@ class FunkiApp(tk.Tk):
         elif dtype == 'config' and self.data:
 
             self.data.load_params(path)
+            self.load_config()
 
         self._update()
 
@@ -453,6 +456,27 @@ class FunkiApp(tk.Tk):
         )
 
         PopUpTable(df, title=title, save_command=command)
+
+
+    def load_config(self):
+
+        def set_(var, keys):
+
+            val = rget(self.data.uns['funki'], keys)
+
+            if isinstance(val, list):
+
+                val = val[0]
+
+            elif isinstance(val, dict) and len(val) > 0:
+
+                val = True
+
+            var.set(val or var.get())
+
+        for tab, attr, keyseq in PARAMS:
+
+            set_(getattr(self.tabs[tab], attr), keyseq)
 
 
 if __name__ == '__main__':
