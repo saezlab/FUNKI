@@ -667,16 +667,16 @@ def plot_enrich(
     score = data.uns['funki']['enrich'][contrast]['score']
     pval = data.uns['funki']['enrich'][contrast]['padj']
 
-    res = (
-        score
-        .melt(value_name='score')
-        .merge(
-            pval
-            .melt(value_name='pvalue')
-            .assign(logpval=lambda x: x['pvalue'].clip(2.22e-4, 1))
-            .assign(logpval=lambda x: np.log10(x['logpval']))
-        )
+    res = pd.merge(
+        score.T,
+        pval.T,
+        how='outer',
+        left_index=True,
+        right_index=True
     )
+    res.columns = ['score', 'pval']
+    res['logpval'] = np.log10(res['pval'])
+    res.reset_index(inplace=True)
 
     if ax is None:
 
@@ -690,12 +690,13 @@ def plot_enrich(
     dc.pl.dotplot(
         df=res,
         x='score',
-        y='variable',
+        y='index',
         s='logpval',
         c='score',
-        scale=1,
+        scale=0.1,
         top=top,
-        ax=ax
+        ax=ax,
+        return_fig=False,
     )
     ax.set_title(f'Enrichment for {contrast} with {method}')
 
