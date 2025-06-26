@@ -26,7 +26,7 @@ jobs:
         pip install myst_parser
         pip install numba==0.59.0
     - name: Building HTML docs
-      run: make -C docs html
+      run: make docs html
     - name: Deploy
       uses: s0/git-publish-subdir-action@develop
       env:
