@@ -1,9 +1,3 @@
-# Sphinx vars
-SPHINXOPTS ?=
-SPHINXBUILD ?= sphinx-build
-SOURCEDIR = ./docs/source
-BUILDDIR = ./docs/
-
 # Building vars
 VER = $(shell python3 -c "from funki import __version__; print(__version__)")
 ICON = ./docs/source/_images/funki_favicon.ico
@@ -25,4 +19,4 @@ clean:
 	rm -r *.spec build/
 
 docs:
-	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
+	make -C docs html
