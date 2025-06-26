@@ -29,7 +29,6 @@ dependencies = [
     'harmonypy',
     'decoupler',
     'omnipath',
-    'tksvg',
     'pydeseq2',
     'rpy2',
 ]

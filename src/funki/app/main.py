@@ -3,7 +3,6 @@ import os
 import tkinter as tk
 from tkinter import ttk
 from tkinter import filedialog as fd
-import tksvg
 import pandas as pd
 
 from funki import __version__
@@ -214,7 +213,7 @@ class FunkiApp(tk.Tk):
         Sets up the header logo.
         '''
 
-        logo = tksvg.SvgImage(file=PATH_LOGO, scale=0.25)
+        logo = tk.PhotoImage(file=PATH_LOGO)
 
         header = ttk.Label(self.mainframe, image=logo, padding=(10, 10, 10, 10))
         header.image = logo # Avoiding garbage collection
@@ -479,9 +478,15 @@ class FunkiApp(tk.Tk):
             set_(getattr(self.tabs[tab], attr), keyseq)
 
 
+def _quit():
+    app.quit()
+    app.destroy()
+
+
 if __name__ == '__main__':
 
     app = FunkiApp()
     load_style(app)
+    app.protocol("WM_DELETE_WINDOW", _quit)
 
     app.mainloop()

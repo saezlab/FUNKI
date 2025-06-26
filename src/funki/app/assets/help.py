@@ -1,6 +1,5 @@
 import tkinter as tk
 from tkinter import ttk
-import tksvg
 
 from funki import __version__
 
@@ -9,7 +8,7 @@ from .msg_help import HELPMSG
 
 
 class Help(tk.Toplevel):
-    
+
     def __init__(self):
 
         super().__init__()
@@ -40,7 +39,7 @@ class Help(tk.Toplevel):
         )
         self.toc.grid(row=0, column=0, sticky='NSEW', rowspan=2)
         self.toc.bind('<<ListboxSelect>>', self.update)
-        
+
         # Title
         self.title = ttk.Label(
             self.mainframe,
@@ -95,7 +94,7 @@ class About(tk.Toplevel):
         mainframe.rowconfigure(2, weight=1) # Desctiption
         mainframe.rowconfigure(3, weight=0) # Close button
 
-        logo = tksvg.SvgImage(file=PATH_LOGO, scale=0.15)
+        logo = tk.PhotoImage(file=PATH_LOGO)
         header = ttk.Label(
             mainframe,
             image=logo,
