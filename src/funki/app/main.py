@@ -33,6 +33,8 @@ class FunkiApp(tk.Tk):
 
         super().__init__()
 
+        load_style(self)
+        self.protocol("WM_DELETE_WINDOW", self._quit)
         self.geometry('800x800')
         self._platform = self.tk.call('tk', 'windowingsystem')
 
@@ -268,6 +270,11 @@ class FunkiApp(tk.Tk):
 
                 tab._update()
 
+    def _quit(self):
+
+        self.quit()
+        self.destroy()
+
 
     def new_project(self):
         '''
@@ -478,15 +485,11 @@ class FunkiApp(tk.Tk):
             set_(getattr(self.tabs[tab], attr), keyseq)
 
 
-def _quit():
-    app.quit()
-    app.destroy()
+
 
 
 if __name__ == '__main__':
 
     app = FunkiApp()
-    load_style(app)
-    app.protocol("WM_DELETE_WINDOW", _quit)
 
     app.mainloop()
