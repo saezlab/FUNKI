@@ -9,14 +9,14 @@ from funki import __version__
 from funki.input import read
 from funki.common import rget
 
-from utils import PATH_LOGO
-from utils import PopUpTable
-from utils import check_num
-from tabs import TABS
-from tabs import PARAMS
-from style import load_style
-from assets.help import Help
-from assets.help import About
+from funki.app.utils import PATH_LOGO
+from funki.app.utils import PopUpTable
+from funki.app.utils import check_num
+from funki.app.tabs import TABS
+from funki.app.tabs import PARAMS
+from funki.app.style import load_style
+from funki.app.assets.help import Help
+from funki.app.assets.help import About
 
 
 class FunkiApp(tk.Tk):

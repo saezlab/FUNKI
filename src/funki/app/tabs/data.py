@@ -6,8 +6,8 @@ from funki.input import DataSet
 from funki.plots import plot_obs
 from funki.preprocessing import sc_pseudobulk
 
-from utils import Figure
-from utils import LabeledWidget
+from funki.app.utils import Figure
+from funki.app.utils import LabeledWidget
 
 
 class TabData(ttk.Frame):

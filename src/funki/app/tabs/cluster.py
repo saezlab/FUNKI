@@ -6,8 +6,8 @@ from funki import plots
 from funki.analysis import clustering
 from funki.preprocessing import harmonize
 
-from utils import Figure
-from utils import LabeledWidget
+from funki.app.utils import Figure
+from funki.app.utils import LabeledWidget
 
 
 class TabClust(ttk.Frame):

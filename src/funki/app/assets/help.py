@@ -3,8 +3,8 @@ from tkinter import ttk
 
 from funki import __version__
 
-from utils import WrapLabel, PATH_LOGO
-from .msg_help import HELPMSG
+from funki.app.utils import WrapLabel, PATH_LOGO
+from funki.app.assets.msg_help import HELPMSG
 
 
 class Help(tk.Toplevel):

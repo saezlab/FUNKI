@@ -4,9 +4,9 @@ import matplotlib.pyplot as plt
 
 from funki.pipelines import differential_expression
 
-from utils import Figure
-from utils import LabeledWidget
-from utils import PATH_ICON_SWP
+from funki.app.utils import Figure
+from funki.app.utils import LabeledWidget
+from funki.app.utils import PATH_ICON_SWP
 
 
 class TabDex(ttk.Frame):

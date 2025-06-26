@@ -6,8 +6,8 @@ from funki.pipelines import sc_quality_control
 from funki.preprocessing import sc_trans_filter
 from funki.preprocessing import sc_trans_normalize_total
 
-from utils import Figure
-from utils import LabeledWidget
+from funki.app.utils import Figure
+from funki.app.utils import LabeledWidget
 
 
 class TabNorm(ttk.Frame):

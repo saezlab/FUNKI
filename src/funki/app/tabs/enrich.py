@@ -6,9 +6,8 @@ import matplotlib.pyplot as plt
 
 from funki.pipelines import enrichment_analysis
 
-from utils import LabeledWidget
-from utils import Figure
-from utils import PopUpTable
+from funki.app.utils import LabeledWidget
+from funki.app.utils import Figure
 
 
 class TabEnrich(ttk.Frame):

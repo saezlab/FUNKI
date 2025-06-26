@@ -1,9 +1,9 @@
 import tkinter as tk
 from tkinter import ttk
 
-from utils import read_text
-from utils import WrapLabel
-from utils import PATH_MSG
+from funki.app.utils import read_text
+from funki.app.utils import WrapLabel
+from funki.app.utils import PATH_MSG
 
 
 class TabHome(ttk.Frame):
