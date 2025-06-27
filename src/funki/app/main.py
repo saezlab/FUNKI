@@ -482,6 +482,12 @@ class FunkiApp(tk.Tk):
 
         for tab, attr, keyseq in PARAMS:
 
+            # Special case: contrast-dependent parameters
+            if keyseq[0] == 'diff_exp':
+
+                # Use last added contrast
+                keyseq[1] = list(self.data.uns['funki']['diff_exp'])[-1]
+
             set_(getattr(self.tabs[tab], attr), keyseq)
 
 

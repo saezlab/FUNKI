@@ -609,6 +609,12 @@ def plot_dex(data, contrast=None, logfc_thr=1.0, fdr_thr=0.05, top=15, ax=None):
             'it is properly written.'
         )
 
+    # Storing parameters
+    data.uns['funki']['diff_exp'][contrast].update({
+        'thr_logfc': logfc_thr,
+        'thr_pval': fdr_thr,
+    })
+
     if ax is None:
 
         fig, ax = plt.subplots()
