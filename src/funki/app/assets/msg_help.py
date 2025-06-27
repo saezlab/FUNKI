@@ -1,10 +1,20 @@
 
 HELPMSG = {
-    'Loading measurements': (
-        'Please provide a table where rows are observations (e.g. samples, '
-        'cells...) and columns are variables (e.g. genes, proteins...). Note '
-        'that for the enrichment analysis, it is assumed that your variables '
-        'use Gene Symbols as identifiers.'
+    'Getting started': (
+        'FUNKI handles data based on the AnnData format. This data structure is'
+        'comprised of a main table of e.g. measurements, where columns '
+        'represent observations (e.g. cells, samples...) and rows represent '
+        'variables (e.g. transcripts, proteins...). This table is then '
+        'accompanied of the "obs" and "var" tables, containing information '
+        'regarding the observations and variables respectively (i.e. metadata).'
+        'There are a few more data structures included, but these are the '
+        'basics, if you are interested, you can read more about it in the '
+        'original AnnData publication and/or documentation.\n\n'
+        'Most of the file formats supported by AnnData are also supported in '
+        'FUNKI. These include H5/H5AD, Excel, Loom, MTX, UMI, CSV, TSV or TXT.'
+        'Some of these formats allow the storage of metadata along with the '
+        'actual data, if that is not the case, you can upload a separate file '
+        'with the sample metadata (CSV, TSV or TXT).'
     ),
     'Loading metadata': (
         'Please provide a table where rows are observations (e.g. samples, '
