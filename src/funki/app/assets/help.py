@@ -54,6 +54,7 @@ class Help(tk.Toplevel):
         self.content = ScrollText(
             self.mainframe,
             width=50,
+            font=('Arial', 12),
         )
         self.content.grid(row=1, column=1, sticky='NSEW')
 
