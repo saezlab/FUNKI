@@ -215,7 +215,9 @@ class TabEnrich(ttk.Frame):
             self.net,
             contrast=self.contrast.get(),
             method=method,
-            ax=self.ax
+            ax=self.ax,
+            gset=self.gset.get(),
+            org=self.org.get(),
         )
         self.fig.tight_layout()
         self.figframe._update()

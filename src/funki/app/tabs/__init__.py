@@ -20,7 +20,7 @@ TABS = {
 # dictionary.
 # Format is:
 # (<tab_name>, <attribute_name>, [sequence of DataSet.uns['funki'] keys])
-PARAMS = [ # TODO: Handle missing parameters
+PARAMS = [
     ('data', 'sample', ['sc_pseudobulk', 'sample_col']),
     ('data', 'group', ['sc_pseudobulk', 'groups_col']),
     ('norm', 'max_genes', ['sc_trans_filter', 'max_genes']),
@@ -45,8 +45,8 @@ PARAMS = [ # TODO: Handle missing parameters
     ('dex', 'groupB', ['diff_exp', None, 'ref_var']),
     ('dex', 'thr_logfc', ['diff_exp', None, 'thr_logfc']),
     ('dex', 'thr_pval', ['diff_exp', None, 'thr_pval']),
-    #('enrich', 'gset', []),
-    #('enrich', 'org', []),
+    ('enrich', 'gset', ['enrich', 'gset']),
+    ('enrich', 'org', ['enrich', 'org']),
     ('enrich', 'method', ['enrich', 'method']),
     ('enrich', 'contrast', ['enrich', 'contrast']),
 ]
