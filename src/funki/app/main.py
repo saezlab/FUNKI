@@ -1,4 +1,5 @@
 import os
+import json
 
 import tkinter as tk
 from tkinter import ttk
@@ -350,8 +351,11 @@ class FunkiApp(tk.Tk):
         # Loading configuration
         elif dtype == 'config' and self.data:
 
-            self.data.load_params(path)
-            self.load_config()
+            with open(path, 'r') as f:
+
+                cfg = json.load(f)
+
+            self.load_config(cfg)
 
         self._update()
 
@@ -464,11 +468,11 @@ class FunkiApp(tk.Tk):
         PopUpTable(df, title=title, save_command=command)
 
 
-    def load_config(self):
+    def load_config(self, cfg):
 
         def set_(var, keys):
 
-            val = rget(self.data.uns['funki'], keys)
+            val = rget(cfg, keys)
 
             if isinstance(val, list):
 
@@ -483,10 +487,10 @@ class FunkiApp(tk.Tk):
         for tab, attr, keyseq in PARAMS:
 
             # Special case: contrast-dependent parameters
-            if keyseq[0] == 'diff_exp':
+            if keyseq[0] == 'diff_exp' and 'diff_exp' in cfg:
 
                 # Use last added contrast
-                keyseq[1] = list(self.data.uns['funki']['diff_exp'])[-1]
+                keyseq[1] = list(cfg['diff_exp'])[-1]
 
             set_(getattr(self.tabs[tab], attr), keyseq)
 
