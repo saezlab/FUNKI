@@ -55,6 +55,8 @@ class Help(tk.Toplevel):
             self.mainframe,
             width=50,
             font=('Arial', 12),
+            padx=10,
+            pady=10,
         )
         self.content.grid(row=1, column=1, sticky='NSEW')
 
