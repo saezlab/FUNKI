@@ -1,8 +1,8 @@
 import tkinter as tk
 from tkinter import ttk
 
+from funki.app.style import styleText
 from funki.app.utils import read_text
-from funki.app.utils import WrapLabel
 from funki.app.utils import PATH_MSG
 
 
@@ -19,11 +19,10 @@ class TabHome(ttk.Frame):
         self.controller = controller
 
         # Welcome text
-        WrapLabel(
-            self,
-            text=read_text(PATH_MSG),
-            anchor='nw',
-        ).grid(row=0, column=0, sticky='NSEW', columnspan=2)
+        txt = tk.Text(self, **styleText)
+        txt.insert('end', read_text(PATH_MSG))
+        txt.configure(state='disabled')
+        txt.grid(row=0, column=0, sticky='NSEW', columnspan=2)
 
         # Button frames
         lframe = ttk.Frame(self)

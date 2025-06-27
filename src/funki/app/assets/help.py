@@ -3,7 +3,8 @@ from tkinter import ttk
 
 from funki import __version__
 
-from funki.app.utils import WrapLabel, PATH_LOGO
+from funki.app.utils import ScrollText
+from funki.app.utils import PATH_LOGO
 from funki.app.assets.msg_help import HELPMSG
 
 
@@ -50,11 +51,9 @@ class Help(tk.Toplevel):
         self.title.grid(row=0, column=1, sticky='NSEW')
 
         # Contents
-        self.content = WrapLabel(
+        self.content = ScrollText(
             self.mainframe,
             width=50,
-            anchor='nw',
-            padding=(10, 0, 0, 0),
         )
         self.content.grid(row=1, column=1, sticky='NSEW')
 
@@ -67,7 +66,7 @@ class Help(tk.Toplevel):
 
         k = self.toc.get(self.toc.curselection()[0])
         self.title['text'] = k
-        self.content['text'] = HELPMSG[k]
+        self.content.update(HELPMSG[k])
 
 
 class About(tk.Toplevel):
