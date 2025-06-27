@@ -485,9 +485,6 @@ class FunkiApp(tk.Tk):
             set_(getattr(self.tabs[tab], attr), keyseq)
 
 
-
-
-
 if __name__ == '__main__':
 
     app = FunkiApp()

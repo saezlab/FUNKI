@@ -17,6 +17,3 @@ compile:
 
 clean:
 	rm -r *.spec build/
-
-docs:
-	make -C docs html
