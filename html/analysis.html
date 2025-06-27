@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>funki.analysis &#8212; FUNKI documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css?v=d54626cc" />
+    
+    <script src="_static/documentation_options.js?v=938c9ccc"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    
+    <link rel="icon" href="_static/funki_favicon.ico"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="funki.plots" href="plots.html" />
+    <link rel="prev" title="funki.preprocessing" href="preprocessing.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="plots.html" title="funki.plots"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="preprocessing.html" title="funki.preprocessing"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">FUNKI documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">funki.analysis</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-funki.analysis">
+<span id="funki-analysis"></span><h1>funki.analysis<a class="headerlink" href="#module-funki.analysis" title="Link to this heading">¶</a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="funki.analysis.clustering">
+<span class="sig-prename descclassname"><span class="pre">funki.analysis.</span></span><span class="sig-name descname"><span class="pre">clustering</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'leiden'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resolution</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">neigh_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alg_kwargs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#funki.analysis.clustering" title="Link to this definition">¶</a></dt>
+<dd><p>Computes the clustering of the cells/samples according to the selected
+algorithm and resolution parameter. You can plot the resulting clustering
+with your dimensionality reduction approach of choice
+(<a class="reference internal" href="plots.html#funki.plots.plot_pca" title="funki.plots.plot_pca"><code class="xref py py-func docutils literal notranslate"><span class="pre">funki.plots.plot_pca()</span></code></a>, <a class="reference internal" href="plots.html#funki.plots.plot_tsne" title="funki.plots.plot_tsne"><code class="xref py py-func docutils literal notranslate"><span class="pre">funki.plots.plot_tsne()</span></code></a> or
+<a class="reference internal" href="plots.html#funki.plots.plot_umap" title="funki.plots.plot_umap"><code class="xref py py-func docutils literal notranslate"><span class="pre">funki.plots.plot_umap()</span></code></a>) by passing the clustering algorithm name to
+the keyword argument <code class="docutils literal notranslate"><span class="pre">color</span></code> (e.g.: <code class="docutils literal notranslate"><span class="pre">plot_tsne(mydata,</span> <span class="pre">color='leiden')</span></code>)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<a class="reference internal" href="input.html#funki.input.DataSet" title="funki.input.DataSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">funki.input.DataSet</span></code></a>) – The data set instance from which to compute the clustering.</p></li>
+<li><p><strong>alg</strong> (<em>str</em><em>, </em><em>optional</em>) – The algorithm to use for computing the clusters, can be either
+<code class="docutils literal notranslate"><span class="pre">'leiden'</span></code> or <code class="docutils literal notranslate"><span class="pre">'louvain'</span></code>, defaults to <code class="docutils literal notranslate"><span class="pre">'leiden'</span></code></p></li>
+<li><p><strong>resolution</strong> (<em>float</em><em>, </em><em>optional</em>) – The resolution of the clustering, a higher number
+generates more and smaller clusters, defaults to <code class="docutils literal notranslate"><span class="pre">1.0</span></code></p></li>
+<li><p><strong>**neigh_kwargs</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>any</em><em>]</em><em>, </em><em>optional</em>) – Other keyword arguments that are passed to
+<a class="reference external" href="https://scanpy.readthedocs.io/en/latest/api/generated/scanpy.pp.neighbors.html">scanpy.pp.neighbors()</a> function, defaults to <code class="docutils literal notranslate"><span class="pre">{}</span></code></p></li>
+<li><p><strong>**alg_kwargs</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>any</em><em>]</em><em>, </em><em>optional</em>) – Other keyword arguments that are passed to the
+clustering algorithm <a class="reference external" href="https://scanpy.readthedocs.io/en/latest/api/generated/scanpy.tl.louvain.html">scanpy.tl.louvain()</a> or <a class="reference external" href="https://scanpy.readthedocs.io/en/latest/api/generated/scanpy.tl.leiden.html">scanpy.tl.leiden()</a>
+functions, defaults to <code class="docutils literal notranslate"><span class="pre">{}</span></code></p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">None</span></code>, results are stored inplace of the passed <code class="docutils literal notranslate"><span class="pre">data</span></code> object</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>NoneType</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="funki.analysis.diff_exp">
+<span class="sig-prename descclassname"><span class="pre">funki.analysis.</span></span><span class="sig-name descname"><span class="pre">diff_exp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">design_factor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">contrast_var</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref_var</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'pydeseq2'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#funki.analysis.diff_exp" title="Link to this definition">¶</a></dt>
+<dd><p>Computes differential expression analysis on the provided data based on a
+given design factor and both the contrast and reference variables (e.g.
+treatment and control).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<a class="reference internal" href="input.html#funki.input.DataSet" title="funki.input.DataSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">funki.input.DataSet</span></code></a>) – The data from which to compute the differential expression</p></li>
+<li><p><strong>design_factor</strong> (<em>str</em>) – Name of the column containing the variables which the
+contrasting samples are assigned. The column must be present in the
+<code class="docutils literal notranslate"><span class="pre">data.obs</span></code> table</p></li>
+<li><p><strong>contrast_var</strong> (<em>any</em><em> | </em><em>list</em><em>[</em><em>any</em><em>]</em>) – The variable value(s) that defines the samples that are
+to be contrasted against the reference (e.g. <code class="docutils literal notranslate"><span class="pre">'treatment'</span></code>). The value
+must be present in the specified <code class="docutils literal notranslate"><span class="pre">design_factor</span></code> column</p></li>
+<li><p><strong>ref_var</strong> (<em>any</em><em> | </em><em>list</em><em>[</em><em>any</em><em>]</em>) – The variable value(s) that defines the refence samples (e.g.
+<code class="docutils literal notranslate"><span class="pre">'control'</span></code>). The value must be present in the specified
+<code class="docutils literal notranslate"><span class="pre">design_factor</span></code> column</p></li>
+<li><p><strong>method</strong> (<em>str</em>) – Which method to use for computing the differential
+expression. Available methods are <code class="docutils literal notranslate"><span class="pre">'pydeseq2'</span></code> or <code class="docutils literal notranslate"><span class="pre">'limma'</span></code>,
+defaults to <code class="docutils literal notranslate"><span class="pre">'pydeseq2'</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">None</span></code>, results are stored inplace of the passed <code class="docutils literal notranslate"><span class="pre">data</span></code> object</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>NoneType</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="funki.analysis.enrich">
+<span class="sig-prename descclassname"><span class="pre">funki.analysis.</span></span><span class="sig-name descname"><span class="pre">enrich</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">net</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">contrast</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'source'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'target'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#funki.analysis.enrich" title="Link to this definition">¶</a></dt>
+<dd><p>Performs enrichment analysis using <a class="reference external" href="https://decoupler-py.readthedocs.io/en/latest/index.html">Decoupler</a> based on a given network
+(e.g. gene set collection) and statistical method(s).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<a class="reference internal" href="input.html#funki.input.DataSet" title="funki.input.DataSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">funki.input.DataSet</span></code></a>) – The data set from which to perform the enrichment</p></li>
+<li><p><strong>net</strong> (<a class="reference external" href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html">pandas.DataFrame</a>) – The network linking the features of the data to the attributes
+(e.g. pathways, gene sets, transcription factors, etc.)</p></li>
+<li><p><strong>contrast</strong> (<em>str</em>) – Which result of the differential expression to use for the
+enrichment. Must be present in <code class="docutils literal notranslate"><span class="pre">data.varm_keys</span></code> named with the format
+<code class="docutils literal notranslate"><span class="pre">'{contrast_var}_vs_{ref_var}'</span></code>. Defaults to <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+<li><p><strong>method</strong> (<em>NoneType</em><em> | </em><em>str</em>) – Which statistical method to use in order to compute the
+enrichment, defaults to <code class="docutils literal notranslate"><span class="pre">None</span></code>. If none is provided, uses <code class="docutils literal notranslate"><span class="pre">'ulm'</span></code>.
+To see all the available methods, you can run <a class="reference external" href="https://decoupler-py.readthedocs.io/en/latest/api/mt.html">decoupler.mt.show()</a>
+function.</p></li>
+<li><p><strong>source</strong> (<em>str</em>) – Column name from the provided <code class="docutils literal notranslate"><span class="pre">net</span></code> containing the gene
+sets to enrich for. Defaults to <code class="docutils literal notranslate"><span class="pre">'source'</span></code>.</p></li>
+<li><p><strong>target</strong> (<em>str</em>) – Column name from the provided <code class="docutils literal notranslate"><span class="pre">net</span></code> containing the gene set
+components (e.g. gene/protein names) that can be mapped back to the data
+set variable names. Defaults to <code class="docutils literal notranslate"><span class="pre">'target'</span></code>.</p></li>
+<li><p><strong>weight</strong> (<em>NoneType</em><em> | </em><em>str</em>) – Defines the column in the network containing the weights to
+use in the enrichment, defaults to <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+<li><p><strong>**kwargs</strong> (<em>optional</em>) – Other keyword arguments that passed to
+<a class="reference external" href="https://decoupler-py.readthedocs.io/en/latest/api/generated/decoupler.mt.decouple.html#decoupler.mt.decouple">decoupler.mt.decouple()</a> function</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><code class="docutils literal notranslate"><span class="pre">None</span></code>, results are stored inplace of the passed <code class="docutils literal notranslate"><span class="pre">data</span></code>
+object, which is a <a class="reference internal" href="input.html#funki.input.DataSet" title="funki.input.DataSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">funki.input.DataSet</span></code></a> instance. Estimates,
+p-values and consensus scores (in case of multiple methods) are stored
+as part of the <code class="docutils literal notranslate"><span class="pre">obsm</span></code> attribute of the object.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>NoneType</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="funki.analysis.label_transfer">
+<span class="sig-prename descclassname"><span class="pre">funki.analysis.</span></span><span class="sig-name descname"><span class="pre">label_transfer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transfer_label</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#funki.analysis.label_transfer" title="Link to this definition">¶</a></dt>
+<dd><p>Performs label transfer between the provided reference and target data sets.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<a class="reference internal" href="input.html#funki.input.DataSet" title="funki.input.DataSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">funki.input.DataSet</span></code></a>) – The target data set for the labels to be transferred to.</p></li>
+<li><p><strong>ref_data</strong> (<a class="reference internal" href="input.html#funki.input.DataSet" title="funki.input.DataSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">funki.input.DataSet</span></code></a> | <cite>anndata.AnnData</cite>) – The reference data set to transfer the labels from. The labels to
+transfer must be present in the <code class="docutils literal notranslate"><span class="pre">obs</span></code> table.</p></li>
+<li><p><strong>transfer_label</strong> (<em>str</em>) – The column from the <code class="docutils literal notranslate"><span class="pre">obs</span></code> table which contains the labels that are to
+be transferred.</p></li>
+<li><p><strong>**kwargs</strong> (<em>optional</em>) – Other keyword arguments that are passed to the
+label transfer function <a class="reference external" href="https://scanpy.readthedocs.io/en/stable/generated/scanpy.tl.ingest.html">scanpy.tl.ingest()</a>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="funki.analysis.sc_trans_qc_metrics">
+<span class="sig-prename descclassname"><span class="pre">funki.analysis.</span></span><span class="sig-name descname"><span class="pre">sc_trans_qc_metrics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">var_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mito'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#funki.analysis.sc_trans_qc_metrics" title="Link to this definition">¶</a></dt>
+<dd><p>Takes a single-cell transcriptomics data set and computes several quality
+control (QC) metrics according to the provided variable annotation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<a class="reference internal" href="input.html#funki.input.DataSet" title="funki.input.DataSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">funki.input.DataSet</span></code></a>) – A single-cell transcriptomic data set instance</p></li>
+<li><p><strong>var_name</strong> (<em>str</em><em>, </em><em>optional</em>) – The variable over which to compute the QC metrics. This
+name should exist in <code class="docutils literal notranslate"><span class="pre">DataSet.var_names</span></code>, defaults to <code class="docutils literal notranslate"><span class="pre">'mito'</span></code></p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The resulting filtered data set after applying the specified
+thresholds</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="input.html#funki.input.DataSet" title="funki.input.DataSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">funki.input.DataSet</span></code></a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">funki.analysis</a><ul>
+<li><a class="reference internal" href="#funki.analysis.clustering"><code class="docutils literal notranslate"><span class="pre">clustering()</span></code></a></li>
+<li><a class="reference internal" href="#funki.analysis.diff_exp"><code class="docutils literal notranslate"><span class="pre">diff_exp()</span></code></a></li>
+<li><a class="reference internal" href="#funki.analysis.enrich"><code class="docutils literal notranslate"><span class="pre">enrich()</span></code></a></li>
+<li><a class="reference internal" href="#funki.analysis.label_transfer"><code class="docutils literal notranslate"><span class="pre">label_transfer()</span></code></a></li>
+<li><a class="reference internal" href="#funki.analysis.sc_trans_qc_metrics"><code class="docutils literal notranslate"><span class="pre">sc_trans_qc_metrics()</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="preprocessing.html"
+                          title="previous chapter">funki.preprocessing</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="plots.html"
+                          title="next chapter">funki.plots</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/analysis.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="plots.html" title="funki.plots"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="preprocessing.html" title="funki.preprocessing"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">FUNKI documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">funki.analysis</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2024, Nicolàs Palacio-Escat.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

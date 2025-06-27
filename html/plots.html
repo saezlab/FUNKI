@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>funki.plots &#8212; FUNKI documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=fa44fd50" />
+    <link rel="stylesheet" type="text/css" href="_static/classic.css?v=d54626cc" />
+    
+    <script src="_static/documentation_options.js?v=938c9ccc"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    
+    <link rel="icon" href="_static/funki_favicon.ico"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="funki.pipelines" href="pipelines.html" />
+    <link rel="prev" title="funki.analysis" href="analysis.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="pipelines.html" title="funki.pipelines"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="analysis.html" title="funki.analysis"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">FUNKI documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">funki.plots</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="module-funki.plots">
+<span id="funki-plots"></span><h1>funki.plots<a class="headerlink" href="#module-funki.plots" title="Link to this heading">¶</a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="funki.plots.plot_counts_vs_n_genes">
+<span class="sig-prename descclassname"><span class="pre">funki.plots.</span></span><span class="sig-name descname"><span class="pre">plot_counts_vs_n_genes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#funki.plots.plot_counts_vs_n_genes" title="Link to this definition">¶</a></dt>
+<dd><p>Generates a scatter plot displaying the number of genes by counts versus
+total gene counts.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<a class="reference internal" href="input.html#funki.input.DataSet" title="funki.input.DataSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">funki.input.DataSet</span></code></a>) – The data set from which to generate the figure</p></li>
+<li><p><strong>ax</strong> (<a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes">matplotlib.axes.Axes</a>) – Matplotlib Axes instance where to draw the plot. Defaults to
+<code class="docutils literal notranslate"><span class="pre">None</span></code>, meaning a new figure and axes will be generated.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The figure contataining the resulting scatter plot. If an axes is
+passed, nothing is returned.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.html#matplotlib.figure.Figure">matplotlib.figure.Figure</a> | None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="funki.plots.plot_counts_vs_pct_mito">
+<span class="sig-prename descclassname"><span class="pre">funki.plots.</span></span><span class="sig-name descname"><span class="pre">plot_counts_vs_pct_mito</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#funki.plots.plot_counts_vs_pct_mito" title="Link to this definition">¶</a></dt>
+<dd><p>Generates a scatter plot displaying the percentage of mitochondrial genes
+versus total gene counts.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<a class="reference internal" href="input.html#funki.input.DataSet" title="funki.input.DataSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">funki.input.DataSet</span></code></a>) – The data set from which to generate the figure</p></li>
+<li><p><strong>ax</strong> (<a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes">matplotlib.axes.Axes</a>) – Matplotlib Axes instance where to draw the plot. Defaults to
+<code class="docutils literal notranslate"><span class="pre">None</span></code>, meaning a new figure and axes will be generated.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The figure contataining the resulting scatter plot. If an axes is
+passed, nothing is returned.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.html#matplotlib.figure.Figure">matplotlib.figure.Figure</a> | None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="funki.plots.plot_dex">
+<span class="sig-prename descclassname"><span class="pre">funki.plots.</span></span><span class="sig-name descname"><span class="pre">plot_dex</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">contrast</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">logfc_thr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fdr_thr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">15</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#funki.plots.plot_dex" title="Link to this definition">¶</a></dt>
+<dd><p>Plots the results of the differential expression analisis as a volcano plot.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<a class="reference internal" href="input.html#funki.input.DataSet" title="funki.input.DataSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">funki.input.DataSet</span></code></a>) – The data set from which to generate the figure</p></li>
+<li><p><strong>contrast</strong> (<em>str</em>) – Which result of the differential expression to use for the
+enrichment. Must be present in <code class="docutils literal notranslate"><span class="pre">data.varm_keys</span></code> named with the format
+<code class="docutils literal notranslate"><span class="pre">'{contrast_var}_vs_{ref_var}'</span></code>. Defaults to <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p></li>
+<li><p><strong>logfc_thr</strong> (<em>float</em><em>, </em><em>optional</em>) – Threshold for signifacnce based on the log2(FC) value,
+defaults to <code class="docutils literal notranslate"><span class="pre">1.0</span></code></p></li>
+<li><p><strong>fdr_thr</strong> (<em>float</em><em>, </em><em>optional</em>) – Threshold for signifacnce based on the FDR value, defaults
+to <code class="docutils literal notranslate"><span class="pre">0.05</span></code></p></li>
+<li><p><strong>top</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of top genes for which to display their gene name,
+defaults to <code class="docutils literal notranslate"><span class="pre">15</span></code>.</p></li>
+<li><p><strong>ax</strong> (<a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes">matplotlib.axes.Axes</a>) – Matplotlib Axes instance where to draw the plot. Defaults to
+<code class="docutils literal notranslate"><span class="pre">None</span></code>, meaning a new figure and axes will be generated.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The figure contataining the resulting scatter plot. If an axes is
+passed, nothing is returned.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.html#matplotlib.figure.Figure">matplotlib.figure.Figure</a> | None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="funki.plots.plot_enrich">
+<span class="sig-prename descclassname"><span class="pre">funki.plots.</span></span><span class="sig-name descname"><span class="pre">plot_enrich</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#funki.plots.plot_enrich" title="Link to this definition">¶</a></dt>
+<dd><p>Generates a dotplot displaying the top results of an enrichment analysis
+based on the provided methods.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<a class="reference internal" href="input.html#funki.input.DataSet" title="funki.input.DataSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">funki.input.DataSet</span></code></a>) – The data set from which to generate the figure (it is assumed
+that <code class="docutils literal notranslate"><span class="pre">funki.analysis.enrich()</span></code> as been performed beforehand).</p></li>
+<li><p><strong>top</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of top enriched gene sets to display based on their
+score, defaults to <code class="docutils literal notranslate"><span class="pre">10</span></code>.</p></li>
+<li><p><strong>method</strong> (<em>NoneType</em><em> | </em><em>str</em>) – Which statistical method to use in order to compute the
+enrichment, defaults to <code class="docutils literal notranslate"><span class="pre">None</span></code>. If none is provided, uses <code class="docutils literal notranslate"><span class="pre">'ulm'</span></code>.
+To see all the available methods, you can run <code class="docutils literal notranslate"><span class="pre">decoupler.mt.show()</span></code>
+function.</p></li>
+<li><p><strong>ax</strong> (<a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes">matplotlib.axes.Axes</a>) – Matplotlib Axes instance where to draw the plot. Defaults to
+<code class="docutils literal notranslate"><span class="pre">None</span></code>, meaning a new figure and axes will be generated.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The figure contataining the resulting bar plot</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.html#matplotlib.figure.Figure">matplotlib.figure.Figure</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="funki.plots.plot_highest_expr">
+<span class="sig-prename descclassname"><span class="pre">funki.plots.</span></span><span class="sig-name descname"><span class="pre">plot_highest_expr</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#funki.plots.plot_highest_expr" title="Link to this definition">¶</a></dt>
+<dd><p>Generates a box plot of the top expressed genes (based on mean expression).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<a class="reference internal" href="input.html#funki.input.DataSet" title="funki.input.DataSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">funki.input.DataSet</span></code></a>) – The data set from which to generate the figure</p></li>
+<li><p><strong>top</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of top genes to represent, defaults to <code class="docutils literal notranslate"><span class="pre">10</span></code></p></li>
+<li><p><strong>ax</strong> (<a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes">matplotlib.axes.Axes</a>) – Matplotlib Axes instance where to draw the plot. Defaults to
+<code class="docutils literal notranslate"><span class="pre">None</span></code>, meaning a new figure and axes will be generated.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The figure contataining the resulting box plot. If an axes is
+passed, nothing is returned.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.html#matplotlib.figure.Figure">matplotlib.figure.Figure</a> | None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="funki.plots.plot_n_genes">
+<span class="sig-prename descclassname"><span class="pre">funki.plots.</span></span><span class="sig-name descname"><span class="pre">plot_n_genes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#funki.plots.plot_n_genes" title="Link to this definition">¶</a></dt>
+<dd><p>Generates a violin plot displaying the number of genes by counts. This is,
+number of genes per cell that have non-zero counts.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<a class="reference internal" href="input.html#funki.input.DataSet" title="funki.input.DataSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">funki.input.DataSet</span></code></a>) – The data set from which to generate the figure</p></li>
+<li><p><strong>ax</strong> (<a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes">matplotlib.axes.Axes</a>) – Matplotlib Axes instance where to draw the plot. Defaults to
+<code class="docutils literal notranslate"><span class="pre">None</span></code>, meaning a new figure and axes will be generated.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The figure contataining the resulting violin plot. If an axes is
+passed, nothing is returned.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.html#matplotlib.figure.Figure">matplotlib.figure.Figure</a> | None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="funki.plots.plot_obs">
+<span class="sig-prename descclassname"><span class="pre">funki.plots.</span></span><span class="sig-name descname"><span class="pre">plot_obs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">obs_var</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#funki.plots.plot_obs" title="Link to this definition">¶</a></dt>
+<dd><p>Generates a plot to visualize the metadata.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<a class="reference internal" href="input.html#funki.input.DataSet" title="funki.input.DataSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">funki.input.DataSet</span></code></a>) – The data set from which to generate the figure (it is assumed
+that <code class="docutils literal notranslate"><span class="pre">funki.analysis.enrich()</span></code> as been performed beforehand).</p></li>
+<li><p><strong>obs_var</strong> (<em>str</em>) – The variable (column name) of the observations matrix to
+plot.</p></li>
+<li><p><strong>ax</strong> (<a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes">matplotlib.axes.Axes</a>) – Matplotlib Axes instance where to draw the plot. Defaults to
+<code class="docutils literal notranslate"><span class="pre">None</span></code>, meaning a new figure and axes will be generated.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The figure contataining the resulting plot. If an axes is passed,
+nothing is returned.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.html#matplotlib.figure.Figure">matplotlib.figure.Figure</a> | None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="funki.plots.plot_pca">
+<span class="sig-prename descclassname"><span class="pre">funki.plots.</span></span><span class="sig-name descname"><span class="pre">plot_pca</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_highly_variable</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recalculate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#funki.plots.plot_pca" title="Link to this definition">¶</a></dt>
+<dd><p>Plots the dimensionality reduction PCA results of a data set.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<a class="reference internal" href="input.html#funki.input.DataSet" title="funki.input.DataSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">funki.input.DataSet</span></code></a>) – The data set from which to compute the PCA</p></li>
+<li><p><strong>color</strong> (<em>str</em><em>, </em><em>optional</em>) – Variable to color from, defaults to <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
+<li><p><strong>use_highly_variable</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to use highly variable genes only or all
+genes available, defaults to <code class="docutils literal notranslate"><span class="pre">True</span></code></p></li>
+<li><p><strong>recalculate</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to recalculate the dimensionality reduction,
+defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code></p></li>
+<li><p><strong>ax</strong> (<a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes">matplotlib.axes.Axes</a>) – Matplotlib Axes instance where to draw the plot. Defaults to
+<code class="docutils literal notranslate"><span class="pre">None</span></code>, meaning a new figure and axes will be generated.</p></li>
+<li><p><strong>**kwargs</strong> (<em>optional</em>) – Other keyword arguments that can be passed to
+<a class="reference external" href="https://scanpy.readthedocs.io/en/latest/generated/scanpy.pp.pca.html">scanpy.pp.pca()</a></p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The figure contataining the scatter plot showing the PCA embedding</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.html#matplotlib.figure.Figure">matplotlib.figure.Figure</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="funki.plots.plot_pct_counts_mito">
+<span class="sig-prename descclassname"><span class="pre">funki.plots.</span></span><span class="sig-name descname"><span class="pre">plot_pct_counts_mito</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#funki.plots.plot_pct_counts_mito" title="Link to this definition">¶</a></dt>
+<dd><p>Generates a violin plot displaying the percentage of mitochondrial genes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<a class="reference internal" href="input.html#funki.input.DataSet" title="funki.input.DataSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">funki.input.DataSet</span></code></a>) – The data set from which to generate the figure</p></li>
+<li><p><strong>ax</strong> (<a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes">matplotlib.axes.Axes</a>) – Matplotlib Axes instance where to draw the plot. Defaults to
+<code class="docutils literal notranslate"><span class="pre">None</span></code>, meaning a new figure and axes will be generated.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The figure contataining the resulting violin plot. If an axes is
+passed, nothing is returned.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.html#matplotlib.figure.Figure">matplotlib.figure.Figure</a> | None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="funki.plots.plot_total_counts">
+<span class="sig-prename descclassname"><span class="pre">funki.plots.</span></span><span class="sig-name descname"><span class="pre">plot_total_counts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#funki.plots.plot_total_counts" title="Link to this definition">¶</a></dt>
+<dd><p>Generates a violin plot displaying the total counts per gene.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<a class="reference internal" href="input.html#funki.input.DataSet" title="funki.input.DataSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">funki.input.DataSet</span></code></a>) – The data set from which to generate the figure</p></li>
+<li><p><strong>ax</strong> (<a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes">matplotlib.axes.Axes</a>) – Matplotlib Axes instance where to draw the plot. Defaults to
+<code class="docutils literal notranslate"><span class="pre">None</span></code>, meaning a new figure and axes will be generated.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The figure contataining the resulting violin plot. If an axes is
+passed, nothing is returned.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.html#matplotlib.figure.Figure">matplotlib.figure.Figure</a> | None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="funki.plots.plot_tsne">
+<span class="sig-prename descclassname"><span class="pre">funki.plots.</span></span><span class="sig-name descname"><span class="pre">plot_tsne</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">perplexity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">30</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recalculate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#funki.plots.plot_tsne" title="Link to this definition">¶</a></dt>
+<dd><p>Plots the dimensionality reduction t-SNE results of a data set.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<a class="reference internal" href="input.html#funki.input.DataSet" title="funki.input.DataSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">funki.input.DataSet</span></code></a>) – The data set from which to compute the t-SNE</p></li>
+<li><p><strong>color</strong> (<em>str</em><em>, </em><em>optional</em>) – Variable to color from, defaults to <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
+<li><p><strong>perplexity</strong> (<em>int</em><em>, </em><em>optional</em>) – Perplexity hyperparmaeter for the t-SNE representation.
+Relates to the number of nearest neighbours, defaults to <code class="docutils literal notranslate"><span class="pre">30</span></code></p></li>
+<li><p><strong>recalculate</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to recalculate the dimensionality reduction,
+defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code></p></li>
+<li><p><strong>ax</strong> (<a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes">matplotlib.axes.Axes</a>) – Matplotlib Axes instance where to draw the plot. Defaults to
+<code class="docutils literal notranslate"><span class="pre">None</span></code>, meaning a new figure and axes will be generated.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The figure contataining the scatter plot showing the tSNE
+embedding</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.html#matplotlib.figure.Figure">matplotlib.figure.Figure</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="funki.plots.plot_umap">
+<span class="sig-prename descclassname"><span class="pre">funki.plots.</span></span><span class="sig-name descname"><span class="pre">plot_umap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_dist</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">spread</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gamma</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recalculate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#funki.plots.plot_umap" title="Link to this definition">¶</a></dt>
+<dd><p>Plots the dimensionality reduction UMAP results of a data set.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<a class="reference internal" href="input.html#funki.input.DataSet" title="funki.input.DataSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">funki.input.DataSet</span></code></a>) – The data set from which to compute the UMAP</p></li>
+<li><p><strong>color</strong> (<em>str</em><em>, </em><em>optional</em>) – Variable to color from, defaults to <code class="docutils literal notranslate"><span class="pre">None</span></code></p></li>
+<li><p><strong>min_dist</strong> (<em>float</em><em>, </em><em>optional</em>) – Effective minimum distance between the embedded points</p></li>
+<li><p><strong>spread</strong> (<em>float</em><em>, </em><em>optional</em>) – Effective scale of embedded points</p></li>
+<li><p><strong>alpha</strong> (<em>float</em><em>, </em><em>optional</em>) – Initial learning rate for the optimization</p></li>
+<li><p><strong>gamma</strong> (<em>float</em><em>, </em><em>optional</em>) – Weighting applied to negative samples for the optimization</p></li>
+<li><p><strong>recalculate</strong> (<em>bool</em><em>, </em><em>optional</em>) – Whether to recalculate the dimensionality reduction,
+defaults to <code class="docutils literal notranslate"><span class="pre">False</span></code></p></li>
+<li><p><strong>ax</strong> (<a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.axes.Axes.html#matplotlib.axes.Axes">matplotlib.axes.Axes</a>) – Matplotlib Axes instance where to draw the plot. Defaults to
+<code class="docutils literal notranslate"><span class="pre">None</span></code>, meaning a new figure and axes will be generated.</p></li>
+<li><p><strong>**kwargs</strong> (<em>optional</em>) – Other keyword arguments that can be passed to
+<a class="reference external" href="https://scanpy.readthedocs.io/en/latest/generated/scanpy.tl.umap.html">scanpy.tl.umap()</a></p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The figure contataining the scatter plot showing the UMAP
+embedding</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://matplotlib.org/stable/api/_as_gen/matplotlib.figure.Figure.html#matplotlib.figure.Figure">matplotlib.figure.Figure</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">funki.plots</a><ul>
+<li><a class="reference internal" href="#funki.plots.plot_counts_vs_n_genes"><code class="docutils literal notranslate"><span class="pre">plot_counts_vs_n_genes()</span></code></a></li>
+<li><a class="reference internal" href="#funki.plots.plot_counts_vs_pct_mito"><code class="docutils literal notranslate"><span class="pre">plot_counts_vs_pct_mito()</span></code></a></li>
+<li><a class="reference internal" href="#funki.plots.plot_dex"><code class="docutils literal notranslate"><span class="pre">plot_dex()</span></code></a></li>
+<li><a class="reference internal" href="#funki.plots.plot_enrich"><code class="docutils literal notranslate"><span class="pre">plot_enrich()</span></code></a></li>
+<li><a class="reference internal" href="#funki.plots.plot_highest_expr"><code class="docutils literal notranslate"><span class="pre">plot_highest_expr()</span></code></a></li>
+<li><a class="reference internal" href="#funki.plots.plot_n_genes"><code class="docutils literal notranslate"><span class="pre">plot_n_genes()</span></code></a></li>
+<li><a class="reference internal" href="#funki.plots.plot_obs"><code class="docutils literal notranslate"><span class="pre">plot_obs()</span></code></a></li>
+<li><a class="reference internal" href="#funki.plots.plot_pca"><code class="docutils literal notranslate"><span class="pre">plot_pca()</span></code></a></li>
+<li><a class="reference internal" href="#funki.plots.plot_pct_counts_mito"><code class="docutils literal notranslate"><span class="pre">plot_pct_counts_mito()</span></code></a></li>
+<li><a class="reference internal" href="#funki.plots.plot_total_counts"><code class="docutils literal notranslate"><span class="pre">plot_total_counts()</span></code></a></li>
+<li><a class="reference internal" href="#funki.plots.plot_tsne"><code class="docutils literal notranslate"><span class="pre">plot_tsne()</span></code></a></li>
+<li><a class="reference internal" href="#funki.plots.plot_umap"><code class="docutils literal notranslate"><span class="pre">plot_umap()</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="analysis.html"
+                          title="previous chapter">funki.analysis</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="pipelines.html"
+                          title="next chapter">funki.pipelines</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/plots.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="pipelines.html" title="funki.pipelines"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="analysis.html" title="funki.analysis"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">FUNKI documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">funki.plots</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2024, Nicolàs Palacio-Escat.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>
