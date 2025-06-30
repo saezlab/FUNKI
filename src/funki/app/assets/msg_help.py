@@ -34,14 +34,14 @@ HELPMSG = {
         'there exists a sub-group from which to subset the samples (e.g. '
         'cell-type).'
     ),
-    'Data filtering': (
+    'Filtering': (
         'Choosing proper filtering parameters is a highly context-dependent '
         'task. Depending on the experimental set up, these filters can vary a '
         'lot. A proper choice requires some expertise and/or some trial and '
         'error. Therefore, feel free to play with the parameters and observe '
         'the resulting distribution of your data with the help of the plots '
         'below. A good strategy is to start with lax thresholds and move up to '
-        'more astringent ones.\n'
+        'more astringent ones.\n\n'
         '- Max. genes per cell:\n'
         'Maximum number of genes per cell. Cells with higher number of '
         'measured genes will be excluded from the data set. This filter is '
@@ -65,7 +65,7 @@ HELPMSG = {
         'Normalizes each cell by total counts over all genes such that the '
         'total counts of each cell after scaling is equivalent to the '
         'specified size factor. A size factor of one million corresponds to '
-        'CPM normalization (counts per million).\n'
+        'CPM normalization (counts per million).\n\n'
         'Although optional, it is usually recommended to also log-transform '
         'the data as it helps reduce skewness and the impact of outliers as '
         'well as bringing the data distribution closer to a normal (Gaussian) '
@@ -74,22 +74,13 @@ HELPMSG = {
         'logarithm. The addition of one to the original value serves two main '
         'purposes: avoiding division by zero causing the resulting value to be '
         'negative infinite and also, since log(1)=0, non-detected genes remain '
-        'valued as zero after the transformation.'
-    ),
-    'Differential expression': (
-        'Here we perform the differential expression analysis between two '
-        'groups of samples thanks to the package "PyDESeq2". First, you need '
-        'to select over which variable of the metadata the groups of samples '
-        'are defined (e.g. "condition"). Once selected, you can select which '
-        'value(s) define the contrasting groups. For instance, if the metadata '
-        'table contains a "condition" column with values "treatment" and '
-        '"control", you can select these on the left and right dropdown menus '
-        'respectively to compute the differential expression between these.'
+        'valued as zero after the transformation. It is also assumed that the '
+        'data is log-transformed upon differential expression analysis.'
     ),
     'Dimensionality reduction': (
         'Embedding, also known as dimensionality reduction algorithms, help us '
         'visualize multi-dimensional data (e.g. cells expressing N number of '
-        'genes) into a low-dimensional space (e.g. a 2D scatter plot).\n'
+        'genes) into a low-dimensional space (e.g. a 2D scatter plot).\n\n'
         '- Harmony:\n'
         'Harmony is an algorithm that aims to reduce batch effects between '
         'data sets based in one or more covariates wich you can select in the '
@@ -110,7 +101,7 @@ HELPMSG = {
         'values increase the number of resulting clusters (i.e. more '
         'granularity) while lower values reduce the number of resulting '
         'clusters. Here you can choose between two graph-based community '
-        'detection algorithms to compute the clusters:\n'
+        'detection algorithms to compute the clusters:\n\n'
         '- Leiden:\n'
         'Modified version of Louvain algorithm aiming to address issues with '
         'disconnected communities. This algorithm optimizes a quality function '
@@ -118,6 +109,16 @@ HELPMSG = {
         '- Louvain:\n'
         'Louvain algorithm optimizes a modularity function, a metric derived '
         'from the adjacency matrix.'
+    ),
+    'Differential expression': (
+        'Here we perform the differential expression analysis between two '
+        'groups of samples thanks to the package "PyDESeq2". First, you need '
+        'to select over which variable of the metadata the groups of samples '
+        'are defined (e.g. "condition"). Once selected, you can select which '
+        'value(s) define the contrasting groups. For instance, if the metadata '
+        'table contains a "condition" column with values "treatment" and '
+        '"control", you can select these on the left and right dropdown menus '
+        'respectively to compute the differential expression between these.'
     ),
     'Gene sets': (
         'Here you can select across multiple resources containing molecular '
