@@ -14,12 +14,25 @@ HELPMSG = {
         'FUNKI. These include H5/H5AD, Excel, Loom, MTX, UMI, CSV, TSV or TXT.'
         'Some of these formats allow the storage of metadata along with the '
         'actual data, if that is not the case, you can upload a separate file '
-        'with the sample metadata (CSV, TSV or TXT).'
+        'with the sample metadata (CSV, TSV or TXT). In the case of the '
+        'metadata tables, it is assumed that rows correspond to observations '
+        '(e.g. samples, cells, ...) and columns correspond to the metadata '
+        'variables (e.g. age, sex, disease state, ...).\n\n'
+        'You can load the data and visualize the data tables by using either '
+        'the buttons in the home page or by using the corresponding menus on '
+        '"File" menus on top of the application.'
     ),
-    'Loading metadata': (
-        'Please provide a table where rows are observations (e.g. samples, '
-        'cells...) and columns are annotation variables (e.g. sample  names, '
-        'condition, cell type...).'
+    'Data summary and pseudo-bulking': (
+        'In this tab the user can visualize basic summary of the loaded data '
+        'set as well as the different varaibles in the metadata.\n\n'
+        'Furthermore the user can also apply pseudo-bulking on their '
+        'single-cell data set. This allows to summarize the expression of '
+        'individual single-cells into samples by adding up their raw counts.'
+        'To do this, the user must select a variable from the metadata over '
+        'which to summarize the cell expression (e.g. sample, patient, ...).'
+        'Furthermore, the user can also select a grouping variable in case '
+        'there exists a sub-group from which to subset the samples (e.g. '
+        'cell-type).'
     ),
     'Data filtering': (
         'Choosing proper filtering parameters is a highly context-dependent '
