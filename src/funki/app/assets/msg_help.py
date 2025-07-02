@@ -180,6 +180,6 @@ HELPMSG = {
         'expression contrast results to enrich for (computed previously in the '
         'corresponding tab) and then click the button to compute the '
         'enrichment. The plot generated below will show you the top scoring '
-        'enriched gene sets.\n\n'
+        'enriched gene sets.'
     ),
 }
