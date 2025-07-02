@@ -30,7 +30,7 @@ class TabEnrich(ttk.Frame):
         self.net = pd.DataFrame(columns=['source', 'target', 'weight'])
         ttk.Label(
             self,
-            text='Gene Set collection:',
+            text='Gene set collection:',
             style='Title.TLabel',
             width=20
         ).grid(row=0, column=0, sticky='NSWE')
