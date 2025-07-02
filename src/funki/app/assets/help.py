@@ -67,9 +67,11 @@ class Help(tk.Toplevel):
 
     def _update(self, *ev):
 
-        k = self.toc.get(self.toc.curselection()[0])
-        self.title['text'] = k
-        self.content._update(HELPMSG[k])
+        if self.toc.curselection():
+
+            k = self.toc.get(self.toc.curselection()[0])
+            self.title['text'] = k
+            self.content._update(HELPMSG[k])
 
 
 class About(tk.Toplevel):
