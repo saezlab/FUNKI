@@ -39,7 +39,7 @@ class Help(tk.Toplevel):
             selectmode='single'
         )
         self.toc.grid(row=0, column=0, sticky='NSEW', rowspan=2)
-        self.toc.bind('<<ListboxSelect>>', self.update)
+        self.toc.bind('<<ListboxSelect>>', self._update)
 
         # Title
         self.title = ttk.Label(
@@ -62,14 +62,14 @@ class Help(tk.Toplevel):
 
         # Initial position
         self.toc.selection_set(0)
-        self.update()
+        self._update()
 
 
-    def update(self, *ev):
+    def _update(self, *ev):
 
         k = self.toc.get(self.toc.curselection()[0])
         self.title['text'] = k
-        self.content.update(HELPMSG[k])
+        self.content._update(HELPMSG[k])
 
 
 class About(tk.Toplevel):

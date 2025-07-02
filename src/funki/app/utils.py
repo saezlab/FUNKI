@@ -4,7 +4,6 @@ import tkinter as tk
 from tkinter import ttk
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.backends.backend_tkagg import NavigationToolbar2Tk
 
@@ -316,36 +315,35 @@ class ScrollText(ttk.Frame):
         self.rowconfigure(0, weight=1)
         #self.rowconfigure(1, weight=0)
 
-        self.txt = tk.Text(self, **options)
-        self.update(text)
-        self.txt.grid(row=0, column=0, sticky='NSWE')
+        self.text = tk.Text(self, **options)
+        self._update(text)
+        self.text.grid(row=0, column=0, sticky='NSWE')
 
         #xscrollbar = ttk.Scrollbar(
         #    self,
         #    orient='horizontal',
-        #    command=self.txt.xview,
+        #    command=self.text.xview,
         #)
         #xscrollbar.grid(column=0, row=1, sticky='EW')
         yscrollbar = ttk.Scrollbar(
             self,
             orient='vertical',
-            command=self.txt.yview,
+            command=self.text.yview,
         )
         yscrollbar.grid(column=1, row=0, sticky='NS')
 
-        self.txt.configure(
+        self.text.configure(
             #xscrollcommand=xscrollbar.set,
             yscrollcommand=yscrollbar.set,
         )
 
 
-    def update(self, text):
+    def _update(self, text):
 
         if text:
 
-            self.txt.configure(state='normal')
+            self.text.configure(state='normal')
 
-            self.txt.delete('0.0', 'end')
-            self.txt.insert('end', text)
-
-            self.txt.configure(state='disabled')
+            self.text.delete('0.0', 'end')
+            self.text.insert('end', text)
+            self.text.configure(state='disabled')

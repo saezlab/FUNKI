@@ -91,7 +91,7 @@ HELPMSG = {
         'Analysis (PCA), t-Stochastic Neighbor Embedding (t-SNE) and Unifold '
         'Manifold Approximation and Projection (UMAP). Note that t-SNE and '
         'UMAP have hyperparameters that can be adjusted and can affect the '
-        'final embedding\n\n.'
+        'final embedding.\n\n'
         '- Perplexity:\n'
         'This hyperparameter of the t-SNE embedding is related to the number '
         'of nearest neighbors. As a general rule of thumb, larger data sets '
