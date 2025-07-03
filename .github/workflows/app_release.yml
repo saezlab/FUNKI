@@ -26,10 +26,14 @@ jobs:
           architecture: 'x64'
           cache: 'pip'
 
+      - name: Setup Conda
+        uses: s-weigand/setup-conda@v1
+        with:
+          activate-conda: false
+
       - name: Install dependencies
         run: |
-          sudo apt-get install r-base-dev
-          sudo apt-get install libtirpc-dev
+          conda install r-base-dev
           pip install scikit-build
           pip install ./
 
