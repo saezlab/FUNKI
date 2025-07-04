@@ -38,6 +38,7 @@ jobs:
           conda install r-devtools
           conda install libtirpc
           pip install scikit-build
+          pip install pyinstaller
           pip install ./
 
       - name: Build executable
