@@ -29,6 +29,7 @@ jobs:
       - name: Setup Conda
         uses: s-weigand/setup-conda@v1
         with:
+          conda-channels: anaconda, conda-forge
           activate-conda: false
 
       - name: Install dependencies
