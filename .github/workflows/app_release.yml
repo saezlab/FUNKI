@@ -50,8 +50,5 @@ jobs:
         with:
           name: ${{ runner.os }} Build
           path: |
-            build/*.exe
-            build/*.bin
-            build/*.app/**/*
-            build/*.dist/**/*
+            FUNKI_v*
           include-hidden-files: true
