@@ -177,19 +177,6 @@ class DataSet(anndata.AnnData):
             json.dump(self.uns['funki'], f, indent=4)
 
 
-    def load_params(self, path):
-        '''
-        Loads the analysis parameters from a JSON file.
-
-        :param path: Path where the parameters file is stored.
-        :type path: str
-        '''
-
-        with open(path, 'r') as f:
-
-            self.uns['funki'] = json.load(f)
-
-
 def read(path, *args, **kwargs):
     '''
     Function takes a path to a file and uses the appropiate `anndata reading`_

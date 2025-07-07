@@ -98,6 +98,9 @@ def enrich(
         'target': target,
         **kwargs,
     }
+    # Removing GUI config-specific parameters not used by Decoupler methods
+    kwargs.pop('gset', None)
+    kwargs.pop('org', None)
 
     # Preparing network matrix
     net = net.rename(columns={

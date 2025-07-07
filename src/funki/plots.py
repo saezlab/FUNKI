@@ -50,6 +50,12 @@ def plot_pca(
         py.pp.pca.html
     '''
 
+    # Storing parameters
+    data.uns['funki']['embedding'] = {
+        'method': 'pca',
+        'color_by': color,
+    }
+
     if recalculate or 'X_pca' not in data.obsm:
 
         if use_highly_variable:
@@ -109,6 +115,13 @@ def plot_tsne(
     .. _matplotlib.figure.Figure: https://matplotlib.org/stable/api/_as_gen/mat\
         plotlib.figure.Figure.html#matplotlib.figure.Figure
     '''
+
+    # Storing parameters
+    data.uns['funki']['embedding'] = {
+        'method': 'tsne',
+        'color_by': color,
+        'perplexity': perplexity,
+    }
 
     if recalculate or 'X_tsne' not in data.obsm:
 
@@ -179,6 +192,16 @@ def plot_umap(
     .. _scanpy.tl.umap(): https://scanpy.readthedocs.io/en/latest/generated/scan\
         py.tl.umap.html
     '''
+
+    # Storing parameters
+    data.uns['funki']['embedding'] = {
+        'method': 'umap',
+        'color_by': color,
+        'min_dist': min_dist,
+        'spread': spread,
+        'alpha': alpha,
+        'gamma': gamma,
+    }
 
     if recalculate or 'X_umap' not in data.obsm:
 
@@ -585,6 +608,12 @@ def plot_dex(data, contrast=None, logfc_thr=1.0, fdr_thr=0.05, top=15, ax=None):
             'provided, please run funki.analysis.diff_exp() first or make sure '
             'it is properly written.'
         )
+
+    # Storing parameters
+    data.uns['funki']['diff_exp'][contrast].update({
+        'thr_logfc': logfc_thr,
+        'thr_pval': fdr_thr,
+    })
 
     if ax is None:
 

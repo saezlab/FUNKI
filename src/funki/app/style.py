@@ -62,3 +62,9 @@ def load_style(root):
     )
 
     return style
+
+styleText = {
+    'background': _colors['lightgray'],
+    'borderwidth': 0,
+    'font': ('Arial', 12)
+}
