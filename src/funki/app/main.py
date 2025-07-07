@@ -129,6 +129,11 @@ class FunkiApp(tk.Tk):
                     'disabled',
                     lambda: self.save_file(dtype='dex')
                 ),
+                (
+                    'Enrichment analysis',
+                    'disabled',
+                    lambda: self.save_file(dtype='enrich')
+                ),
                 '---',
                 (
                     'Configuration',
@@ -156,6 +161,11 @@ class FunkiApp(tk.Tk):
                     'Gene Set collection',
                     'normal',
                     lambda: self.view_data(dtype='gsc')
+                ),
+                (
+                    'Enrichment analysis',
+                    'disabled',
+                    lambda: self.view_data(dtype='enrich')
                 ),
             ],
             self.menu_help: [
@@ -264,6 +274,17 @@ class FunkiApp(tk.Tk):
 
                 self.menu_view.entryconfig('Metadata', state='normal')
                 self.menu_save.entryconfig('Metadata', state='normal')
+
+            if 'enrich' in self.data.uns and not self.data.uns['enrich'].empty:
+
+                self.menu_view.entryconfig(
+                    'Enrichment analysis',
+                    state='normal'
+                )
+                self.menu_save.entryconfig(
+                    'Enrichment analysis',
+                    state='normal'
+                )
 
         for tab in self.tabs.values():
 
@@ -404,6 +425,10 @@ class FunkiApp(tk.Tk):
                 'padj'
             ]]
 
+        elif dtype == 'enrich':
+
+            df = self.data.uns['enrich']
+
         # Storing file
         if dtype == 'config':
 
@@ -459,9 +484,14 @@ class FunkiApp(tk.Tk):
             df = self.tabs['enrich'].net
             title = f'{res} ({org})'
 
+        elif dtype == 'enrich':
+
+            title = 'Enrichment analysis'
+            df = self.data.uns['enrich']
+
         command = (
             (lambda: self.save_file(dtype=dtype))
-            if dtype in {'raw', 'obs', 'dex'}
+            if dtype in {'raw', 'obs', 'dex', 'gsc', 'enrich'}
             else None
         )
 

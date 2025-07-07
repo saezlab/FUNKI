@@ -142,14 +142,27 @@ class TabEnrich(ttk.Frame):
         )
         self.combox_obs.grid(row=2, column=1, sticky='NSEW')
 
-        # - Compute button
+        # Compute/view button
+        frame_buttons = ttk.Frame(self)
+        frame_buttons.columnconfigure(0, weight=1)
+        frame_buttons.columnconfigure(1, weight=1)
+
         self.button_compute = ttk.Button(
-            self,
+            frame_buttons,
             text='Enrich',
             command=self.compute,
             state='disabled',
         )
-        self.button_compute.grid(row=3, column=1, sticky='W')
+        self.button_compute.grid(row=0, column=0, sticky='W')
+        self.button_view = ttk.Button(
+            frame_buttons,
+            text='View',
+            command=lambda: self.controller.view_data(dtype='enrich'),
+            state='disabled',
+        )
+        self.button_view.grid(row=0, column=1, sticky='E')
+
+        frame_buttons.grid(row=3, column=1, sticky='NSWE')
 
         # Figure
         self.fig, self.ax = plt.subplots()
@@ -187,6 +200,13 @@ class TabEnrich(ttk.Frame):
                     # Activate compute button
                     self.button_compute.configure(state='normal')
 
+            if (
+                'enrich' in self.controller.data.uns
+                and not self.controller.data.uns['enrich'].empty
+            ):
+
+                self.button_view.configure(state='normal')
+
 
     def _get_resource(self, *ev):
 
@@ -221,3 +241,5 @@ class TabEnrich(ttk.Frame):
         )
         self.fig.tight_layout()
         self.figframe._update()
+
+        self.controller._update()
