@@ -255,6 +255,8 @@ class TabDex(ttk.Frame):
 
     def compute(self):
 
+        name = f'{self.groupA.get()}_vs_{self.groupB.get()}'
+
         self.ax.clear()
         differential_expression(
             self.controller.data,
@@ -271,13 +273,23 @@ class TabDex(ttk.Frame):
 
         # Activating save/view menus and button
         self.button_view.configure(state='normal')
-        self.controller.menu_view.entryconfig(
-            'Differential expression',
-            state='normal',
+        self.controller.menu_view.entryconfigure(
+            'Differential expression...',
+            state='normal'
         )
-        self.controller.menu_save.entryconfig(
-            'Differential expression',
-            state='normal',
+        self.controller.menu_save.entryconfigure(
+            'Differential expression...',
+            state='normal'
+        )
+
+        # Adding submenu for current contrast
+        self.controller.menu_view_dex.add_command(
+            label=name,
+            command=lambda: self.controller.view_data(dtype='dex', key=name)
+        )
+        self.controller.menu_save_dex.add_command(
+            label=name,
+            command=lambda: self.controller.save_file(dtype='dex', key=name)
         )
 
         self.controller._update()

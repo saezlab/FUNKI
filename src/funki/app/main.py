@@ -66,19 +66,21 @@ class FunkiApp(tk.Tk):
         self.menu_file = tk.Menu(self.menubar)
         self.menu_open = tk.Menu(self.menu_file)
         self.menu_save = tk.Menu(self.menu_file)
+        self.menu_save_dex = tk.Menu(self.menu_save)
         self.menu_view = tk.Menu(self.menubar)
+        self.menu_view_dex = tk.Menu(self.menu_open)
         self.menu_help = tk.Menu(self.menubar)
 
         # Keys are parent menu instance, values are either:
         # * '---': Will add a separator in that position
         # * tuple: Contains 3 elements:
         #   - Label/text, status and command will create that option
-        #   - Label/text, None, parent menu instance will add a cascade
+        #   - Label/text, status, parent menu instance will add a cascade
         menu_options = {
             self.menubar: [
-                ('File', None, self.menu_file),
-                ('View', None, self.menu_view),
-                ('Help', None, self.menu_help),
+                ('File', 'normal', self.menu_file),
+                ('View', 'normal', self.menu_view),
+                ('Help', 'normal', self.menu_help),
             ],
             self.menu_file: [
                 (
@@ -86,8 +88,8 @@ class FunkiApp(tk.Tk):
                     'normal',
                     self.new_project
                 ),
-                ('Open...', None, self.menu_open),
-                ('Save...', None, self.menu_save),
+                ('Open...', 'normal', self.menu_open),
+                ('Save...', 'normal', self.menu_save),
                 '---',
                 (
                     'Exit',
@@ -124,11 +126,8 @@ class FunkiApp(tk.Tk):
                     'disabled',
                     lambda: self.save_file(dtype='obs')
                 ),
-                (
-                    'Differential expression',
-                    'disabled',
-                    lambda: self.save_file(dtype='dex')
-                ),
+                ('Differential expression...', 'disabled', self.menu_save_dex),
+                 ###lambda: self.save_file(dtype='dex')),
                 (
                     'Enrichment analysis',
                     'disabled',
@@ -152,11 +151,8 @@ class FunkiApp(tk.Tk):
                     'disabled',
                     lambda: self.view_data(dtype='obs')
                 ),
-                (
-                    'Differential expression',
-                    'disabled',
-                    lambda: self.view_data(dtype='dex')
-                ),
+                ('Differential expression...', 'disabled', self.menu_view_dex),
+                    ##lambda: self.view_data(dtype='dex')),
                 (
                     'Gene Set collection',
                     'normal',
@@ -190,9 +186,9 @@ class FunkiApp(tk.Tk):
 
                     menu.add_separator()
 
-                elif state == None:
+                elif isinstance(command, tk.Menu):
 
-                    menu.add_cascade(menu=command, label=label)
+                    menu.add_cascade(menu=command, label=label, state=state)
 
                 else:
 
@@ -381,7 +377,7 @@ class FunkiApp(tk.Tk):
         self._update()
 
 
-    def save_file(self, dtype=None):
+    def save_file(self, dtype=None, key=None):
         '''
         Pops up a save file dialog and saves the corresponding file in the path.
         '''
@@ -417,7 +413,7 @@ class FunkiApp(tk.Tk):
 
         elif dtype == 'dex':
 
-            df = self.data.var[[
+            df = self.data.varm[key][[
                 'baseMean',
                 'log2FoldChange',
                 'stat',
@@ -449,7 +445,7 @@ class FunkiApp(tk.Tk):
         About()
 
 
-    def view_data(self, dtype=None):
+    def view_data(self, dtype=None, key=None):
 
         df = pd.DataFrame()
         title = ''
@@ -466,11 +462,8 @@ class FunkiApp(tk.Tk):
 
         elif dtype == 'dex' and 'diff_exp' in self.data.uns['funki']:
 
-            a = self.tabs['dex'].groupA.get()
-            b = self.tabs['dex'].groupB.get()
-
-            title = f'DEX - {a} vs. {b}'
-            df = self.data.varm[f'{a}_vs_{b}'] # TODO: add contingency measures
+            title = f'DEX - {key}'
+            df = self.data.varm[key]
 
         elif dtype == 'gsc':
 
