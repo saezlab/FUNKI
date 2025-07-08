@@ -1,4 +1,5 @@
 import re
+import traceback
 
 import tkinter as tk
 from tkinter import ttk
@@ -107,6 +108,7 @@ class Figure(ttk.Frame):
     def _update(self):
 
         self.canvas.draw()
+
 
     def newfig(self, fig):
 
@@ -302,6 +304,41 @@ class PopUpTable(tk.Toplevel):
             if save_command:
 
                 button_save.configure(state='normal')
+
+
+class PopUpError(tk.Toplevel):
+
+    def __init__(self, exc, val, tb):
+
+        super().__init__()
+
+        name = exc.__name__
+        self.title(f'FUNKI - {name}!')
+
+        self.columnconfigure(0, weight=1)
+        self.rowconfigure(0, weight=1)
+
+        frame = ttk.Frame(self, padding=(5, 5, 5, 5))
+
+        frame.columnconfigure(0, weight=1)
+        frame.rowconfigure(0, weight=1)
+        frame.rowconfigure(1, weight=0)
+
+        frame.grid(row=0, column=0, sticky='NSEW')
+
+        text = ScrollText(
+            frame,
+            text='\n'.join(traceback.format_tb(tb)) + '\n' + f'{name}: {val}'
+        )
+        text.grid(column=0, row=0, sticky='NSEW')
+
+        button_close = ttk.Button(
+            frame,
+            text='Close',
+            command=self.destroy,
+            padding=(5, 5, 5, 5),
+        )
+        button_close.grid(row=1, column=0)
 
 
 class ScrollText(ttk.Frame):

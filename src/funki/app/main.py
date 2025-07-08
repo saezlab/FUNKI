@@ -13,6 +13,7 @@ from funki.common import rget
 from funki.app.utils import PATH_LOGO
 from funki.app.utils import PopUpTable
 from funki.app.utils import check_num
+from funki.app.utils import PopUpError
 from funki.app.tabs import TABS
 from funki.app.tabs import PARAMS
 from funki.app.style import load_style
@@ -127,7 +128,6 @@ class FunkiApp(tk.Tk):
                     lambda: self.save_file(dtype='obs')
                 ),
                 ('Differential expression...', 'disabled', self.menu_save_dex),
-                 ###lambda: self.save_file(dtype='dex')),
                 (
                     'Enrichment analysis',
                     'disabled',
@@ -152,7 +152,6 @@ class FunkiApp(tk.Tk):
                     lambda: self.view_data(dtype='obs')
                 ),
                 ('Differential expression...', 'disabled', self.menu_view_dex),
-                    ##lambda: self.view_data(dtype='dex')),
                 (
                     'Gene Set collection',
                     'normal',
@@ -516,6 +515,11 @@ class FunkiApp(tk.Tk):
                 keyseq[1] = list(cfg['diff_exp'])[-1]
 
             set_(getattr(self.tabs[tab], attr), keyseq)
+
+
+    def report_callback_exception(self, exc, val, tb):
+
+        PopUpError(exc, val, tb)
 
 
 if __name__ == '__main__':
