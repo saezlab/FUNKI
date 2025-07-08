@@ -1,6 +1,7 @@
 # FUNKI changelog
 
 ## 0.2.X
+- Added view/save menu options for multiple differential expression contrasts
 - Added view and save options for erichment results table
 
 ## 0.2.2
