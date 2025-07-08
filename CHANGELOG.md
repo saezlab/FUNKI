@@ -1,6 +1,7 @@
 # FUNKI changelog
 
 ## 0.2.X
+- Exceptions are now shown as a pop-up and provide traceback
 - Added view/save menu options for multiple differential expression contrasts
 - Added view and save options for erichment results table
 
