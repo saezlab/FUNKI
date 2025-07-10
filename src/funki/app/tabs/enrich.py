@@ -44,7 +44,7 @@ class TabEnrich(ttk.Frame):
             'Gene set collection:',
             lpos='W',
             wget_kwargs={
-                'state': 'disabled',
+                'state': 'readonly',
                 'textvariable': self.gset,
                 'values': (
                     ['Hallmark', 'CollecTRI', 'DoRothEA', 'PROGENy']
@@ -66,7 +66,7 @@ class TabEnrich(ttk.Frame):
             'Organism:',
             lpos='W',
             wget_kwargs={
-                'state': 'disabled',
+                'state': 'readonly',
                 'textvariable': self.org,
                 'values': (
                     ['Human']
@@ -105,7 +105,7 @@ class TabEnrich(ttk.Frame):
             'Method:',
             lpos='W',
             wget_kwargs={
-                'state': 'disabled',
+                'state': 'readonly',
                 'textvariable': self.method,
                 'width': 50,
                 'values': [
