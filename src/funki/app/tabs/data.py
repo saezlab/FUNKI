@@ -187,16 +187,18 @@ class TabData(ttk.Frame):
 
     def compute(self, *ev):
 
-        aux = self.controller.data.copy()
-        sc_pseudobulk(
-            self.controller.data,
-            self.sample.get(),
-            groups_col=self.group.get()
-        )
-        # TODO: Should make this a standard function
-        self.controller.data = DataSet(
-            self.controller.data.uns['pseudobulk'].copy()
-        )
-        self.controller.data.uns['nonpseudo_original'] = aux.copy()
+        with self.controller.pgbar:
+
+            aux = self.controller.data.copy()
+            sc_pseudobulk(
+                self.controller.data,
+                self.sample.get(),
+                groups_col=self.group.get()
+            )
+            # TODO: Should make this a standard function
+            self.controller.data = DataSet(
+                self.controller.data.uns['pseudobulk'].copy()
+            )
+            self.controller.data.uns['nonpseudo_original'] = aux.copy()
 
         self.controller._update()

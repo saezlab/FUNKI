@@ -14,6 +14,7 @@ from funki.app.utils import PATH_LOGO
 from funki.app.utils import PopUpTable
 from funki.app.utils import check_num
 from funki.app.utils import PopUpError
+from funki.app.utils import ProgressBar
 from funki.app.tabs import TABS
 from funki.app.tabs import PARAMS
 from funki.app.style import load_style
@@ -211,14 +212,15 @@ class FunkiApp(tk.Tk):
         self.mainframe.columnconfigure(0, weight=1)
         self.mainframe.rowconfigure(0, weight=0)
         self.mainframe.rowconfigure(1, weight=1)
+        self.mainframe.rowconfigure(2, weight=0)
 
-        self._setup_header()
+        self._setup_header_foot()
         self._setup_notebook()
 
 
-    def _setup_header(self):
+    def _setup_header_foot(self):
         '''
-        Sets up the header logo.
+        Sets up the header logo and the progressbar on foot.
         '''
 
         logo = tk.PhotoImage(file=PATH_LOGO)
@@ -226,6 +228,13 @@ class FunkiApp(tk.Tk):
         header = ttk.Label(self.mainframe, image=logo, padding=(10, 10, 10, 10))
         header.image = logo # Avoiding garbage collection
         header.grid(column=0, row=0, sticky='NSEW')
+
+        self.pgbar = ProgressBar(
+            self.mainframe,
+            orient='horizontal',
+            mode='indeterminate',
+        )
+        self.pgbar.grid(column=0, row=2, sticky='NSEW')
 
 
     def _setup_notebook(self):
@@ -342,8 +351,11 @@ class FunkiApp(tk.Tk):
         # Loading of measurement data
         if dtype == 'raw': # TODO: Make a copy in raw layer?
 
-            self.fname_raw = path
-            self.data = read(path)
+            with self.pgbar:
+
+                self.fname_raw = path
+                self.data = read(path)
+
 
         # Loading of metadata
         elif dtype == 'obs' and self.data:

@@ -258,16 +258,20 @@ class TabDex(ttk.Frame):
         name = f'{self.groupA.get()}_vs_{self.groupB.get()}'
 
         self.ax.clear()
-        differential_expression(
-            self.controller.data,
-            self.contrast_var.get(),
-            self.groupA.get(),
-            self.groupB.get(),
-            logfc_thr=self.thr_logfc.get(),
-            fdr_thr=self.thr_pval.get(),
-            method=self.method.get(),
-            ax=self.ax,
-        )
+
+        with self.controller.pgbar:
+
+            differential_expression(
+                self.controller.data,
+                self.contrast_var.get(),
+                self.groupA.get(),
+                self.groupB.get(),
+                logfc_thr=self.thr_logfc.get(),
+                fdr_thr=self.thr_pval.get(),
+                method=self.method.get(),
+                ax=self.ax,
+            )
+
         self.fig.tight_layout()
         self.figframe._update()
 

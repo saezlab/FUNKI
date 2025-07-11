@@ -233,15 +233,18 @@ class TabEnrich(ttk.Frame):
         self.fig, self.ax = plt.subplots()
         self.figframe.newfig(self.fig)
 
-        enrichment_analysis(
-            self.controller.data,
-            self.net,
-            contrast=self.contrast.get(),
-            method=method,
-            ax=self.ax,
-            gset=self.gset.get(),
-            org=self.org.get(),
-        )
+        with self.controller.pgbar:
+
+            enrichment_analysis(
+                self.controller.data,
+                self.net,
+                contrast=self.contrast.get(),
+                method=method,
+                ax=self.ax,
+                gset=self.gset.get(),
+                org=self.org.get(),
+            )
+
         self.fig.tight_layout()
         self.figframe._update()
 

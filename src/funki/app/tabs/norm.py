@@ -145,12 +145,14 @@ class TabNorm(ttk.Frame):
 
         if self.controller.data:
 
-            self.controller.data = sc_trans_filter(
-                self.controller.data,
-                min_genes=self.min_genes.get(),
-                max_genes=self.max_genes.get(),
-                mito_pct=self.mito_pct.get(),
-            )
+            with self.controller.pgbar:
+
+                self.controller.data = sc_trans_filter(
+                    self.controller.data,
+                    min_genes=self.min_genes.get(),
+                    max_genes=self.max_genes.get(),
+                    mito_pct=self.mito_pct.get(),
+                )
 
             self.controller._update()
 
@@ -159,10 +161,12 @@ class TabNorm(ttk.Frame):
 
         if self.controller.data:
 
-            self.controller.data = sc_trans_normalize_total(
-                self.controller.data,
-                target_sum=self.size_factor.get(),
-                log_transform=self.log_transform.get()
-            )
+            with self.controller.pgbar:
+
+                self.controller.data = sc_trans_normalize_total(
+                    self.controller.data,
+                    target_sum=self.size_factor.get(),
+                    log_transform=self.log_transform.get()
+                )
 
             self.controller._update()

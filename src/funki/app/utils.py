@@ -1,5 +1,6 @@
 import re
 import traceback
+from threading import Thread
 
 import tkinter as tk
 from tkinter import ttk
@@ -28,6 +29,38 @@ def read_text(path):
 def check_num(n):
 
     return re.match('^[0-9.]*$', n) is not None
+
+
+class ProgressBar(ttk.Progressbar):
+
+    def grid(self, **kwargs):
+
+        self.grid_kwargs = kwargs
+
+
+    def __enter__(self):
+
+        super().grid(**self.grid_kwargs)
+        self['value'] = 0
+        self.start()
+        self.running = True
+        self.thread = Thread(target=self._update)
+        self.thread.start()
+        self.update()
+
+
+    def __exit__(self, type, value, traceback):
+
+        self.stop()
+        self.running = False
+        self.grid_forget()
+
+
+    def _update(self):
+
+        while self.running:
+
+            self.step()
 
 
 class LabeledWidget(ttk.Frame):

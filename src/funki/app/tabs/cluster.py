@@ -344,46 +344,51 @@ class TabClust(ttk.Frame):
 
     def cluster(self, *ev):
 
-        clustering(
-            self.controller.data,
-            alg=self.clustering_method.get(),
-            resolution=self.resoultion.get(),
-        )
+        with self.controller.pgbar:
+
+            clustering(
+                self.controller.data,
+                alg=self.clustering_method.get(),
+                resolution=self.resoultion.get(),
+            )
+
         self.controller._update()
 
 
     def plot(self):
 
-        # Apply Harmony?
-        if self.harmony.get() and self.harmony_var.get():
+        with self.controller.pgbar:
 
-            harmonize(
+            # Apply Harmony?
+            if self.harmony.get() and self.harmony_var.get():
+
+                harmonize(
+                    self.controller.data,
+                    [self.harmony_var.get()],
+                    recalculate=True
+                )
+
+            method = self.embedding_method.get()
+
+            kwargs = {}
+
+            if method == 'tsne':
+
+                kwargs['perplexity'] = self.perplexity.get()
+
+            elif method == 'umap':
+
+                kwargs['min_dist'] = self.min_dist.get()
+                kwargs['spread'] = self.spread.get()
+                kwargs['alpha'] = self.alpha.get()
+                kwargs['gamma'] = self.gamma.get()
+
+            self.ax.clear()
+            getattr(plots, f'plot_{method}')(
                 self.controller.data,
-                [self.harmony_var.get()],
-                recalculate=True
+                color=self.color_var.get(),
+                ax=self.ax,
+                **kwargs
             )
-
-        method = self.embedding_method.get()
-
-        kwargs = {}
-
-        if method == 'tsne':
-
-            kwargs['perplexity'] = self.perplexity.get()
-
-        elif method == 'umap':
-
-            kwargs['min_dist'] = self.min_dist.get()
-            kwargs['spread'] = self.spread.get()
-            kwargs['alpha'] = self.alpha.get()
-            kwargs['gamma'] = self.gamma.get()
-
-        self.ax.clear()
-        getattr(plots, f'plot_{method}')(
-            self.controller.data,
-            color=self.color_var.get(),
-            ax=self.ax,
-            **kwargs
-        )
-        self.fig.tight_layout()
-        self.figframe._update()
+            self.fig.tight_layout()
+            self.figframe._update()
