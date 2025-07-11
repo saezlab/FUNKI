@@ -1,6 +1,6 @@
 # FUNKI changelog
 
-## 0.2.X
+## 0.2.3
 - Cursor now shows waiting/busy status when running heavy processes
 - Exceptions are now shown as a pop-up and provide traceback
 - Added view/save menu options for multiple differential expression contrasts
