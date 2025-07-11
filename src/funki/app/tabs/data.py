@@ -8,6 +8,7 @@ from funki.preprocessing import sc_pseudobulk
 
 from funki.app.utils import Figure
 from funki.app.utils import LabeledWidget
+from funki.app.utils import Busy
 
 
 class TabData(ttk.Frame):
@@ -187,7 +188,7 @@ class TabData(ttk.Frame):
 
     def compute(self, *ev):
 
-        with self.controller.pgbar:
+        with Busy(self.controller):
 
             aux = self.controller.data.copy()
             sc_pseudobulk(
@@ -201,4 +202,4 @@ class TabData(ttk.Frame):
             )
             self.controller.data.uns['nonpseudo_original'] = aux.copy()
 
-        self.controller._update()
+            self.controller._update()

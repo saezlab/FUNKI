@@ -8,6 +8,7 @@ from funki.pipelines import enrichment_analysis
 
 from funki.app.utils import LabeledWidget
 from funki.app.utils import Figure
+from funki.app.utils import Busy
 
 
 class TabEnrich(ttk.Frame):
@@ -233,7 +234,7 @@ class TabEnrich(ttk.Frame):
         self.fig, self.ax = plt.subplots()
         self.figframe.newfig(self.fig)
 
-        with self.controller.pgbar:
+        with Busy(self.controller):
 
             enrichment_analysis(
                 self.controller.data,
@@ -245,7 +246,7 @@ class TabEnrich(ttk.Frame):
                 org=self.org.get(),
             )
 
-        self.fig.tight_layout()
-        self.figframe._update()
+            self.fig.tight_layout()
+            self.figframe._update()
 
-        self.controller._update()
+            self.controller._update()

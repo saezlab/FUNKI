@@ -31,6 +31,24 @@ def check_num(n):
     return re.match('^[0-9.]*$', n) is not None
 
 
+class Busy:
+
+    def __init__(self, root):
+
+        self.root = root
+
+
+    def __enter__(self):
+
+        self.root.config(cursor='watch')
+        self.root.update()
+
+
+    def __exit__(self, type, value, traceback):
+
+        self.root.config(cursor='')
+
+
 class ProgressBar(ttk.Progressbar):
 
     def grid(self, **kwargs):

@@ -8,6 +8,7 @@ from funki.preprocessing import sc_trans_normalize_total
 
 from funki.app.utils import Figure
 from funki.app.utils import LabeledWidget
+from funki.app.utils import Busy
 
 
 class TabNorm(ttk.Frame):
@@ -145,7 +146,7 @@ class TabNorm(ttk.Frame):
 
         if self.controller.data:
 
-            with self.controller.pgbar:
+            with Busy(self.controller):
 
                 self.controller.data = sc_trans_filter(
                     self.controller.data,
@@ -154,14 +155,14 @@ class TabNorm(ttk.Frame):
                     mito_pct=self.mito_pct.get(),
                 )
 
-            self.controller._update()
+                self.controller._update()
 
 
     def apply_norm(self, *ev):
 
         if self.controller.data:
 
-            with self.controller.pgbar:
+            with Busy(self.controller):
 
                 self.controller.data = sc_trans_normalize_total(
                     self.controller.data,
@@ -169,4 +170,4 @@ class TabNorm(ttk.Frame):
                     log_transform=self.log_transform.get()
                 )
 
-            self.controller._update()
+                self.controller._update()

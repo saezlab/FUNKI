@@ -7,6 +7,7 @@ from funki.pipelines import differential_expression
 from funki.app.utils import Figure
 from funki.app.utils import LabeledWidget
 from funki.app.utils import PATH_ICON_SWP
+from funki.app.utils import Busy
 
 
 class TabDex(ttk.Frame):
@@ -259,7 +260,7 @@ class TabDex(ttk.Frame):
 
         self.ax.clear()
 
-        with self.controller.pgbar:
+        with Busy(self.controller):
 
             differential_expression(
                 self.controller.data,
@@ -272,28 +273,28 @@ class TabDex(ttk.Frame):
                 ax=self.ax,
             )
 
-        self.fig.tight_layout()
-        self.figframe._update()
+            self.fig.tight_layout()
+            self.figframe._update()
 
-        # Activating save/view menus and button
-        self.button_view.configure(state='normal')
-        self.controller.menu_view.entryconfigure(
-            'Differential expression...',
-            state='normal'
-        )
-        self.controller.menu_save.entryconfigure(
-            'Differential expression...',
-            state='normal'
-        )
+            # Activating save/view menus and button
+            self.button_view.configure(state='normal')
+            self.controller.menu_view.entryconfigure(
+                'Differential expression...',
+                state='normal'
+            )
+            self.controller.menu_save.entryconfigure(
+                'Differential expression...',
+                state='normal'
+            )
 
-        # Adding submenu for current contrast
-        self.controller.menu_view_dex.add_command(
-            label=name,
-            command=lambda: self.controller.view_data(dtype='dex', key=name)
-        )
-        self.controller.menu_save_dex.add_command(
-            label=name,
-            command=lambda: self.controller.save_file(dtype='dex', key=name)
-        )
+            # Adding submenu for current contrast
+            self.controller.menu_view_dex.add_command(
+                label=name,
+                command=lambda: self.controller.view_data(dtype='dex', key=name)
+            )
+            self.controller.menu_save_dex.add_command(
+                label=name,
+                command=lambda: self.controller.save_file(dtype='dex', key=name)
+            )
 
-        self.controller._update()
+            self.controller._update()

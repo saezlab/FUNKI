@@ -14,7 +14,7 @@ from funki.app.utils import PATH_LOGO
 from funki.app.utils import PopUpTable
 from funki.app.utils import check_num
 from funki.app.utils import PopUpError
-from funki.app.utils import ProgressBar
+from funki.app.utils import Busy
 from funki.app.tabs import TABS
 from funki.app.tabs import PARAMS
 from funki.app.style import load_style
@@ -214,11 +214,11 @@ class FunkiApp(tk.Tk):
         self.mainframe.rowconfigure(1, weight=1)
         self.mainframe.rowconfigure(2, weight=0)
 
-        self._setup_header_foot()
+        self._setup_header()
         self._setup_notebook()
 
 
-    def _setup_header_foot(self):
+    def _setup_header(self):
         '''
         Sets up the header logo and the progressbar on foot.
         '''
@@ -229,12 +229,12 @@ class FunkiApp(tk.Tk):
         header.image = logo # Avoiding garbage collection
         header.grid(column=0, row=0, sticky='NSEW')
 
-        self.pgbar = ProgressBar(
-            self.mainframe,
-            orient='horizontal',
-            mode='indeterminate',
-        )
-        self.pgbar.grid(column=0, row=2, sticky='NSEW')
+        #self.pgbar = ProgressBar(
+        #    self.mainframe,
+        #    orient='horizontal',
+        #    mode='indeterminate',
+        #)
+        #self.pgbar.grid(column=0, row=2, sticky='NSEW')
 
 
     def _setup_notebook(self):
@@ -348,44 +348,43 @@ class FunkiApp(tk.Tk):
 
             return
 
-        # Loading of measurement data
-        if dtype == 'raw': # TODO: Make a copy in raw layer?
-
-            with self.pgbar:
+        with Busy(self):
+            # Loading of measurement data
+            if dtype == 'raw': # TODO: Make a copy in raw layer?
 
                 self.fname_raw = path
                 self.data = read(path)
 
 
-        # Loading of metadata
-        elif dtype == 'obs' and self.data:
+            # Loading of metadata
+            elif dtype == 'obs' and self.data:
 
-            fname, ext = os.path.splitext(path)
+                fname, ext = os.path.splitext(path)
 
-            self.fname_obs = path
-            obs = pd.read_csv(
-                path,
-                sep=',' if ext == '.csv' else '\t',
-                index_col=0
-            )
-            # TODO: Handle samples not in data
-            self.data.obs = self.data.obs.merge(
-                obs,
-                how='outer',
-                left_index=True,
-                right_index=True,
-            )
+                self.fname_obs = path
+                obs = pd.read_csv(
+                    path,
+                    sep=',' if ext == '.csv' else '\t',
+                    index_col=0
+                )
+                # TODO: Handle samples not in data
+                self.data.obs = self.data.obs.merge(
+                    obs,
+                    how='outer',
+                    left_index=True,
+                    right_index=True,
+                )
 
-        # Loading configuration
-        elif dtype == 'config' and self.data:
+            # Loading configuration
+            elif dtype == 'config' and self.data:
 
-            with open(path, 'r') as f:
+                with open(path, 'r') as f:
 
-                cfg = json.load(f)
+                    cfg = json.load(f)
 
-            self.load_config(cfg)
+                self.load_config(cfg)
 
-        self._update()
+            self._update()
 
 
     def save_file(self, dtype=None, key=None):

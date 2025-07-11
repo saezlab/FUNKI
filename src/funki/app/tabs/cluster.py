@@ -8,6 +8,7 @@ from funki.preprocessing import harmonize
 
 from funki.app.utils import Figure
 from funki.app.utils import LabeledWidget
+from funki.app.utils import Busy
 
 
 class TabClust(ttk.Frame):
@@ -344,7 +345,7 @@ class TabClust(ttk.Frame):
 
     def cluster(self, *ev):
 
-        with self.controller.pgbar:
+        with Busy(self.controller):
 
             clustering(
                 self.controller.data,
@@ -352,12 +353,12 @@ class TabClust(ttk.Frame):
                 resolution=self.resoultion.get(),
             )
 
-        self.controller._update()
+            self.controller._update()
 
 
     def plot(self):
 
-        with self.controller.pgbar:
+        with Busy(self.controller):
 
             # Apply Harmony?
             if self.harmony.get() and self.harmony_var.get():
