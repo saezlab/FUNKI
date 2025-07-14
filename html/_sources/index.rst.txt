@@ -3,7 +3,7 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-.. image:: _images/funki_logo.svg
+.. image:: ../../assets/funki_logo.svg
     :width: 1000
     :scale: 50%
 
