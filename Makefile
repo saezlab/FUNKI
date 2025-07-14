@@ -5,6 +5,7 @@ FLAGS = --onefile \
 		--hidden-import=PIL._tkinter_finder \
 		--hidden-import=scipy._cyutility \
 		--recursive-copy-metadata scanpy \
+		--add-data=assets/*:assets/ \
 		--clean \
 		--distpath=./ \
 		--name=FUNKI_v$(VER) \

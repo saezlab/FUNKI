@@ -1,6 +1,8 @@
 import tkinter as tk
 from tkinter import ttk
 import matplotlib.pyplot as plt
+from PIL import Image
+from PIL import ImageTk
 
 from funki.pipelines import differential_expression
 
@@ -83,7 +85,7 @@ class TabDex(ttk.Frame):
         self.combox_B.wg.bind('<<ComboboxSelected>>', self._update)
 
         # Swap button
-        icon = tk.PhotoImage(file=PATH_ICON_SWP)
+        icon = ImageTk.PhotoImage(Image.open(PATH_ICON_SWP))
         self.button_swap = ttk.Button(
             self,
             image=icon,

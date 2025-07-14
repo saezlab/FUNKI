@@ -1,5 +1,9 @@
 # FUNKI changelog
 
+## 0.2.X
+- Centralized assets
+- Fixed problem on build not including some assets
+
 ## 0.2.3
 - Cursor now shows waiting/busy status when running heavy processes
 - Exceptions are now shown as a pop-up and provide traceback

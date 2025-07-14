@@ -1,10 +1,13 @@
 import os
+import sys
 import json
 
 import tkinter as tk
 from tkinter import ttk
 from tkinter import filedialog as fd
 import pandas as pd
+from PIL import Image
+from PIL import ImageTk
 
 from funki import __version__
 from funki.input import read
@@ -18,13 +21,15 @@ from funki.app.utils import Busy
 from funki.app.tabs import TABS
 from funki.app.tabs import PARAMS
 from funki.app.style import load_style
-from funki.app.assets.help import Help
-from funki.app.assets.help import About
+from funki.app.help import Help
+from funki.app.help import About
+
+
+cd = getattr(sys, '_MEIPASS', os.getcwd())
+os.chdir(cd)
 
 
 class FunkiApp(tk.Tk):
-    # TODO: Check if some of the Label can be replaced with Text for better
-    # formatting and handling
 
     _platform = None
 
@@ -223,7 +228,7 @@ class FunkiApp(tk.Tk):
         Sets up the header logo and the progressbar on foot.
         '''
 
-        logo = tk.PhotoImage(file=PATH_LOGO)
+        logo = ImageTk.PhotoImage(Image.open(PATH_LOGO))
 
         header = ttk.Label(self.mainframe, image=logo, padding=(10, 10, 10, 10))
         header.image = logo # Avoiding garbage collection
