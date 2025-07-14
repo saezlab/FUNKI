@@ -1,6 +1,6 @@
 # FUNKI changelog
 
-## 0.2.X
+## 0.2.3b
 - Centralized assets
 - Fixed problem on build not including some assets
 
