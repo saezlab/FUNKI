@@ -1,11 +1,13 @@
 import tkinter as tk
 from tkinter import ttk
+from PIL import Image
+from PIL import ImageTk
 
 from funki import __version__
 
 from funki.app.utils import ScrollText
 from funki.app.utils import PATH_LOGO
-from funki.app.assets.msg_help import HELPMSG
+from funki.app.help.msg_help import HELPMSG
 
 
 class Help(tk.Toplevel):
@@ -98,7 +100,7 @@ class About(tk.Toplevel):
         mainframe.rowconfigure(2, weight=1) # Desctiption
         mainframe.rowconfigure(3, weight=0) # Close button
 
-        logo = tk.PhotoImage(file=PATH_LOGO)
+        logo = ImageTk.PhotoImage(Image.open(PATH_LOGO))
         header = ttk.Label(
             mainframe,
             image=logo,

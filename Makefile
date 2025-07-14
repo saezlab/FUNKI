@@ -1,6 +1,6 @@
 # Building vars
 VER = $(shell python3 -c "from funki import __version__; print(__version__.replace('.', '_'))")
-ICON = ./docs/source/_images/funki_favicon.ico
+ICON = assets/funki_favicon.ico
 FLAGS = --onefile \
 		--hidden-import=PIL._tkinter_finder \
 		--hidden-import=scipy._cyutility \

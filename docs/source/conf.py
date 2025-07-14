@@ -37,7 +37,7 @@ source_suffix = {
 html_theme = 'classic'
 html_title = 'FUNKI documentation'
 html_static_path = ['_static']
-html_favicon = '_images/funki_favicon.ico'
+html_favicon = '../../assets/funki_favicon.ico'
 html_theme_options = {
     'relbarbgcolor': _colors['blue'],
     'headbgcolor': _colors['aqua'],

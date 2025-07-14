@@ -1,4 +1,4 @@
-<img style='padding: 10px 10px 20px 10px;' src='./docs/source/_images/funki_logo.svg' width='500'>
+<img style='padding: 10px 10px 20px 10px;' src='assets/funki_logo.svg' width='500'>
 
 # Welcome to FUNKI
 Welcome to FUNKI, the omics FUNctional analysis worKflows Interface tool. This
@@ -33,7 +33,7 @@ object. This class in turn inherits (i.e. is built on top of) the
 class. You can explore all implemented functionalities available
 programmatically in the [Documentation](https://saezlab.github.io/FUNKI/).
 
-If you want to access FUNKI via the GUI, you need to execute the application 
+If you want to access FUNKI via the GUI, you need to execute the application
 script with your Python interpreter, but first you need to download and install
 FUNKI using the commands below:
 

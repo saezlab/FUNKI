@@ -12,9 +12,9 @@ from matplotlib.backends.backend_tkagg import NavigationToolbar2Tk
 from funki.common import _colors
 
 
-PATH_LOGO = 'src/funki/app/assets/funki_logo.png'
-PATH_MSG = 'src/funki/app/assets/msg_home.txt'
-PATH_ICON_SWP = 'src/funki/app/assets/icon_swap.png'
+PATH_LOGO = 'assets/funki_logo.png'
+PATH_MSG = 'assets/msg_home.txt'
+PATH_ICON_SWP = 'assets/icon_swap.png'
 
 
 def read_text(path):
