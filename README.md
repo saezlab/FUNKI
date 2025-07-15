@@ -36,9 +36,12 @@ object. This class in turn inherits (i.e. is built on top of) the
 class. You can explore all implemented functionalities available
 programmatically in the [Documentation](https://saezlab.github.io/FUNKI/).
 
-If you want to access FUNKI via the GUI, you need to execute the application
-script with your Python interpreter, but first you need to download and install
-FUNKI using the commands below:
+If you want to access FUNKI via the graphical interface, you can download the
+executable [here](https://github.com/saezlab/FUNKI/releases). If there is no
+executable build for your OS, you can also execute the application script with
+the Python interpreter as follows:
+
+First you need to download and install FUNKI using the commands below:
 
 ```bash
 git clone git@github.com:saezlab/FUNKI.git
@@ -46,7 +49,8 @@ cd FUNKI
 pip install ./
 ```
 
-Now you can launch the FUNKI by simply running the application script:
+Now you can launch the FUNKI interface by simply executing the application
+script with:
 
 ```bash
 python src/funki/app/main.py
