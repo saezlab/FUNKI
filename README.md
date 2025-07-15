@@ -25,6 +25,9 @@ To install FUNKI in your local computer you can use `pip` as follows:
 pip install git+https://github.com/saezlab/funki
 ```
 
+You can also install it by cloning or downloading the code in this repository as
+described below.
+
 ## Usage
 Everything within FUNKI is works around an instance of a
 [`DataSet`](https://saezlab.github.io/FUNKI/html/input.html#funki.input.DataSet)
