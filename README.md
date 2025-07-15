@@ -18,6 +18,15 @@ Institute for Computational Biomedicine, Univeristy Hospital Heidelberg.
 
 This work is being funded by the CRC 1550 - Molecular Circuits of Heart Disease.
 
+## Preface
+Everything within FUNKI is works around an instance of a
+[`DataSet`](https://saezlab.github.io/FUNKI/html/input.html#funki.input.DataSet)
+class. This object inherits (i.e. is built on top of) the
+[`anndata.AnnData`](https://anndata.readthedocs.io/en/latest/generated/anndata.AnnData.html)
+class. If you are not familiar with this data structure, you can read more about it their
+[publication](https://joss.theoj.org/papers/10.21105/joss.04371) or explore
+the package [documentation](https://anndata.readthedocs.io/en/stable/index.html).
+
 ## Installation
 To install FUNKI in your local computer you can use `pip` as follows:
 
@@ -29,13 +38,6 @@ You can also install it by cloning or downloading the code in this repository as
 described below.
 
 ## Usage
-Everything within FUNKI is works around an instance of a
-[`DataSet`](https://saezlab.github.io/FUNKI/html/input.html#funki.input.DataSet)
-object. This class in turn inherits (i.e. is built on top of) the
-[`anndata.AnnData`](https://anndata.readthedocs.io/en/latest/generated/anndata.AnnData.html)
-class. You can explore all implemented functionalities available
-programmatically in the [Documentation](https://saezlab.github.io/FUNKI/).
-
 If you want to access FUNKI via the graphical interface, you can download the
 executable [here](https://github.com/saezlab/FUNKI/releases). If there is no
 executable build for your OS, you can also execute the application script with
@@ -57,8 +59,11 @@ python src/funki/app/main.py
 ```
 
 ## Documentation
-You can find the full documentation here, in the
-[FUNKI documentation webpage](https://saezlab.github.io/FUNKI/).
+You can explore all implemented functionalities available
+programmatically in the [Documentation](https://saezlab.github.io/FUNKI/).
+
+For GUI usage, you can explore the help pages within the application's "Help"
+menu.
 
 ---
 
