@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 # Building vars
 VER = $(shell python3 -c "from funki import __version__; print(__version__.replace('.', '_'))")
 ICON = assets/funki_favicon.ico
